@@ -1,0 +1,102 @@
+# Personnes
+je
+me
+moi
+mon
+ma
+mes
+nous
+notre
+tu
+te
+toi
+ta
+tes
+vous
+votre
+il
+lui
+elle
+on
+son
+sa
+ses
+ils
+leurs
+
+# Conjugaison
+est
+sont
+a
+ont
+aurait
+serait
+était
+étaient
+avait
+avaient
+fut
+eut
+# Nombre
+deux
+trois
+quatre
+cinq
+six
+sept
+huit
+dix
+vingt
+cent
+
+# Démonstratifs
+cette
+ces
+cet
+cela
+celui
+celle
+voilà
+
+# Logique
+puis
+car
+donc
+et
+comme
+ou
+ni
+ne
+mais
+parce que
+
+##
+# Lieu
+dans
+sur
+là
+sous
+vers
+entre
+devant
+chez
+derrière
+
+
+# Temps
+quand
+après
+avant
+depuis
+pendant
+demain
+maintenant
+aujourd'hui
+
+
+
+# Relatives
+qui
+où
+dont
+quoi
