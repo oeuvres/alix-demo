@@ -74,13 +74,13 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
         Occ occ = new Occ();
         while ( toks.word( occ ) ) {
           out.print("<tr><td>");
-          out.print( occ.graph(  ) );
+          out.print( occ.graph );
           out.print("</td><td>");
-          out.print( occ.orth(  ) );
+          out.print( occ.orth );
           out.print("</td><td>");
-          out.print( Tag.label(occ.cat()) );
+          out.print( occ.tag.label() );
           out.print("</td><td>");
-          out.print( occ.lem() );
+          out.print( occ.lem );
           out.print("</td><tr>");
           out.println();
         }

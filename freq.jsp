@@ -11,7 +11,13 @@ java.util.Arrays,
 java.util.LinkedHashMap,
 
 site.oeuvres.util.Char,
-site.oeuvres.util.TermDic,site.oeuvres.fr.Tag,site.oeuvres.fr.Occ,site.oeuvres.fr.Tokenizer,site.oeuvres.fr.Lexik,site.oeuvres.fr.LexikEntry"%>
+site.oeuvres.util.TermDic,
+site.oeuvres.fr.Tag,
+site.oeuvres.fr.Occ,
+site.oeuvres.fr.Tokenizer,
+site.oeuvres.fr.Lexik,
+site.oeuvres.fr.LexikEntry
+"%>
 <%!static String[][] cat = {
   // new String[] {"11000", "apollinaire_11000-verges.xml", "Apollinaire", "Les Onze mille verges"},
   new String[] {"alcools", "apollinaire_alcools.xml", "Apollinaire", "Alcools"},
@@ -67,9 +73,9 @@ public TermDic parse( String text, boolean lem) throws IOException {
   // String last;
   while ( toks.word( occ ) ) {
     if (lem) {
-      dic.add( occ.lem() );
+      dic.add( occ.lem );
     }
-    else dic.add( occ.orth() );
+    else dic.add( occ.orth );
   }
   return dic;
 }%>
@@ -207,7 +213,7 @@ if ( dico == null ) {
 else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
   Path listfile = Paths.get( context, "/gram.txt" );
   if ( "verblist".equals( vue ) ) listfile = Paths.get( context, "/verbs.txt" );
-  int occs = dico.occs();
+  long occs = dico.occs();
 %>
   	<table class="sortable">
       <caption>
@@ -269,7 +275,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
     <%
       }
     else {
-      int occs = dico.occs();
+      long occs = dico.occs();
       int limit = 100;
       int n = 1;
       LexikEntry entry;
@@ -338,10 +344,10 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
             // if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
             entry = Lexik.entry(words[i] );
             if ( entry == null ) continue;
-            if ( "verb".equals( vue ) && entry.cat == Tag.VERB );
-            else if ( "adj".equals( vue ) &&  entry.cat == Tag.ADJ );
-            else if ( "sub".equals( vue ) && entry.cat == Tag.SUB );
-            else if ( "adv".equals( vue ) && entry.cat == Tag.ADV );
+            if ( "verb".equals( vue ) && entry.tag.equals( Tag.VERB ) ) ;
+            else if ( "adj".equals( vue ) &&  entry.tag.equals( Tag.ADJ ) );
+            else if ( "sub".equals( vue ) && entry.tag.equals( Tag.SUB ) );
+            else if ( "adv".equals( vue ) && entry.tag.equals( Tag.ADV ) );
             else continue;
             if ( vuelem ) franfreq = entry.lemfreq;
             else franfreq = entry.orthfreq;

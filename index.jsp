@@ -12,11 +12,11 @@ java.nio.file.Files
   <body>
     <article id="article">
       <h1>Alix</h1>
-      <p>Expérimentations pédagogiques de fouille de textes</p>
+      <p>Expérimentations pédagogiques sur les fréquences lexicales</p>
       <ul>
         <li><a href="lem.jsp">Le lemmatiseur du pauvre</a></li>
         <li><a href="freq.jsp">Fréquences relatives</a></li>
-        <li><a href="net.jsp">Réseaux de noms propres</a></li>
+        <li><a href="comp.jsp">Comparer deux tableaux lexicaux</a></li>
       </ul>
     </article>
   </body>

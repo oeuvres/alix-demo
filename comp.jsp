@@ -38,8 +38,8 @@ static String[][] catalog = {
   new String[] {"stendhal", "stendhal.xml", "Stendhal", "Romans"},
   new String[] {"zola", "zola.xml", "Zola", "Romans"},
 };
-public static final String[] _FILTER = new String[] { "aller", "bientôt", "devoir", "demander",
-    "donner", "faire", "falloir", "paraître", "pouvoir", "prendre", "savoir", "venir", "voir", "vouloir" };
+public static final String[] _FILTER = new String[] {  };
+// "aller", "bientôt", "devoir", "demander", "donner", "faire", "falloir", "paraître", "pouvoir", "prendre", "savoir", "venir", "voir", "vouloir"
 public static final HashSet<String> FILTER = new HashSet<String>(Arrays.asList(_FILTER));
 /**
  * Récupérer un dictionnaire par identifiant
@@ -77,11 +77,10 @@ public TermDic parse( String text ) throws IOException {
   Occ occ = new Occ();
   short cat;
   while ( toks.word( occ ) ) {
-    cat = occ.cat();
-    if ( Tag.isVerb( cat ) ) {
-      dic.add( occ.lem() );
+    if ( occ.tag.isVerb() ) {
+      dic.add( occ.lem );
     }
-    else dic.add( occ.orth() );
+    else dic.add( occ.orth );
   }
   return dic;
 }
