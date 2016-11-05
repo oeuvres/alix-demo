@@ -11,16 +11,8 @@ java.util.Arrays,
 java.util.LinkedHashMap,
 
 site.oeuvres.util.Char,
-site.oeuvres.util.TermDic,
-site.oeuvres.fr.Cat,
-site.oeuvres.fr.Occ,
-site.oeuvres.fr.Tokenizer,
-site.oeuvres.fr.Lexik,
-site.oeuvres.fr.LexikEntry
-"%>
-<%!
-
-static String[][] cat = {
+site.oeuvres.util.TermDic,site.oeuvres.fr.Tag,site.oeuvres.fr.Occ,site.oeuvres.fr.Tokenizer,site.oeuvres.fr.Lexik,site.oeuvres.fr.LexikEntry"%>
+<%!static String[][] cat = {
   // new String[] {"11000", "apollinaire_11000-verges.xml", "Apollinaire", "Les Onze mille verges"},
   new String[] {"alcools", "apollinaire_alcools.xml", "Apollinaire", "Alcools"},
   // new String[] {"jdj", "apollinaire_exploits-jeune-don-juan.xml", "Apollinaire", "Les Exploits d’un jeune Don Juan"},
@@ -82,7 +74,7 @@ public TermDic parse( String text, boolean lem) throws IOException {
   return dic;
 }%>
 <%
-request.setCharacterEncoding("UTF-8");
+  request.setCharacterEncoding("UTF-8");
 String context = application.getRealPath("/");
 
 
@@ -126,46 +118,46 @@ DecimalFormat biasdf = new DecimalFormat("# %");
     <h1><a href=".">Alix</a> : différentes fréquences lexicales</h1>
       <%
         String text = request.getParameter( "text" );
-      if ( text==null ) text="";
+        if ( text==null ) text="";
       %>
     <form style="position: fixed; float: left; width: 30em; " onsubmit="if (!this.text.value) return true; this.method = 'post'; this.action='?'; " method="get">
       <select name="bib" onchange="this.form.text.value = ''; this.method = 'GET';  this.form.submit()">
       <%
         String bib = request.getParameter("bib");
-      if ( !"".equals( text ) ) bib = null;
-      String selected = "";
-      if ( bib == null ) selected = " selected=\"selected\"";
-      out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+selected+">Choisir un texte…</option>");
+        if ( !"".equals( text ) ) bib = null;
+        String selected = "";
+        if ( bib == null ) selected = " selected=\"selected\"";
+        out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+selected+">Choisir un texte…</option>");
 
-      for ( int i = 0; i < cat.length; i++) {
-        selected = "";
-        if ( cat[i][0].equals( bib ) ) selected = " selected=\"selected\"";
-        out.print("<option value=\""+cat[i][0]+"\""+selected+">"+cat[i][2]+". "+cat[i][3]+"</option>");
-      }
+        for ( int i = 0; i < cat.length; i++) {
+          selected = "";
+          if ( cat[i][0].equals( bib ) ) selected = " selected=\"selected\"";
+          out.print("<option value=\""+cat[i][0]+"\""+selected+">"+cat[i][2]+". "+cat[i][3]+"</option>");
+        }
       %>
       </select>
       <br/>
       <select name="vue" onchange="this.form.onsubmit(); this.form.submit()">
       <%
         String vue = request.getParameter( "vue" );
-      selected = "";
-      if ( vue == null ) selected = " selected=\"selected\"";
-      out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+selected+">Choisir une liste de mots…</option>");
-      String vuelabel = null;
-      boolean vuelem = false;
-      for ( int i = 0; i < vues.length; i++) {
         selected = "";
-        if ( vues[i][0].equals( vue ) ) {
-          selected = " selected=\"selected\"";
-          vuelabel = vues[i][1];
-          if ( vues[i].length > 2 && vues[i][2] != null ) vuelem = true;
+        if ( vue == null ) selected = " selected=\"selected\"";
+        out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+selected+">Choisir une liste de mots…</option>");
+        String vuelabel = null;
+        boolean vuelem = false;
+        for ( int i = 0; i < vues.length; i++) {
+          selected = "";
+          if ( vues[i][0].equals( vue ) ) {
+            selected = " selected=\"selected\"";
+            vuelabel = vues[i][1];
+            if ( vues[i].length > 2 && vues[i][2] != null ) vuelem = true;
+          }
+          out.print("<option value=\""+vues[i][0]+"\""+selected+">"+vues[i][1]+"</option>");
         }
-        out.print("<option value=\""+vues[i][0]+"\""+selected+">"+vues[i][1]+"</option>");
-      }
-      if ( vue == null ) {
-        vue = vues[0][0];
-        vuelabel = vues[0][1];
-      }
+        if ( vue == null ) {
+          vue = vues[0][0];
+          vuelabel = vues[0][1];
+        }
       %>
       </select>
       <br/>
@@ -176,7 +168,7 @@ DecimalFormat biasdf = new DecimalFormat("# %");
     </form>
     <div style="margin-left: 31em; ">
 <%
-String[] bibl = null; // the current text
+  String[] bibl = null; // the current text
 int index = 0;
 while ( index < cat.length) {
   if (cat[index][0].equals( bib ))
@@ -220,8 +212,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
   	<table class="sortable">
       <caption>
       <%
-
-//       <caption> bibl[2], <i>bibl[3]</i>,  numdf.format( occs ) mots<br/> ( vuelabel )</caption>
+        //       <caption> bibl[2], <i>bibl[3]</i>,  numdf.format( occs ) mots<br/> ( vuelabel )</caption>
       %>
       </caption>
       <tr>
@@ -232,145 +223,147 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
         <th title="0 % absent du texte, 50 % même fréquence dans le texte et Frantext, 100 % absent (ou presque) de Frantext">% Frantext</th>
       </tr>
   	<%
+  	  BufferedReader br = Files.newBufferedReader(  listfile, StandardCharsets.UTF_8 );
+  	    int n = 0;
+  	    int count;
+  	    float franfreq = 0;
+  	    double myfreq = 0;
+  	    double bias = 0;
+  	    String w;
+  	    LexikEntry entry;
+  	    while ( ( w = br.readLine() ) != null) {
+  	  if ( w == null ) continue;
+  	  if ( "".equals( w ) ) continue;
+  	  if ( w.startsWith( "##" ) ) break;
+  	  n++;
+  	  out.print( "<tr>\n");
+  	  // a label, not a word
+  	  if ( w.charAt( 0 ) == '#' ) {
+  	    out.print( "<th>"+n+"</th>\n" );
+  	    out.print( "<th align=\"left\">"+w.substring( 1 ).trim()+"</th><th/><th/><th/>\n" );
+  	    continue;
+  	  }
+  	  out.print( "<td align=\"right\">"+n+"</td>\n" );
+  	  out.print( "<td>"+w+"</td>\n" );
+  	  count = dico.count( w );
+  	  if (count != 0) out.print( "<td align=\"right\">"+count+"</td>\n" );
+  	  else out.print( "<td/>");
+  	  entry = Lexik.entry( w );
+  	  if ( vuelem ) {
+  	    if ( entry != null ) franfreq = entry.lemfreq ;
+  	    else franfreq = 0;
+  	  } else {
+  	    if ( entry != null ) franfreq = entry.orthfreq ;
+  	    else franfreq = 0;
+  	  }
+  	  myfreq = 1.0*dico.count( w )*1000000/occs;
+  	  bias =  myfreq  / (myfreq + franfreq);
+  	  out.print( "<td align=\"right\">"+decdf.format(franfreq)+"</td>\n" );
+  	  String bg = "bg" + Math.round( 10.0 * (2*bias - 1) );
+  	  out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
 
-    BufferedReader br = Files.newBufferedReader(  listfile, StandardCharsets.UTF_8 );
-    int n = 0;
-    int count;
-    float franfreq = 0;
-    double myfreq = 0;
-    double bias = 0;
-    String w;
-    LexikEntry entry;
-    while ( ( w = br.readLine() ) != null) {
-      if ( w == null ) continue;
-      if ( "".equals( w ) ) continue;
-      if ( w.startsWith( "##" ) ) break;
-      n++;
-      out.print( "<tr>\n");
-      // a label, not a word
-      if ( w.charAt( 0 ) == '#' ) {
-        out.print( "<th>"+n+"</th>\n" );
-        out.print( "<th align=\"left\">"+w.substring( 1 ).trim()+"</th><th/><th/><th/>\n" );
-        continue;
-      }
-      out.print( "<td align=\"right\">"+n+"</td>\n" );
-      out.print( "<td>"+w+"</td>\n" );
-      count = dico.count( w );
-      if (count != 0) out.print( "<td align=\"right\">"+count+"</td>\n" );
-      else out.print( "<td/>");
-      entry = Lexik.entry( w );
-      if ( vuelem ) {
-        if ( entry != null ) franfreq = entry.lemfreq ;
-        else franfreq = 0;
-      } else {
-        if ( entry != null ) franfreq = entry.orthfreq ;
-        else franfreq = 0;
-      }
-      myfreq = 1.0*dico.count( w )*1000000/occs;
-      bias =  myfreq  / (myfreq + franfreq);
-      out.print( "<td align=\"right\">"+decdf.format(franfreq)+"</td>\n" );
-      String bg = "bg" + Math.round( 10.0 * (2*bias - 1) );
-      out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
-
-      out.print( "</tr>\n");
-	}
+  	  out.print( "</tr>\n");
+  		}
   	%>
   	</table>
     <%
-}
-else {
-  int occs = dico.occs();
-  int limit = 100;
-  int n = 1;
-  LexikEntry entry;
+      }
+    else {
+      int occs = dico.occs();
+      int limit = 100;
+      int n = 1;
+      LexikEntry entry;
 
-  // with no cache, 47ms on Dumas, seems OK
-  time = System.nanoTime();
-  String[] words = dico.byCount( 5000 );
-  // out.println( "Chargé en "+((System.nanoTime() - time) / 1000000) + " ms");
-  int size = words.length;
-  String cat;
+      // with no cache, 47ms on Dumas, seems OK
+      time = System.nanoTime();
+      String[] words = dico.byCount( 5000 );
+      // out.println( "Chargé en "+((System.nanoTime() - time) / 1000000) + " ms");
+      int size = words.length;
+      String cat;
     %>
     <table class="sortable">
       <%
-//       <caption>bibl[2], <i>bibl[3]</i>, numdf.format( occs ) mots<br/> ( vuelabel)</caption>
+        //       <caption>bibl[2], <i>bibl[3]</i>, numdf.format( occs ) mots<br/> ( vuelabel)</caption>
       %>
       <tr>
         <th>N°</th>
         <th>Graphie</th>
         <th>Occurrences</th>
-        <% if ( "adj".equals( vue ) || "adv".equals( vue ) || "lem".equals( vue ) || "sub".equals( vue ) || "verb".equals( vue ) || "wordbias".equals( vue ) ) {
-          out.print("<th title=\"Effectif par million d’occurrences\">Frantext</th>\n");
-          out.print("<th title=\"0% = absent du texte, 50% = même fréquence dans le texte et Frantext, 100% absent (ou presque) de Frantext\">% Frantext</th>\n");
-        } %>
+        <%
+          if ( "adj".equals( vue ) || "adv".equals( vue ) || "lem".equals( vue ) || "sub".equals( vue ) || "verb".equals( vue ) || "wordbias".equals( vue ) ) {
+              out.print("<th title=\"Effectif par million d’occurrences\">Frantext</th>\n");
+              out.print("<th title=\"0% = absent du texte, 50% = même fréquence dans le texte et Frantext, 100% absent (ou presque) de Frantext\">% Frantext</th>\n");
+            }
+        %>
       </tr>
-      <% // loop on text forms in
-      for (int i = 0; i < size; i++) {
-        float franfreq = 0;
-        double myfreq = 0;
-        double bias = 0;
-        if ( words[i].isEmpty() ) continue;
-        if ( "nostop".equals( vue ) ) {
-          if (Lexik.isStop( words[i] )) continue;
-        }
-        else if ( "words".equals( vue )) {
-          if (Lexik.isStop( words[i] )) continue;
-          if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
-        }
-        else if ( "lems".equals( vue )) {
-          if ( Char.isPunctuation( words[i].charAt( 0 ) )) continue;
-        }
-        else if ( "lemnostop".equals( vue )) {
-          if (Lexik.isStop( words[i] )) continue;
-          if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
-        }
-        else if ( "lem".equals( vue ) || "wordbias".equals( vue ) ) {
-          if (Lexik.isStop( words[i] )) continue;
-          // supprimer les noms propres ?
-          if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
-          entry = Lexik.entry(words[i] );
-          if ("lem".equals( vue )) {
-            if ( entry != null ) franfreq = entry.lemfreq;
-            else franfreq = 0;
-          } else {
-            if ( entry != null ) franfreq = entry.orthfreq;
-            else franfreq = 0;
+      <%
+        // loop on text forms in
+        for (int i = 0; i < size; i++) {
+          float franfreq = 0;
+          double myfreq = 0;
+          double bias = 0;
+          if ( words[i].isEmpty() ) continue;
+          if ( "nostop".equals( vue ) ) {
+            if (Lexik.isStop( words[i] )) continue;
           }
-          myfreq = 1.0*dico.count( words[i] )*1000000/occs;
-          bias =  myfreq / (myfreq + franfreq);
-          // if (bias < 0.33) continue;
+          else if ( "words".equals( vue )) {
+            if (Lexik.isStop( words[i] )) continue;
+            if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
+          }
+          else if ( "lems".equals( vue )) {
+            if ( Char.isPunctuation( words[i].charAt( 0 ) )) continue;
+          }
+          else if ( "lemnostop".equals( vue )) {
+            if (Lexik.isStop( words[i] )) continue;
+            if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
+          }
+          else if ( "lem".equals( vue ) || "wordbias".equals( vue ) ) {
+            if (Lexik.isStop( words[i] )) continue;
+            // supprimer les noms propres ?
+            if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
+            entry = Lexik.entry(words[i] );
+            if ("lem".equals( vue )) {
+              if ( entry != null ) franfreq = entry.lemfreq;
+              else franfreq = 0;
+            } else {
+              if ( entry != null ) franfreq = entry.orthfreq;
+              else franfreq = 0;
+            }
+            myfreq = 1.0*dico.count( words[i] )*1000000/occs;
+            bias =  myfreq / (myfreq + franfreq);
+            // if (bias < 0.33) continue;
+          }
+          else if ( "sub".equals( vue ) || "verb".equals( vue ) || "adj".equals( vue ) || "adv".equals( vue ) ) {
+            if (Lexik.isStop( words[i] )) continue;
+            // if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
+            entry = Lexik.entry(words[i] );
+            if ( entry == null ) continue;
+            if ( "verb".equals( vue ) && entry.cat == Tag.VERB );
+            else if ( "adj".equals( vue ) &&  entry.cat == Tag.ADJ );
+            else if ( "sub".equals( vue ) && entry.cat == Tag.SUB );
+            else if ( "adv".equals( vue ) && entry.cat == Tag.ADV );
+            else continue;
+            if ( vuelem ) franfreq = entry.lemfreq;
+            else franfreq = entry.orthfreq;
+            myfreq = 1.0*dico.count( words[i] )*1000000/occs;
+            bias =  myfreq / ( myfreq + franfreq );
+          }
+          out.print( "<tr>\n");
+          out.print( "<td>"+n+"</td>\n" );
+          out.print( "<td>"+words[i]+"</td>\n" );
+          out.print( "<td>"+dico.count( words[i] )+"</td>\n" );
+          if ( franfreq > 0 ) {
+            out.print( "<td align=\"right\">"+decdf.format(franfreq)+"</td>\n" );
+            String bg = "bg" + Math.round( 10.0 * (2 * bias - 1) );
+            out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
+          }
+          else if ( "adj".equals( vue ) || "adv".equals( vue ) || "lem".equals( vue ) || "sub".equals( vue ) || "verb".equals( vue ) || "wordbias".equals( vue ) ) {
+              out.print( "<td/><td/>\n");
+          }
+          out.print( "</tr>\n");
+          n++;
+          if (n > limit) break;
         }
-        else if ( "sub".equals( vue ) || "verb".equals( vue ) || "adj".equals( vue ) || "adv".equals( vue ) ) {
-          if (Lexik.isStop( words[i] )) continue;
-          // if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
-          entry = Lexik.entry(words[i] );
-          if ( entry == null ) continue;
-          if ( "verb".equals( vue ) && entry.cat == Cat.VERB );
-          else if ( "adj".equals( vue ) &&  entry.cat == Cat.ADJ );
-          else if ( "sub".equals( vue ) && entry.cat == Cat.SUB );
-          else if ( "adv".equals( vue ) && entry.cat == Cat.ADV );
-          else continue;
-          if ( vuelem ) franfreq = entry.lemfreq;
-          else franfreq = entry.orthfreq;
-          myfreq = 1.0*dico.count( words[i] )*1000000/occs;
-          bias =  myfreq / ( myfreq + franfreq );
-        }
-        out.print( "<tr>\n");
-        out.print( "<td>"+n+"</td>\n" );
-        out.print( "<td>"+words[i]+"</td>\n" );
-        out.print( "<td>"+dico.count( words[i] )+"</td>\n" );
-        if ( franfreq > 0 ) {
-          out.print( "<td align=\"right\">"+decdf.format(franfreq)+"</td>\n" );
-          String bg = "bg" + Math.round( 10.0 * (2 * bias - 1) );
-          out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
-        }
-        else if ( "adj".equals( vue ) || "adv".equals( vue ) || "lem".equals( vue ) || "sub".equals( vue ) || "verb".equals( vue ) || "wordbias".equals( vue ) ) {
-            out.print( "<td/><td/>\n");
-        }
-        out.print( "</tr>\n");
-        n++;
-        if (n > limit) break;
-      }
       %>
     </table>
     <%
