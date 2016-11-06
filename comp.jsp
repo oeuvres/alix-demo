@@ -12,59 +12,39 @@ java.util.Arrays,
 java.util.HashSet,
 java.util.Locale,
 java.util.List,
+java.util.Scanner,
 
 site.oeuvres.util.Char,
 site.oeuvres.util.CompDic,
 site.oeuvres.util.CompDic.Balance,
-site.oeuvres.util.TermDic,site.oeuvres.fr.Tag,site.oeuvres.fr.Occ,site.oeuvres.fr.Tokenizer,site.oeuvres.fr.Lexik,site.oeuvres.fr.LexikEntry"%>
-<%!/** liste de textes */
-static String[][] catalog = {
-  new String[] {"apollinaire_poesie", "apollinaire_poesie.xml", "Apollinaire", "Poésie"},
-  new String[] {"baudelaire_fleurs", "baudelaire_fleurs.xml", "Baudelaire", "Les Fleurs de Mal"},
-  new String[] {"corneillep", "corneillep.txt", "Corneille, Pierre", "Théâtre"},
-  new String[] {"corneillep_femmes", "corneillep_femmes.txt", "Corneille, Pierre", "Femmes, répliques"},
-  new String[] {"corneillep_hommes", "corneillep_hommes.txt", "Corneille, Pierre", "Hommes, répliques"},
-  new String[] {"corneillet", "corneillet.txt", "Corneille, Thomas", "Théâtre"},
-  new String[] {"dumas", "dumas.txt", "Dumas", "Romans"},
-  new String[] {"la-fayette", "la-fayette_princesse-cleves.xml", "La Fayette", "La Princesse de Clèves"},
-  new String[] {"moliere", "moliere.txt", "Molière", "Théâtre"},
-  new String[] {"moliere_femmes", "moliere_femmes.txt", "Molière", "Femmes, répliques"},
-  new String[] {"moliere_hommes", "moliere_hommes.txt", "Molière", "Hommes, répliques"},
-  new String[] {"proust_recherche", "proust_recherche.xml", "Proust", "À la recherche du temps perdu"},
-  new String[] {"racine", "racine.txt", "Racine", "Théâtre"},
-  new String[] {"racine_femmes", "racine_femmes.txt", "Racine", "Femmes, répliques"},
-  new String[] {"racine_hommes", "racine_hommes.txt", "Racine", "Hommes, répliques"},
-  new String[] {"sade", "sade.txt", "Sade", "Récits"},
-  new String[] {"stendhal", "stendhal.xml", "Stendhal", "Romans"},
-  new String[] {"zola", "zola.xml", "Zola", "Romans"},
-};
+site.oeuvres.util.TermDic,site.oeuvres.fr.Tag,
+site.oeuvres.fr.Occ,site.oeuvres.fr.Tokenizer,
+site.oeuvres.fr.Lexik,site.oeuvres.fr.LexikEntry
+"%>
+<%!
 public static final String[] _FILTER = new String[] {  };
 // "aller", "bientôt", "devoir", "demander", "donner", "faire", "falloir", "paraître", "pouvoir", "prendre", "savoir", "venir", "voir", "vouloir"
 public static final HashSet<String> FILTER = new HashSet<String>(Arrays.asList(_FILTER));
 /**
  * Récupérer un dictionnaire par identifiant
  */
-public TermDic get( ServletContext application, final String code ) throws IOException 
+public TermDic get( PageContext pageContext, final String code ) throws IOException 
 {
+  ServletContext application = pageContext.getServletContext();
   String att = "M"+code;
   TermDic dico = (TermDic)application.getAttribute( att );
   if ( dico != null ) return dico;
-  // retrouver l’enregistrement
-  int i = 0;
-  String[] bibl = null;
-  while ( i < catalog.length) {
-    if (catalog[i][0].equals( code )) {
-      bibl = catalog[i];
-      break;
-    }
-    i++;
-  }
+  String[] bibl = catalog.get( code );
   // texte inconnu
   if ( bibl == null ) return null;
+  /*
   String home = application.getRealPath("/");
   String filepath = home + "/textes/" + bibl[1];
   Path path =  Paths.get( filepath );
-  dico = parse( new String( Files.readAllBytes( path ), StandardCharsets.UTF_8 ) );
+  new String( Files.readAllBytes( path ), StandardCharsets.UTF_8 )
+  */
+  // http://web.archive.org/web/20140531042945/https://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
+  dico = parse(  new Scanner( application.getResourceAsStream( bibl[0] ), "UTF-8" ).useDelimiter("\\A").next() );
   application.setAttribute( att, dico );
   return dico;
 }
@@ -104,6 +84,7 @@ DecimalFormat mega = new DecimalFormat("###,###");
 DecimalFormat dec1 = new DecimalFormat("###,###.0");
 
 %>
+<%@include file="common.jsp" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -214,21 +195,10 @@ section:after, section:before, form:after, form:before, .bar:after, .bar:before 
     </form>
     <form id="seltext" name="seltext" action="#seltext" style="width: 100%; text-align: center; z-index: 2; position: relative; clear: both; " method="get">
       <select name="ref1" style="float: left">
-      <%
-        String ref1 = request.getParameter("ref1");
-        if ( !text1.isEmpty() ) ref1 = null;
-        sel = "";
-        if ( ref1 == null ) sel = selected;
-        out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+sel+">Choisir un texte…</option>");
-        for ( int i = 0; i < catalog.length; i++) {
-          sel = "";
-          if ( catalog[i][0].equals( ref1 ) ) {
-            sel = selected;
-            ltitle = catalog[i][2]+". "+catalog[i][3];
-          }
-          out.print("<option value=\""+catalog[i][0]+"\""+sel+">"+catalog[i][2]+". "+catalog[i][3]+"</option>");
-        }
-      %>
+        <%
+        String ref1 = request.getParameter( "ref1" );
+        seltext( pageContext, ref1 ); 
+        %>
       </select>      
       <label title="Largeur de la zone centrale, sans mots grammaticaux">
         <select name="qfilter">
@@ -246,33 +216,22 @@ section:after, section:before, form:after, form:before, .bar:after, .bar:before 
       </label>
       <button type="submit">Comparer</button>
       <select name="ref2" style="float: right; text-align: right; ">
-      <%
-        String ref2 = request.getParameter("ref2");
-        if ( !text2.isEmpty() ) ref2 = null;
-        sel = "";
-        if ( ref2 == null ) sel = selected;
-        out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+sel+">Choisir un texte…</option>");
-        for ( int i = 0; i < catalog.length; i++) {
-          sel = "";
-          if ( catalog[i][0].equals( ref2 ) ){
-            sel = selected;
-            rtitle = catalog[i][2]+". "+catalog[i][3];
-          }
-          out.print("<option value=\""+catalog[i][0]+"\""+sel+">"+catalog[i][2]+". "+catalog[i][3]+"</option>");
-        }
-      %>
+        <%
+        String ref2 = request.getParameter( "ref2" );
+        seltext( pageContext, ref2 ); 
+        %>
       </select>
     </form>
 <%
 if ( ref1 != null && ref2 != null) {
   
   time = System.nanoTime();
-  dic1 = get( application, ref1 );
+  dic1 = get( pageContext, ref1 );
   laps = ((System.nanoTime() - time) / 1000000);
   if ( laps > 1 ) out.println( "<p>"+ref1+": dictionnaire construit en "+ laps + " ms</p>");
   
   time = System.nanoTime();
-  dic2 = get( application, ref2 );
+  dic2 = get( pageContext, ref2 );
   laps = ((System.nanoTime() - time) / 1000000);
   if ( laps > 1 ) out.println( "<p>"+ref2+": dictionnaire construit en "+ laps + " ms</p>");
   

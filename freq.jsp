@@ -9,6 +9,7 @@ java.nio.file.Paths,
 java.text.DecimalFormat,
 java.util.Arrays,
 java.util.LinkedHashMap,
+java.util.Scanner,
 
 site.oeuvres.util.Char,
 site.oeuvres.util.TermDic,
@@ -18,29 +19,7 @@ site.oeuvres.fr.Tokenizer,
 site.oeuvres.fr.Lexik,
 site.oeuvres.fr.LexikEntry
 "%>
-<%!static String[][] cat = {
-  // new String[] {"11000", "apollinaire_11000-verges.xml", "Apollinaire", "Les Onze mille verges"},
-  new String[] {"alcools", "apollinaire_alcools.xml", "Apollinaire", "Alcools"},
-  // new String[] {"jdj", "apollinaire_exploits-jeune-don-juan.xml", "Apollinaire", "Les Exploits d’un jeune Don Juan"},
-  // new String[] {"3dj", "apollinaire_trois-don-juan.xml", "Apollinaire", "Trois Don Juan"},
-  // new String[] {"cleves", "la-fayette_princesse-cleves.xml", "Madame de La Fayette", "La Princesse de Clèves"},
-  new String[] {"illusions", "balzac_illusions-perdues.xml", "Balzac", "Les Illusions perdues"},
-  new String[] {"fleurs", "baudelaire_fleurs.xml", "Baudelaire", "Les Fleurs du Mal"},
-  new String[] {"cahusac", "cahusac_encyclopedie.txt", "Cahusac, Louis de", "Articles de l’Encyclopédie"},
-  new String[] {"corneillep", "corneillep.txt", "Corneille, Pierre", "Théâtre"},
-  // new String[] {"corneillet", "corneillet.txt", "Corneille, Thomas", "Théâtre"},
-  new String[] {"dumas", "dumas.txt", "Dumas", "Romans"},
-  new String[] {"flaubert_bovary", "flaubert_madame-bovary.xml", "Flaubert", "Madame Bovary"},
-  new String[] {"moliere", "moliere.txt", "Molière", "Théâtre"},
-  new String[] {"proust_recherche", "proust_recherche.xml", "Proust", "À la recherche du temps perdu"},
-  new String[] {"racine", "racine.txt", "Racine", "Théâtre"},
-  new String[] {"sade", "sade.txt", "Sade", "Récits"},
-  new String[] {"stendhal", "stendhal.xml", "Stendhal", "Romans"},
-  new String[] {"stendhal_journal", "stendhal_journal.txt", "Stendhal", "Journal et papiers"},
-  new String[] {"zola", "zola.xml", "Zola", "Romans"},
-  // new String[] {"bete", "zola_bete.xml", "Zola", "La Bête humaine"},
-  // new String[] {"bilitis", "louys_bilitis.html", "Pierre Louÿs", "Les chansons de Bilitis"},
-};
+<%!
 static String[][] vues = {
   new String[] { "tokens", "Graphies" },
   new String[] { "nostop", "Graphies sans mots vides" },
@@ -61,11 +40,14 @@ static String[][] vues = {
 /**
  * Charger un texte en vecteur de cooccurrents
  */
-public TermDic load( String file, boolean lem) throws IOException {
-  Path path =  Paths.get( file );
-  String text = new String( Files.readAllBytes( path ), StandardCharsets.UTF_8 );
+public TermDic load( PageContext pageContext, String res, boolean lem) throws IOException {
+  Scanner sc = new Scanner( pageContext.getServletContext().getResourceAsStream( res ), "UTF-8" );
+  sc.useDelimiter("\\A");
+  String text = sc.next();
+  sc.close();
   return parse( text, lem);
 }
+
 public TermDic parse( String text, boolean lem) throws IOException {
   TermDic dic = new TermDic();
   Tokenizer toks = new Tokenizer(text);
@@ -90,6 +72,7 @@ DecimalFormat numdf = new DecimalFormat("# ###");
 DecimalFormat decdf = new DecimalFormat("0.00");
 DecimalFormat biasdf = new DecimalFormat("# %");
 %>
+<%@include file="common.jsp" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -127,26 +110,18 @@ DecimalFormat biasdf = new DecimalFormat("# %");
         if ( text==null ) text="";
       %>
     <form style="position: fixed; float: left; width: 30em; " onsubmit="if (!this.text.value) return true; this.method = 'post'; this.action='?'; " method="get">
-      <select name="bib" onchange="this.form.text.value = ''; this.method = 'GET';  this.form.submit()">
+      <select name="bibcode" onchange="this.form.text.value = ''; this.method = 'GET';  this.form.submit()">
       <%
-        String bib = request.getParameter("bib");
-        if ( !"".equals( text ) ) bib = null;
-        String selected = "";
-        if ( bib == null ) selected = " selected=\"selected\"";
-        out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+selected+">Choisir un texte…</option>");
-
-        for ( int i = 0; i < cat.length; i++) {
-          selected = "";
-          if ( cat[i][0].equals( bib ) ) selected = " selected=\"selected\"";
-          out.print("<option value=\""+cat[i][0]+"\""+selected+">"+cat[i][2]+". "+cat[i][3]+"</option>");
-        }
+        String bibcode = request.getParameter("bibcode");
+        if ( !"".equals( text ) ) bibcode = null;
+        seltext( pageContext, bibcode );
       %>
       </select>
       <br/>
       <select name="vue" onchange="this.form.onsubmit(); this.form.submit()">
       <%
         String vue = request.getParameter( "vue" );
-        selected = "";
+        String selected = "";
         if ( vue == null ) selected = " selected=\"selected\"";
         out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+selected+">Choisir une liste de mots…</option>");
         String vuelabel = null;
@@ -174,17 +149,7 @@ DecimalFormat biasdf = new DecimalFormat("# %");
     </form>
     <div style="margin-left: 31em; ">
 <%
-  String[] bibl = null; // the current text
-int index = 0;
-while ( index < cat.length) {
-  if (cat[index][0].equals( bib ))
-    break;
-  index++;
-}
-// not found
-if ( index < cat.length ) {
-  bibl = cat[index];
-}
+String[] bibl = catalog.get(bibcode);
 
 long time = System.nanoTime();
 
@@ -194,21 +159,20 @@ if ( !"".equals( text )) {
   if ( vuelem ) dico = parse( text, true);
   else dico = parse( text, false);
 }
-else if( bib != null ) {
-  String att = bib;
-  if ( vuelem ) att = bib+"L";
+else if( bibcode != null ) {
+  String att = bibcode;
+  if ( vuelem ) att = bibcode+"L";
   dico = (TermDic)application.getAttribute( att );
   if ( dico == null ) {
-    String filepath = context + "/textes/" + bibl[1];
-    if ( vuelem ) dico = load( filepath, true);
-    else dico = load( filepath, false);
+    if ( vuelem ) dico = load( pageContext, bibl[0], true);
+    else dico = load( pageContext, bibl[0], false);
     application.setAttribute( att, dico );
     out.println( "Dictionnaire construit en "+((System.nanoTime() - time) / 1000000) + " ms");
   }
 }
 
 if ( dico == null ) {
-  if ( bib != null ) out.print( "<p>Le texte "+bib+" n’est pas disponible sur ce serveur.</p>\n");
+  if ( bibcode != null ) out.print( "<p>Le texte "+bibcode+" n’est pas disponible sur ce serveur.</p>\n");
 }
 else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
   Path listfile = Paths.get( context, "/gram.txt" );

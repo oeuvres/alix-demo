@@ -1,0 +1,24 @@
+CODE;CONTEXT RESOURCE;AUTHOR;TITLE
+apollinaire_poesie;/textes/apollinaire_poesie.xml;Apollinaire;Poésie
+apollinaire_porno;/textes/apollinaire_porno.xml;Apollinaire;Contes érotiques
+baudelaire_fleurs;/textes/baudelaire_fleurs.xml;Baudelaire;Les Fleurs de Mal
+beauzee;/textes/beauzee_encyclopedie.xml;Beauzée;Encyclopédie, articles sur la grammaire
+cahusac;/textes/cahusac_encyclopedie.txt;Cahusac;Encyclopédie, articles sur la danse
+corneillep;/textes/corneillep.txt;Corneille, Pierre;Théâtre
+corneillep_femmes;/textes/corneillep_femmes.txt;Corneille, Pierre;Femmes, répliques
+corneillep_hommes;/textes/corneillep_hommes.txt;Corneille, Pierre;Hommes, répliques
+corneillet;/textes/corneillet.txt;Corneille, Thomas;Théâtre
+darwin;/textes/darwin_origine-des-especes.xml;Darwin;Origine des espèces
+dumas;textes/dumas.txt;Dumas;Romans
+la-fayette;/textes/la-fayette_princesse-cleves.xml;La Fayette;La Princesse de Clèves
+moliere;/textes/moliere.txt;Molière;Théâtre
+moliere_femmes;/textes/moliere_femmes.txt;Molière;Femmes, répliques
+moliere_hommes;/textes/moliere_hommes.txt;Molière;Hommes, répliques
+o;/textes/histoire-do.html;Réage;Histoire d’O
+proust_recherche;/textes/proust_recherche.xml;Proust;À la recherche du temps perdu
+racine;/textes/racine.txt;Racine;Théâtre
+racine_femmes;/textes/racine_femmes.txt;Racine;Femmes, répliques
+racine_hommes;/textes/racine_hommes.txt;Racine;Hommes, répliques
+sade;/textes/sade.txt;Sade;Récits
+stendhal;/textes/stendhal.xml;Stendhal;Romans
+zola;/textes/zola.xml;Zola;Romans
