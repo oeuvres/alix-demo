@@ -1,9 +1,5 @@
 <%@ page language="java" contentType="text/plain; charset=UTF-8" pageEncoding="UTF-8"%><%@ page import="
-java.util.LinkedList,
-site.oeuvres.util.Char,
-site.oeuvres.fr.Lexik,
-site.oeuvres.fr.Tokenizer
-" %><%!
+java.util.LinkedList,alix.util.Char,alix.fr.Lexik,alix.fr.Tokenizer" %><%!
 public class Couple {
   int pos;
   String name;

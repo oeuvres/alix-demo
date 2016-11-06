@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="
-site.oeuvres.fr.Lexik,site.oeuvres.fr.Tag,site.oeuvres.fr.Tokenizer,site.oeuvres.fr.Occ" %>
+alix.fr.Lexik,
+alix.fr.Tag,
+alix.fr.Tokenizer,
+alix.fr.Occ
+" %>
 <%
   request.setCharacterEncoding("UTF-8");
 %>
@@ -16,7 +20,7 @@ table.lem td { padding: 0 1ex; border-top: 1px solid #FFFFFF; }
   </head>
   <body>
     <article id="article">
-      <h1><a href=".">Alix</a> : un lemmatiseur qui tolère la poésie</h1>
+      <h1><a href=".">Alix</a> : <a href="">un lemmatiseur qui tolère la poésie</a></h1>
       <p>
 Les vers passent en général très mal dans un lemmatiseur, car les majuscules ne coïncident pas avec
 la ponctuation, si bien qu’ils produisent beaucoup de faux noms propres, et autres erreurs imprévisibles.
@@ -33,7 +37,7 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
 </p>
       <%
         String text = request.getParameter( "text" );
-        if ( text == null) text = "La Beauté "
+        if ( text == null) text = "La Beauté\n\n"
       + "Je suis belle, ô mortels! comme un rêve de pierre,\n"
       + "Et mon sein, où chacun s'est meurtri tour à tour,\n"
       + "Est fait pour inspirer au poète un amour\n"
@@ -53,12 +57,12 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
       + "Mes yeux, mes larges yeux aux clartés éternelles!\n";
       %>
       <form method="post" action="?">
-        <textarea name="text" style="width: 100%; height: 10em; "><%=text%></textarea>
-        <!--
         <label>
-          <input type="checkbox" name="stop"/>
+          (Unknown) voir uniquement les erreurs
+          <% boolean unknown = !(request.getParameter( "unknown" ) == null);  %>
+          <input type="checkbox" name="unknown" <% if(unknown) out.print( " checked=\"checked\"" ); %> />
         </label>
-      -->
+        <textarea name="text" style="width: 100%; height: 10em; "><%=text%></textarea>
         <button type="submit">Envoyer</button>
       </form>
       <table class="lem">
@@ -67,12 +71,14 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
           <th>Forme</th>
           <th>Catégorie</th>
           <th>Lemme</th>
+          <th>Index</th>
         </tr>
       <%
         Tokenizer toks = new Tokenizer(text);
         int n = 1;
         Occ occ = new Occ();
         while ( toks.word( occ ) ) {
+          if ( unknown && !occ.tag.equals( Tag.UNKNOWN )) continue;
           out.print("<tr><td>");
           out.print( occ.graph );
           out.print("</td><td>");
@@ -81,6 +87,10 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
           out.print( occ.tag.label() );
           out.print("</td><td>");
           out.print( occ.lem );
+          out.print("</td><td>");
+          out.print( occ.start );
+          out.print( '–' );
+          out.print( occ.end );
           out.print("</td><tr>");
           out.println();
         }

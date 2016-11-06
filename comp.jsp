@@ -14,12 +14,15 @@ java.util.Locale,
 java.util.List,
 java.util.Scanner,
 
-site.oeuvres.util.Char,
-site.oeuvres.util.CompDic,
-site.oeuvres.util.CompDic.Balance,
-site.oeuvres.util.TermDic,site.oeuvres.fr.Tag,
-site.oeuvres.fr.Occ,site.oeuvres.fr.Tokenizer,
-site.oeuvres.fr.Lexik,site.oeuvres.fr.LexikEntry
+alix.util.Char,
+alix.util.CompDic,
+alix.util.CompDic.Balance,
+alix.util.TermDic,
+alix.fr.Tag,
+alix.fr.Occ,
+alix.fr.Tokenizer,
+alix.fr.Lexik,
+alix.fr.LexikEntry
 "%>
 <%!
 public static final String[] _FILTER = new String[] {  };
@@ -224,16 +227,27 @@ section:after, section:before, form:after, form:before, .bar:after, .bar:before 
     </form>
 <%
 if ( ref1 != null && ref2 != null) {
-  
+  String[] cells;
   time = System.nanoTime();
   dic1 = get( pageContext, ref1 );
   laps = ((System.nanoTime() - time) / 1000000);
-  if ( laps > 1 ) out.println( "<p>"+ref1+": dictionnaire construit en "+ laps + " ms</p>");
+  if ( laps > 5 ) out.println( "<p>"+ref1+": dictionnaire construit en "+ laps + " ms</p>");
+  if ( dic1 != null) {
+    cells = catalog.get( ref1 );
+    ltitle = (cells[1]+". "+cells[2]);
+  }
   
   time = System.nanoTime();
   dic2 = get( pageContext, ref2 );
   laps = ((System.nanoTime() - time) / 1000000);
-  if ( laps > 1 ) out.println( "<p>"+ref2+": dictionnaire construit en "+ laps + " ms</p>");
+  if ( laps > 5 ) out.println( "<p>"+ref2+": dictionnaire construit en "+ laps + " ms</p>");
+  cells = catalog.get( ref2 );
+  rtitle = (cells[1]+". "+cells[2]);
+  /*
+  if ( dic2 != null) {
+    rtitle = (catalog.get( ref2 )[1]+". "+catalog.get( ref2 )[2]).substring( 0, 30 );
+  }
+  */
   
   go = true;
 }

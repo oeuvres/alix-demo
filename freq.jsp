@@ -11,13 +11,13 @@ java.util.Arrays,
 java.util.LinkedHashMap,
 java.util.Scanner,
 
-site.oeuvres.util.Char,
-site.oeuvres.util.TermDic,
-site.oeuvres.fr.Tag,
-site.oeuvres.fr.Occ,
-site.oeuvres.fr.Tokenizer,
-site.oeuvres.fr.Lexik,
-site.oeuvres.fr.LexikEntry
+alix.util.Char,
+alix.util.TermDic,
+alix.fr.Tag,
+alix.fr.Occ,
+alix.fr.Tokenizer,
+alix.fr.Lexik,
+alix.fr.LexikEntry
 "%>
 <%!
 static String[][] vues = {

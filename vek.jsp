@@ -14,13 +14,7 @@ java.util.HashSet,
 java.util.Locale,
 java.util.List,
 java.util.Map,
-java.util.Properties,
-
-site.oeuvres.muthovek.Dicovek,
-site.oeuvres.muthovek.Dicovek.SimRow,
-site.oeuvres.fr.Lexik
-
-"%>
+java.util.Properties,alix.muthovek.Dicovek,alix.muthovek.Dicovek.SimRow,alix.fr.Lexik"%>
 <%!
 /** liste de corpus */
 static Properties props;

@@ -19,7 +19,11 @@ org.apache.lucene.search.Query,
 org.apache.lucene.search.TermQuery,
 org.apache.lucene.search.ScoreDoc,
 org.apache.lucene.search.TopDocs,
-org.apache.lucene.store.FSDirectory,site.oeuvres.lucene.MoreLikeThis,site.oeuvres.lucene.XmlAnalyzer" %>
+org.apache.lucene.store.FSDirectory,
+
+alix.lucene.MoreLikeThis,
+alix.lucene.XmlAnalyzer
+" %>
 <%
 String lucdir = application.getRealPath( File.separator )+"/WEB-INF/lucene";
 IndexReader reader = DirectoryReader.open( FSDirectory.open(Paths.get(lucdir)) );
