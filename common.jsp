@@ -40,7 +40,7 @@ static void seltext( PageContext pageContext, String value ) throws IOException
   String sel = "";
   if (value == null) sel = selected;
   String[] cells = null;
-  out.println("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+sel+">Choisir un texte…</option>");
+  out.println("<option value=\"\" "+sel+">Choisir un texte…</option>");
   for ( String code: catalog.keySet(  ) ) {
     cells = catalog.get( code );
     if ( code.equals( value ) ) sel = selected;

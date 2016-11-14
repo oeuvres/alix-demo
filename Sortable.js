@@ -79,7 +79,7 @@ table.sortable caption { background-color: #F5F3EB; padding: 2px 1ex 2px 1ex } \
 table.sortable td { vertical-align: top; border: #CCCCCC 1px solid; padding: 2px 1ex; } \
 table.sortable td.string { text-align: left; } \
 table.sortable tr td { border-bottom: none; border-top: none; } \
-tr.even { } \
+tr.even { background-color: #FFFFFF; } \
 tr.odd { background-color: #F5F3EB; } \
 table.sortable th { text-align: center; vertical-align: middle; text-align: left; padding: 5px 1ex 5px 1ex; background-color: #FFFFFF; border-top: 2px solid #CCCCCC; border-bottom: 2px solid #CCCCCC; } \
 table.sortable th.head, table.sortable td.head { vertical-align: bottom; } \

@@ -7,16 +7,17 @@ java.nio.file.Files
 <html>
   <head>
     <title>Alix, expérimentations pédagogiques de fouille de textes</title>
-    <link rel="stylesheet" type="text/css" href="http://svn.code.sf.net/p/obvil/code/theme/obvil.css" />
+    <link rel="stylesheet" type="text/css" href="alix.css" />
   </head>
   <body>
-    <article id="article">
+    <article>
       <h1>Alix</h1>
       <p>Expérimentations pédagogiques sur les fréquences lexicales</p>
       <ul>
         <li><a href="lem.jsp">Le lemmatiseur du pauvre</a></li>
         <li><a href="freq.jsp">Fréquences relatives</a></li>
         <li><a href="comp.jsp">Comparer deux tableaux lexicaux</a></li>
+        <li><a href="gn.jsp">Adjectifs ante ou post posés</a></li>
       </ul>
     </article>
   </body>

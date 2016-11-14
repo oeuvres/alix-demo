@@ -1,3 +1,4 @@
 textes/
 WEB-INF/lucene/
 .settings
+test/

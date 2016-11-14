@@ -60,10 +60,10 @@ public TermDic parse( String text ) throws IOException {
   Occ occ = new Occ();
   short cat;
   while ( toks.word( occ ) ) {
-    if ( occ.tag.isVerb() ) {
-      dic.add( occ.lem );
+    if ( occ.tag.isVerb() || occ.tag.code() == Tag.ADJ ) {
+      dic.inc( occ.lem, occ.tag.code() );
     }
-    else dic.add( occ.orth );
+    else dic.inc( occ.orth, occ.tag.code() );
   }
   return dic;
 }
@@ -78,7 +78,9 @@ public float log ( double percent )
   // 1.0 precision
   percent = Math.round(10* (50+sign*50* Math.log10( percent )))/10 ;
   return (float)percent;
-}%>
+}
+
+%>
 <%
 request.setCharacterEncoding("UTF-8");
 long time;
@@ -89,37 +91,11 @@ DecimalFormat dec1 = new DecimalFormat("###,###.0");
 %>
 <%@include file="common.jsp" %>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
+    <meta charset="UTF-8">
     <title>Comparateur de fréquences lexicales</title>
-    <link rel="stylesheet" type="text/css" href="http://svn.code.sf.net/p/obvil/code/theme/obvil.css" />
-    <style type="text/css">
-html, body { height: 100%; background-color: #f3f2ec; }
-article { height: 100%; margin-top:0; padding: 0 2em 0 2em; font-family: sans-serif;   }
-select, button {font-size: 18px; font-family: sans-serif; }
-textarea { border: none; }
-section:after, section:before, form:after, form:before, .bar:after, .bar:before { content:" "; visibility: hidden; display: block; clear: both; height: 0; }
-
-.board { color: rgba(0, 0, 0, 0.7); height: 80%; bottom: 0; font-size: 18px; text-align: center; position: relative; }
-.board .l, .board .c, .board .r  { display: block; position: absolute; text-decoration: none; background-color: rgba(255, 255, 255, 0.5); padding: 0 1ex;  z-index: 2; }
-.board .l { text-align: left;  border-left: 1px solid #F00; margin-right: auto; }
-.board .c { text-align: center; transform: translate(-50%, 0); }
-.board .r { text-align: right; border-right: 1px solid #F00; margin-left: auto; }
-
-.rule { border-bottom: 1px solid #000000; position: sticky; top: 10px; width: 100%; clear: both; }
-.rule .title { font-size: 25px; color: rgba( 255, 0, 0, 0.5 ); margin: 2em 1em; }
-.rule .l, .rule .c, .rule .r { position: absolute; background: transparent; padding: 0 0.5ex; }
-.rule .r { text-align: right; border-right: 1px solid #000; }
-.rule .l { text-align: left;  border-left: 1px solid #000; }
-.rule .c { text-align: center; }
-
-.grid, .grid div { position: absolute; border-left: 1px dotted rgba( 0, 0, 0, 0.2); border-right: 1px dotted rgba( 0, 0, 0, 0.2); height: 100%; }
-
-.bar { text-align:left; position: absolute; width: 100%; border-bottom: 1px solid rgba( 0, 0, 0, 0.2); z-index: 1; }
-
-
-
-    </style>
+    <link rel="stylesheet" type="text/css" href="alix.css" />
   </head>
   <body>
   <%
@@ -139,6 +115,39 @@ section:after, section:before, form:after, form:before, .bar:after, .bar:before 
   TermDic dic1 = null;
   TermDic dic2 = null;
   boolean go = false;
+  String text1 = request.getParameter( "text1" );
+  String text2 = request.getParameter( "text2" );
+  if ( text1==null ) text1="";
+  if ( text2==null ) text2="";
+  String ref1 = request.getParameter( "ref1" );
+  String ref2 = request.getParameter( "ref2" );
+  final String selected = " selected=\"selected\"";
+  String sel;
+
+  String[] cells;
+  if ( !text1.isEmpty()  ) {
+    dic1 = parse( text1 );
+    ltitle = text1.substring( 0, Math.min( 30, text1.length() ) );
+  }
+  else if ( ref1 != null) {
+    dic1 = get( pageContext, ref1 );
+    if ( dic1 != null) {
+      cells = catalog.get( ref1 );
+      ltitle = (cells[1]+". "+cells[2]);
+    }
+  }
+  if ( !text2.isEmpty()  ) {
+    dic2 = parse( text2 );
+    rtitle = text2.substring( 0, Math.min( 30, text2.length() ) );
+  }
+  else if ( ref2 != null) {
+    dic2 = get( pageContext, ref2 );
+    if ( dic2 != null) {
+      cells = catalog.get( ref2 );
+      rtitle = (cells[1]+". "+cells[2]);
+    }
+  }
+  
   %>
     <article>
     <h1><a href=".">Alix</a> : <a href="?">fréquences lexicales comparées</a></h1>
@@ -162,49 +171,19 @@ section:after, section:before, form:after, form:before, .bar:after, .bar:before 
     La largeur de la zone centrale sans mot vide peut être modifiée par un sélecteur (×1, ×1.1, ×1.2…),
     afin de se concentrer sur les différences ou les ressemblances.
     </p>
-    <%
-    String text1 = request.getParameter( "text1" );
-    String text2 = request.getParameter( "text2" );
-    if ( text1==null ) text1="";
-    if ( text2==null ) text2="";
-    if ( !text1.isEmpty() && !text2.isEmpty() ) {
-      dic1 = parse( text1 );
-      dic2 = parse( text2 );
-      ltitle = text1.substring( 0, 30 );
-      rtitle = text2.substring( 0, 30 );
-      go = true;
-    }
-    final String selected = " selected=\"selected\"";
-    String sel;
-    %>
-    <form action="?" style="width: 100%; text-align: center; z-index: 2; clear: both; border: #FFFFFF solid 1px; padding: 0; margin: 0 0 1ex 0; " method="post">
-      <textarea name="text1" style="width: 45%; height: 10em; float: left; "><%=text1%></textarea>
-      <textarea name="text2" style="width: 45%; height: 10em; float: right"><%=text2%></textarea>
-      <label title="Largeur de la zone centrale, sans mots grammaticaux">
-        <select name="qfilter">
-        <%
-        for (float value: values) {
-          out.print("<option value=\""+value+"\"");
-          if ( !seldone && qfilter >= value ) {
-            out.print( selected );
-            seldone = false;
-          }
-          out.print("/>×"+value+"</option>");
-        }
-        %>
-        </select>
-      </label>
-      <button type="submit" name="text">Comparer</button>
-    </form>
+
     <form id="seltext" name="seltext" action="#seltext" style="width: 100%; text-align: center; z-index: 2; position: relative; clear: both; " method="get">
-      <select name="ref1" style="float: left">
-        <%
-        String ref1 = request.getParameter( "ref1" );
-        seltext( pageContext, ref1 ); 
-        %>
+      <table>
+        <tr>
+          <td>
+      <textarea name="text1" style="width: 100%; height: 10em;" placeholder="Copier/coller un texte"><%=text1%></textarea>
+      ou <select name="ref1">
+        <% seltext( pageContext, ref1 ); %>
       </select>      
+          </td>
+          <td align="center">
       <label title="Largeur de la zone centrale, sans mots grammaticaux">
-        <select name="qfilter">
+       <select name="qfilter">
         <%
         for (float value: values) {
           out.print("<option value=\""+value+"\"");
@@ -217,40 +196,31 @@ section:after, section:before, form:after, form:before, .bar:after, .bar:before 
         %>
         </select>
       </label>
+      <br/>
+      <label title="Filtrer les mots selon une catégorie grammaticale">
+      Filtrer
+        <select name="tag">
+        <% String tag= request.getParameter( "tag" ); %>
+          <option value="">Catégorie ?</option>
+          <option value="SUB" <%=("SUB".equals( tag ))?" selected":"" %>>Substantifs</option>
+          <option value="ADJ" <%=("ADJ".equals( tag ))?" selected":"" %>>Adjectifs</option>
+          <option value="VERB" <%=("VERB".equals( tag ))?" selected":"" %>>Verbes</option>
+        </select>
+      </label>
+      <br/>
       <button type="submit">Comparer</button>
-      <select name="ref2" style="float: right; text-align: right; ">
-        <%
-        String ref2 = request.getParameter( "ref2" );
-        seltext( pageContext, ref2 ); 
-        %>
+          </td>
+          <td>
+      <textarea name="text2" style="width: 100%; height: 10em;" placeholder="Copier/coller un texte"><%=text2%></textarea>
+      ou <select name="ref2">
+        <% seltext( pageContext, ref2 );  %>
       </select>
+          </td>
+        </tr>
+      </table>
     </form>
 <%
-if ( ref1 != null && ref2 != null) {
-  String[] cells;
-  time = System.nanoTime();
-  dic1 = get( pageContext, ref1 );
-  laps = ((System.nanoTime() - time) / 1000000);
-  if ( laps > 5 ) out.println( "<p>"+ref1+": dictionnaire construit en "+ laps + " ms</p>");
-  if ( dic1 != null) {
-    cells = catalog.get( ref1 );
-    ltitle = (cells[1]+". "+cells[2]);
-  }
-  
-  time = System.nanoTime();
-  dic2 = get( pageContext, ref2 );
-  laps = ((System.nanoTime() - time) / 1000000);
-  if ( laps > 5 ) out.println( "<p>"+ref2+": dictionnaire construit en "+ laps + " ms</p>");
-  cells = catalog.get( ref2 );
-  rtitle = (cells[1]+". "+cells[2]);
-  /*
-  if ( dic2 != null) {
-    rtitle = (catalog.get( ref2 )[1]+". "+catalog.get( ref2 )[2]).substring( 0, 30 );
-  }
-  */
-  
-  go = true;
-}
+
 if ( dic1 != null && dic2 != null ) {
 %>
     <section>
@@ -289,11 +259,10 @@ if ( dic1 != null && dic2 != null ) {
     <div class="center" style=" margin-left:<%=log(50-gap) %>%; margin-right:<%=log(50-gap) %>%; background: #FFFFFF;
         border-left: 4px rgba(255,0,0,0.3) solid; border-right: 4px rgba(255,0,0,0.3) solid; height: 100%; "> </div>  
 <%
+if ( dic1 == null ) out.println( "<p>"+ref1+": texte inconnu de cette base.</p>" );
+if ( dic2 == null ) out.println( "<p>"+ref2+": texte inconnu de cette base.</p>" );
 // la vue de comparaison
-while ( go ) {
-  if ( dic1 == null ) out.println( "<p>"+ref1+": texte inconnu de cette base.</p>" );
-  if ( dic2 == null ) out.println( "<p>"+ref2+": texte inconnu de cette base.</p>" );
-  if ( dic1 == null || dic2 == null ) break;
+if ( dic1 != null && dic2 != null ) {
   CompDic comp = new CompDic();
   comp.add1( dic1 );
   comp.add2( dic2 );
@@ -310,9 +279,12 @@ while ( go ) {
   StringBuilder sb = new StringBuilder();
   for(int i = 0; i < size ; i++) {
     mot = list.get( i );
-    // filtrer avant de calculer les positions
+    if ( "SUB".equals( tag ) && mot.tag != Tag.SUB ) continue;
+    if ( "ADJ".equals( tag ) && mot.tag != Tag.ADJ ) continue;
+    if ( "VERB".equals( tag ) && mot.tag != Tag.VERB ) continue;
+    // filtrer les mots vides au centre
     if ( Math.max(mot.freq1, mot.freq2)/Math.min(mot.freq1, mot.freq2) < qfilter ) {
-      if ( Lexik.isStop( mot.term ) ||  FILTER.contains(mot.term) ) {
+      if ( Lexik.isStop( mot.term ) ) {
         continue;
       }
     }
@@ -360,7 +332,6 @@ while ( go ) {
   }
   // css hack to extend container
   out.print( "<style> #board { height: "+top+"em; }</style>");
-  break;
 }
       %>
       </section>

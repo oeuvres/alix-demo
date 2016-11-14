@@ -55,9 +55,9 @@ public TermDic parse( String text, boolean lem) throws IOException {
   // String last;
   while ( toks.word( occ ) ) {
     if (lem) {
-      dic.add( occ.lem );
+      dic.inc( occ.lem );
     }
-    else dic.add( occ.orth );
+    else dic.inc( occ.orth );
   }
   return dic;
 }%>
@@ -77,31 +77,8 @@ DecimalFormat biasdf = new DecimalFormat("# %");
 <html>
   <head>
     <title>Fréquence différentielle</title>
-    <link rel="stylesheet" type="text/css" href="http://svn.code.sf.net/p/obvil/code/theme/obvil.css" />
+    <link rel="stylesheet" type="text/css" href="alix.css" />
   </head>
-  <style>
-.bg-10 { background: rgba(255, 0, 0, 1) !important; color: #FFF; }
-.bg-9 { background: rgba(255, 0, 0, 0.9) !important; color: #FFF; }
-.bg-8 { background: rgba(255, 0, 0, 0.8) !important; color: #FFF; }
-.bg-7 { background: rgba(255, 0, 0, 0.7) !important; }
-.bg-6 { background: rgba(255, 0, 0, 0.6) !important; }
-.bg-5 { background: rgba(255, 0, 0, 0.5) !important; }
-.bg-4 { background: rgba(255, 0, 0, 0.4) !important; }
-.bg-3 { background: rgba(255, 0, 0, 0.3) !important; }
-.bg-2 { background: rgba(255, 0, 0, 0.2) !important; }
-.bg-1 { background: rgba(255, 0, 0, 0.1) !important; color: grey;}
-.bg0 { background: #FFFFFF !important; color: grey; }
-.bg1 { background: rgba(0, 0, 192, 0.1) !important; color: grey; }
-.bg2 { background: rgba(0, 0, 192, 0.2) !important; }
-.bg3 { background: rgba(0, 0, 192, 0.3) !important; }
-.bg4 { background: rgba(0, 0, 192, 0.4) !important; }
-.bg5 { background: rgba(0, 0, 192, 0.5) !important; }
-.bg6 { background: rgba(0, 0, 192, 0.6) !important; }
-.bg7 { background: rgba(0, 0, 192, 0.7) !important; }
-.bg8 { background: rgba(0, 0, 192, 0.8) !important; color: #FFF; }
-.bg9 { background: rgba(0, 0, 192, 0.9) !important; color: #FFF; }
-.bg10 { background: rgba(0, 0, 192, 1.0) !important; color: #FFF; }
-  </style>
   <body>
     <article id="article">
     <h1><a href=".">Alix</a> : différentes fréquences lexicales</h1>
@@ -193,15 +170,15 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
         <th title="0 % absent du texte, 50 % même fréquence dans le texte et Frantext, 100 % absent (ou presque) de Frantext">% Frantext</th>
       </tr>
   	<%
-  	  BufferedReader br = Files.newBufferedReader(  listfile, StandardCharsets.UTF_8 );
-  	    int n = 0;
-  	    int count;
-  	    float franfreq = 0;
-  	    double myfreq = 0;
-  	    double bias = 0;
-  	    String w;
-  	    LexikEntry entry;
-  	    while ( ( w = br.readLine() ) != null) {
+    BufferedReader br = Files.newBufferedReader(  listfile, StandardCharsets.UTF_8 );
+    int n = 0;
+    int count;
+    float franfreq = 0;
+    double myfreq = 0;
+    double bias = 0;
+    String w;
+    LexikEntry entry;
+    while ( ( w = br.readLine() ) != null) {
   	  if ( w == null ) continue;
   	  if ( "".equals( w ) ) continue;
   	  if ( w.startsWith( "##" ) ) break;

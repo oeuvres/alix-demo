@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="
+java.net.URL,
+java.util.Scanner,
+
 alix.fr.Lexik,
 alix.fr.Tag,
 alix.fr.Tokenizer,
@@ -12,14 +15,12 @@ alix.fr.Occ
 <html>
   <head>
     <title>Le lemmatiseur du pauvre</title>
-    <link rel="stylesheet" type="text/css" href="http://svn.code.sf.net/p/obvil/code/theme/obvil.css" />
+    <link rel="stylesheet" type="text/css" href="alix.css" />
     <style>
-table.lem { font-family: sans-serif; border-collapse: collapse; border: 2px solid #FFFFFF; }
-table.lem td { padding: 0 1ex; border-top: 1px solid #FFFFFF; }
     </style>
   </head>
   <body>
-    <article id="article">
+    <article>
       <h1><a href=".">Alix</a> : <a href="">un lemmatiseur qui tolère la poésie</a></h1>
       <p>
 Les vers passent en général très mal dans un lemmatiseur, car les majuscules ne coïncident pas avec
@@ -36,8 +37,34 @@ Il en résulte que la sortie est plus fiable pour y appuyer des jeux de règles,
 statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une applications particulière.
 </p>
       <%
-        String text = request.getParameter( "text" );
-        if ( text == null) text = "La Beauté\n\n"
+      String text = request.getParameter( "text" );
+      %>
+      <form method="post" action="?">
+        <label>
+          <% boolean unknown = !(request.getParameter( "unknown" ) == null);  %>
+          <input type="checkbox" name="unknown" <% if(unknown) out.print( " checked=\"checked\"" ); %> />
+          (Unknown) voir uniquement les erreurs
+        </label>
+        <% String url = request.getParameter( "url" ); if (url == null) url=""; %>
+        <label>
+          <input name="url" value="<%= url %>" size="50" onclick="this.select()" placeholder="http://…" 
+          onchange="if (!value) return; this.form.method = 'GET'; this.form.text.value = ''"/>
+          texte sur le web
+        </label>
+        <%
+      if ( !"".equals( url ) ) {
+        try {
+          Scanner scan = new Scanner(  new URL( url ).openStream(), "UTF-8" );
+          scan.useDelimiter("\\A"); 
+          text = scan.next();
+          scan.close();
+        }
+        catch (Exception e) {
+          out.print( "<p>"+url+" Impossible de retirer le texte souhaité.</p>" );
+          text = null;
+        }
+      }
+      if ( text == null) text = "La Beauté\n\n"
       + "Je suis belle, ô mortels! comme un rêve de pierre,\n"
       + "Et mon sein, où chacun s'est meurtri tour à tour,\n"
       + "Est fait pour inspirer au poète un amour\n"
@@ -56,13 +83,7 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
       + "De purs miroirs qui font toutes choses plus belles:\n"
       + "Mes yeux, mes larges yeux aux clartés éternelles!\n";
       %>
-      <form method="post" action="?">
-        <label>
-          (Unknown) voir uniquement les erreurs
-          <% boolean unknown = !(request.getParameter( "unknown" ) == null);  %>
-          <input type="checkbox" name="unknown" <% if(unknown) out.print( " checked=\"checked\"" ); %> />
-        </label>
-        <textarea name="text" style="width: 100%; height: 10em; "><%=text%></textarea>
+        <textarea name="text" style="width: 100%; height: 10em; " onchange="this.form.method='post'; "><%=text%></textarea>
         <button type="submit">Envoyer</button>
       </form>
       <table class="lem">

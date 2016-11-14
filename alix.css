@@ -1,0 +1,56 @@
+html, body { height: 100%; background-color: #f3f2ec; }
+article { height: 100%; margin-top:0; padding: 0 2em 0 2em; font-family: sans-serif;   }
+select, button {font-size: 18px; font-family: sans-serif; }
+textarea { border: none; }
+section:after, section:before, form:after, form:before, .bar:after, .bar:before { content:" "; visibility: hidden; display: block; clear: both; height: 0; }
+
+table.lem { font-family: sans-serif; border-collapse: collapse; border: 2px solid #FFFFFF; }
+table.lem td { padding: 0 1ex; border-top: 1px solid #FFFFFF; }
+
+.board { color: rgba(0, 0, 0, 0.7); height: 80%; bottom: 0; font-size: 18px; text-align: center; position: relative; }
+.board .l, .board .c, .board .r  { display: block; position: absolute; text-decoration: none; background-color: rgba(255, 255, 255, 0.5); padding: 0 1ex;  z-index: 2; }
+.board .l { text-align: left;  border-left: 1px solid #F00; margin-right: auto; }
+.board .c { text-align: center; transform: translate(-50%, 0); }
+.board .r { text-align: right; border-right: 1px solid #F00; margin-left: auto; }
+
+.rule { border-bottom: 1px solid #000000; position: sticky; top: 10px; width: 100%; clear: both; }
+.rule .title { font-size: 25px; color: rgba( 255, 0, 0, 0.5 ); margin: 2em 1em; }
+.rule .l, .rule .c, .rule .r { position: absolute; background: transparent; padding: 0 0.5ex; }
+.rule .r { text-align: right; border-right: 1px solid #000; }
+.rule .l { text-align: left;  border-left: 1px solid #000; }
+.rule .c { text-align: center; }
+
+.grid, .grid div { position: absolute; border-left: 1px dotted rgba( 0, 0, 0, 0.2); border-right: 1px dotted rgba( 0, 0, 0, 0.2); height: 100%; }
+
+.bar { text-align:left; position: absolute; width: 100%; border-bottom: 1px solid rgba( 0, 0, 0, 0.2); z-index: 1; }
+
+
+table.conc { font-family: sans-serif; color: #666; border-spacing : 2px; background-color: #EEEEEE; }
+.conc td, .conc th { padding: 0; }
+td.num { font-size: 70%; }
+td.left { text-align:right; }
+.left b { padding: 0 1ex; margin-left: 1ex; }
+.right b { padding: 0 1ex; margin-right: 1ex; }
+.conc b, .conc th {  font-weight: normal; color: #000; background-color: #FFFFFF; }
+.conc i { font-style: normal; color: red;  }
+.bg-10 { background: rgba(255, 0, 0, 1) !important; color: #FFF; }
+.bg-9 { background: rgba(255, 0, 0, 0.9) !important; color: #FFF; }
+.bg-8 { background: rgba(255, 0, 0, 0.8) !important; color: #FFF; }
+.bg-7 { background: rgba(255, 0, 0, 0.7) !important; }
+.bg-6 { background: rgba(255, 0, 0, 0.6) !important; }
+.bg-5 { background: rgba(255, 0, 0, 0.5) !important; }
+.bg-4 { background: rgba(255, 0, 0, 0.4) !important; }
+.bg-3 { background: rgba(255, 0, 0, 0.3) !important; }
+.bg-2 { background: rgba(255, 0, 0, 0.2) !important; }
+.bg-1 { background: rgba(255, 0, 0, 0.1) !important; color: grey;}
+.bg0 { background: #FFFFFF !important; color: grey; }
+.bg1 { background: rgba(0, 0, 192, 0.1) !important; color: grey; }
+.bg2 { background: rgba(0, 0, 192, 0.2) !important; }
+.bg3 { background: rgba(0, 0, 192, 0.3) !important; }
+.bg4 { background: rgba(0, 0, 192, 0.4) !important; }
+.bg5 { background: rgba(0, 0, 192, 0.5) !important; }
+.bg6 { background: rgba(0, 0, 192, 0.6) !important; }
+.bg7 { background: rgba(0, 0, 192, 0.7) !important; }
+.bg8 { background: rgba(0, 0, 192, 0.8) !important; color: #FFF; }
+.bg9 { background: rgba(0, 0, 192, 0.9) !important; color: #FFF; }
+.bg10 { background: rgba(0, 0, 192, 1.0) !important; color: #FFF; }
