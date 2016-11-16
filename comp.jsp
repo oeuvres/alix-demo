@@ -171,13 +171,17 @@ DecimalFormat dec1 = new DecimalFormat("###,###.0");
     La largeur de la zone centrale sans mot vide peut être modifiée par un sélecteur (×1, ×1.1, ×1.2…),
     afin de se concentrer sur les différences ou les ressemblances.
     </p>
-
-    <form id="seltext" name="seltext" action="#seltext" style="width: 100%; text-align: center; z-index: 2; position: relative; clear: both; " method="get">
+    
+    <form id="seltext" name="seltext" action="#seltext" style="width: 100%; text-align: center; z-index: 2; position: relative; clear: both; " 
+    method="<%=(text1.isEmpty() && text2.isEmpty())?"get":"post" %>">
       <table>
         <tr>
           <td>
-      <textarea name="text1" style="width: 100%; height: 10em;" placeholder="Copier/coller un texte"><%=text1%></textarea>
-      ou <select name="ref1">
+      <textarea name="text1" style="width: 100%; height: 10em;" placeholder="Copier/coller un texte"
+        onblur="this.form.method = 'post'; this.form.action = '?' "
+        onclick="this.select()"
+      ><%=text1%></textarea>
+      ou <select name="ref1" onchange="this.form.text1.value = ''; ">
         <% seltext( pageContext, ref1 ); %>
       </select>      
           </td>
@@ -211,8 +215,11 @@ DecimalFormat dec1 = new DecimalFormat("###,###.0");
       <button type="submit">Comparer</button>
           </td>
           <td>
-      <textarea name="text2" style="width: 100%; height: 10em;" placeholder="Copier/coller un texte"><%=text2%></textarea>
-      ou <select name="ref2">
+      <textarea name="text2" style="width: 100%; height: 10em;" placeholder="Copier/coller un texte"
+        onblur="this.form.method = 'post'; this.form.action = '?' "
+        onclick="this.select()"
+      ><%=text2%></textarea>
+      ou <select name="ref2" onchange="this.form.text2.value = '';">
         <% seltext( pageContext, ref2 );  %>
       </select>
           </td>

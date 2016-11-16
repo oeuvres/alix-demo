@@ -15,6 +15,7 @@ moliere;/WEB-INF/textes/moliere.txt;Molière;Théâtre
 moliere_femmes;/WEB-INF/textes/moliere_femmes.txt;Molière;Femmes, répliques
 moliere_hommes;/WEB-INF/textes/moliere_hommes.txt;Molière;Hommes, répliques
 o;/WEB-INF/textes/histoire-do.html;Réage;Histoire d’O
+peguy;/WEB-INF/textes/peguy_echantillons.txt;Péguy;Échantillons
 proust_recherche;/WEB-INF/textes/proust_recherche.xml;Proust;À la recherche du temps perdu
 proust_jeansanteuil;/WEB-INF/textes/proust_jeansanteuil.xml;Proust;Jean Santeuil
 racine;/WEB-INF/textes/racine.txt;Racine;Théâtre

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="
+java.io.InputStream,
 java.io.PrintWriter,
 java.util.Scanner,
 java.util.List,
@@ -34,6 +35,7 @@ petit texte dans le formulaire, les résultats sont alors rendus sous la forme d
 de toutes les occurrences de groupes adjectivaux capturés.
 L’intérêt de l’automate est de délivrer des statististiques plus globales sur les emplois ante et post posés,
 tableau lexical que l’on obtient en sélectionnant un texte dans le corpus de cette installation.
+Une concordance limitée à 2000 occurrences est livrée à la suite, pour se faire une idée des cas les plus fréquents.
       </p>
       <%
       String text = request.getParameter( "text" );
@@ -66,21 +68,32 @@ tableau lexical que l’on obtient en sélectionnant un texte dans le corpus de 
         <button type="submit">Envoyer</button>
       </form>
       <%
-
-      
-if ( !"".equals( text ) ) {
-  GN gn = new GN( text );
-  out.println( "    <table class=\"conc\">" );
-  gn.parse( new PrintWriter(out) );
-  out.println( "    </table>" );
-}
-else if ( ref != null) {
+TermDic dico = null;
+while (true) {
+  if ( ref == null ) break;
   String[] bibl = catalog.get( ref );
   // texte inconnu
   if ( bibl == null ) {
-    out.println( "<p>"+ref+": texte inconnu de cette base.</p>" );
+    out.println( "<p class=\"error\">"+ref+": texte inconnu de cette installation.</p>" );
+    break;
   }
-  else {
+  InputStream stream = application.getResourceAsStream( bibl[0] );
+  if ( stream == null ) {
+    out.println( "<p class=\"error\">"+bibl[0]+": fichier introuvable sur cette installation.</p>" );
+    break;
+  }
+  // conordance ?
+  text = new Scanner( stream, "UTF-8" ).useDelimiter("\\A").next();
+  
+  String att = "A"+ref;
+  dico = (TermDic)application.getAttribute( att );
+  if ( dico != null ) break;
+  GN gn = new GN( text );
+  dico = gn.parse( );
+  application.setAttribute( att, dico );
+  break;
+}      
+if ( dico != null) {
     %>
       <table class="sortable">
         <tr>
@@ -88,18 +101,10 @@ else if ( ref != null) {
           <th>Adjectif</th>
           <th title="Effectif antéposé">Antéposé</th>
           <th title="Effectif postposé">Postposé</th>
-          <th title="Fréquence en “ppm” (parite par million)">Fréq./M.</th>
+          <th title="Fréquence en “ppm” (partie par million)">Fréq./M.</th>
           <th>% Frantext</th>
         </tr>
     <%
-    String att = "A"+ref;
-    TermDic dico = (TermDic)application.getAttribute( att );
-    if ( dico == null ) {
-      text = new Scanner( application.getResourceAsStream( bibl[0] ), "UTF-8" ).useDelimiter("\\A").next();
-      GN gn = new GN( text );
-      dico = gn.parse( null );
-      application.setAttribute( att, dico );
-    }
     List<Map.Entry<String, int[]>> list = dico.entriesByCount();
     int limit = 200;
     int i = 1;
@@ -141,11 +146,18 @@ else if ( ref != null) {
       
       if ( i++ >= limit ) break;
     }
-  }
-
-}
       %>
       </table>
+      <% 
+}
+if ( !text.isEmpty(  ) ) {
+  GN gn = new GN( text );
+  out.println( "    <table class=\"conc\">" );
+  gn.parse( new PrintWriter(out), 2000 );
+  out.println( "    </table>" );
+}
+
+%>
     </article>
     <script src="Sortable.js">//</script>
   </body>

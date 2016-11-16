@@ -83,7 +83,7 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
       + "De purs miroirs qui font toutes choses plus belles:\n"
       + "Mes yeux, mes larges yeux aux clartés éternelles!\n";
       %>
-        <textarea name="text" style="width: 100%; height: 10em; " onchange="this.form.method='post'; "><%=text%></textarea>
+        <textarea name="text" style="width: 100%; height: 10em; " onchange="this.form.method='post'; " onclick="this.select()"><%=text%></textarea>
         <button type="submit">Envoyer</button>
       </form>
       <table class="lem">

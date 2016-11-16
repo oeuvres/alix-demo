@@ -131,12 +131,13 @@ String[] bibl = catalog.get(bibcode);
 long time = System.nanoTime();
 
 TermDic dico = null;
+
 // text direct
 if ( !"".equals( text )) {
   if ( vuelem ) dico = parse( text, true);
   else dico = parse( text, false);
 }
-else if( bibcode != null ) {
+else if( bibcode != null && bibl != null ) {
   String att = bibcode;
   if ( vuelem ) att = bibcode+"L";
   dico = (TermDic)application.getAttribute( att );
