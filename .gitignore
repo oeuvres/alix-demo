@@ -2,3 +2,4 @@ textes/
 WEB-INF/lucene/
 .settings
 test/
+WEB-INF/catalog.csv

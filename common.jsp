@@ -17,7 +17,7 @@ static LinkedHashMap<String,String[]> catalog( PageContext pageContext ) throws 
   catalog = new LinkedHashMap<String,String[]>();
   BufferedReader buf = new BufferedReader( 
     new InputStreamReader(
-      pageContext.getServletContext().getResourceAsStream( "/catalog.csv" ), 
+      pageContext.getServletContext().getResourceAsStream( "/WEB-INF/catalog.csv" ), 
       StandardCharsets.UTF_8
     )
   );

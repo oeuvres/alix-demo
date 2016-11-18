@@ -35,7 +35,7 @@ petit texte dans le formulaire, les résultats sont alors rendus sous la forme d
 de toutes les occurrences de groupes adjectivaux capturés.
 L’intérêt de l’automate est de délivrer des statististiques plus globales sur les emplois ante et post posés,
 tableau lexical que l’on obtient en sélectionnant un texte dans le corpus de cette installation.
-Une concordance limitée à 2000 occurrences est livrée à la suite, pour se faire une idée des cas les plus fréquents.
+Une concordance limitée à 2000 occurrences est livrée à la suite, pour se faire une meilleure idée de ce qui est capturé.
       </p>
       <%
       String text = request.getParameter( "text" );

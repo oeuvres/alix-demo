@@ -32,6 +32,7 @@ static String[][] vues = {
   new String[] { "adj", "Adjectifs lemmatisés", "withlems" },
   new String[] { "verb", "Verbes lemmatisés", "withlems" },
   new String[] { "adv", "Adverbes" },
+  new String[] { "name", "Noms propres" },
   new String[] { "gramlist", "Mots grammaticaux, % Frantext" },
   new String[] { "verblist", "Verbes fréquents % Frantext", "withlems" },
 };
@@ -55,9 +56,9 @@ public TermDic parse( String text, boolean lem) throws IOException {
   // String last;
   while ( toks.word( occ ) ) {
     if (lem) {
-      dic.inc( occ.lem );
+      dic.inc( occ.lem, occ.tag.code(  ) );
     }
-    else dic.inc( occ.orth );
+    else dic.inc( occ.orth, occ.tag.code(  ) );
   }
   return dic;
 }%>
@@ -281,7 +282,19 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
             bias =  myfreq / (myfreq + franfreq);
             // if (bias < 0.33) continue;
           }
-          else if ( "sub".equals( vue ) || "verb".equals( vue ) || "adj".equals( vue ) || "adv".equals( vue ) ) {
+          else if ( "name".equals( vue ) ) {
+            int tag = dico.tag( words[i] );
+            if ( !Tag.isName( tag )) continue;
+            out.print( "<tr>\n");
+            out.print( "<td>"+n+"</td>\n" );
+            out.print( "<td>"+words[i]+"</td>\n" );
+            out.print( "<td>"+dico.count( words[i] )+"</td>\n" );
+            out.print( "</tr>\n");
+            n++;
+            if (n > limit) break;
+            continue;
+          }
+          else if ( "sub".equals( vue ) ||  "verb".equals( vue ) || "adj".equals( vue ) || "adv".equals( vue ) ) {
             if (Lexik.isStop( words[i] )) continue;
             // if ( Char.isUpperCase( words[i].charAt( 0 ) )) continue;
             entry = Lexik.entry(words[i] );
