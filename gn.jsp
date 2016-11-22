@@ -16,6 +16,7 @@ alix.frana.GN
 <%!
 
 %>
+<% request.setCharacterEncoding("UTF-8"); %>
 <%@include file="common.jsp" %>
 <!DOCTYPE html>
 <html lang="fr">

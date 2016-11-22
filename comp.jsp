@@ -81,8 +81,8 @@ public float log ( double percent )
 }
 
 %>
+<% request.setCharacterEncoding("UTF-8"); %>
 <%
-request.setCharacterEncoding("UTF-8");
 long time;
 DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
 DecimalFormat mega = new DecimalFormat("###,###");

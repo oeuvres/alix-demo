@@ -3,6 +3,7 @@
 java.nio.charset.StandardCharsets,
 java.nio.file.Files
 " %>
+<% request.setCharacterEncoding("UTF-8"); %>
 <!DOCTYPE html>
 <html>
   <head>

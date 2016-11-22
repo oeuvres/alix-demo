@@ -31,8 +31,11 @@ td.num { font-size: 70%; }
 td.left { text-align:right; }
 .left b { padding: 0 1ex; margin-left: 1ex; }
 .right b { padding: 0 1ex; margin-right: 1ex; }
-.conc b, .conc th {  font-weight: normal; color: #000; background-color: #FFFFFF; }
+.conc b, .conc th {  color: #000; background-color: #FFFFFF; }
 .conc i { font-style: normal; color: red;  }
+section.conc { width: 80ex; margin-left: auto; margin-right: auto; }
+.conc p { margin: 0.5ex 0; padding: 0.5ex 0; border-bottom: 1px solid #FFFFFF; }
+
 .bg-10 { background: rgba(255, 0, 0, 1) !important; color: #FFF; }
 .bg-9 { background: rgba(255, 0, 0, 0.9) !important; color: #FFF; }
 .bg-8 { background: rgba(255, 0, 0, 0.8) !important; color: #FFF; }

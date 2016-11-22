@@ -2,6 +2,7 @@
 <%@ page import="
 java.io.IOException,
 java.io.BufferedReader,
+java.io.InputStream,
 java.nio.charset.StandardCharsets,
 java.nio.file.Files,
 java.nio.file.Path,
@@ -42,7 +43,9 @@ static String[][] vues = {
  * Charger un texte en vecteur de cooccurrents
  */
 public TermDic load( PageContext pageContext, String res, boolean lem) throws IOException {
-  Scanner sc = new Scanner( pageContext.getServletContext().getResourceAsStream( res ), "UTF-8" );
+  InputStream stream = pageContext.getServletContext().getResourceAsStream( res );
+  if ( stream == null ) return null;
+  Scanner sc = new Scanner( stream, "UTF-8" );
   sc.useDelimiter("\\A");
   String text = sc.next();
   sc.close();
@@ -61,13 +64,11 @@ public TermDic parse( String text, boolean lem) throws IOException {
     else dic.inc( occ.orth, occ.tag.code(  ) );
   }
   return dic;
-}%>
+}
+%>
+<% request.setCharacterEncoding("UTF-8"); %>
 <%
-  request.setCharacterEncoding("UTF-8");
 String context = application.getRealPath("/");
-
-
-
 // global vars
 DecimalFormat numdf = new DecimalFormat("# ###");
 DecimalFormat decdf = new DecimalFormat("0.00");
@@ -145,8 +146,13 @@ else if( bibcode != null && bibl != null ) {
   if ( dico == null ) {
     if ( vuelem ) dico = load( pageContext, bibl[0], true);
     else dico = load( pageContext, bibl[0], false);
-    application.setAttribute( att, dico );
-    out.println( "Dictionnaire construit en "+((System.nanoTime() - time) / 1000000) + " ms");
+    if (dico != null ) {
+      application.setAttribute( att, dico );
+      out.println( "Dictionnaire construit en "+((System.nanoTime() - time) / 1000000) + " ms");
+    }
+    else {
+      out.print( "<p>Le texte "+bibl[0]+" n’est pas disponible sur ce serveur.</p>\n");
+    }
   }
 }
 
@@ -219,13 +225,13 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
       }
     else {
       long occs = dico.occs();
-      int limit = 100;
+      int limit = 300;
       int n = 1;
       LexikEntry entry;
 
       // with no cache, 47ms on Dumas, seems OK
       time = System.nanoTime();
-      String[] words = dico.byCount( 5000 );
+      String[] words = dico.byCount( 10000 );
       // out.println( "Chargé en "+((System.nanoTime() - time) / 1000000) + " ms");
       int size = words.length;
       String cat;
@@ -243,6 +249,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
               out.print("<th title=\"Effectif par million d’occurrences\">Frantext</th>\n");
               out.print("<th title=\"0% = absent du texte, 50% = même fréquence dans le texte et Frantext, 100% absent (ou presque) de Frantext\">% Frantext</th>\n");
             }
+          if ( "name".equals( vue ) ) out.print("<th>Catégorie</th>");
         %>
       </tr>
       <%
@@ -285,10 +292,16 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           else if ( "name".equals( vue ) ) {
             int tag = dico.tag( words[i] );
             if ( !Tag.isName( tag )) continue;
+            /*
+            if ( "pers".equals( vue ) && tag != Tag.NAMEpers && tag != Tag.NAMEpersf && tag != Tag.NAMEpersm ) continue;
+            if ( "place".equals( vue ) && tag != Tag.NAMEplace ) continue;
+            if ( "name".equals( vue ) && tag != Tag.NAME ) continue;
+            */
             out.print( "<tr>\n");
             out.print( "<td>"+n+"</td>\n" );
             out.print( "<td>"+words[i]+"</td>\n" );
             out.print( "<td>"+dico.count( words[i] )+"</td>\n" );
+            out.print( "<td>"+ Tag.label( dico.tag( words[i] ) )+"</td>\n" );
             out.print( "</tr>\n");
             n++;
             if (n > limit) break;

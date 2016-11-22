@@ -8,9 +8,7 @@ alix.fr.Tag,
 alix.fr.Tokenizer,
 alix.fr.Occ
 " %>
-<%
-  request.setCharacterEncoding("UTF-8");
-%>
+<% request.setCharacterEncoding("UTF-8"); %>
 <!DOCTYPE html>
 <html>
   <head>
