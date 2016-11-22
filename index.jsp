@@ -38,10 +38,11 @@ En effet, certaines questions linguistiques demandent des états de langue actue
 Nous sommes au service de la langue et des auteurs, leurs droits nous sont sacrés.
 C’est d’ailleurs pour mieux les aimer que ces instruments fouillent l’intimité de leur syntaxe.
       </p>
-      <ul>
+      <ul class="menu">
         <li><a href="lem.jsp">Le lemmatiseur du pauvre</a></li>
-        <li><a href="freq.jsp">Mots fréquents, selon la catégorie grammaticale, comparés à Frantext</a></li>
+        <li><a href="freq.jsp">Mots fréquents</a></li>
         <li><a href="comp.jsp">Comparer deux tableaux lexicaux</a></li>
+        <li><a href="grep.jsp">Concordance et cooccurrences</a></li>
         <li><a href="gn.jsp">Adjectifs ante ou post posés</a></li>
       </ul>
     </article>
