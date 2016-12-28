@@ -1,5 +1,6 @@
 html, body { height: 100%; background-color: #f3f2ec; }
-article { min-height: 100%; margin-top:0; padding: 0 2em 0 2em; font-family: sans-serif;   }
+#article { min-height: 100%;}
+article { margin-top:0; padding: 0 2em 0 2em; font-family: sans-serif;   }
 select, button {font-size: 18px; font-family: sans-serif; }
 textarea { border: none; }
 section:after, section:before, form:after, form:before, .bar:after, .bar:before { content:" "; visibility: hidden; display: block; clear: both; height: 0; }
@@ -59,3 +60,5 @@ section.conc { width: 80ex; margin-left: auto; margin-right: auto; }
 .bg10 { background: rgba(0, 0, 192, 1.0) !important; color: #FFF; }
 
 ul.menu li { margin: 0.5ex 0; font-size: 150%; }
+
+#totop { position: fixed; bottom: 1em; color: rgba( 0, 0, 0, 0.3); }

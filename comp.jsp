@@ -22,51 +22,12 @@ alix.fr.Tag,
 alix.fr.Occ,
 alix.fr.Tokenizer,
 alix.fr.Lexik,
-alix.fr.LexikEntry
+alix.fr.WordEntry
 "%>
 <%!
 public static final String[] _FILTER = new String[] {  };
 // "aller", "bientôt", "devoir", "demander", "donner", "faire", "falloir", "paraître", "pouvoir", "prendre", "savoir", "venir", "voir", "vouloir"
 public static final HashSet<String> FILTER = new HashSet<String>(Arrays.asList(_FILTER));
-/**
- * Récupérer un dictionnaire par identifiant
- */
-public TermDic get( PageContext pageContext, final String code ) throws IOException 
-{
-  ServletContext application = pageContext.getServletContext();
-  String att = "M"+code;
-  TermDic dico = (TermDic)application.getAttribute( att );
-  if ( dico != null ) return dico;
-  String[] bibl = catalog.get( code );
-  // texte inconnu
-  if ( bibl == null ) return null;
-  /*
-  String home = application.getRealPath("/");
-  String filepath = home + "/textes/" + bibl[1];
-  Path path =  Paths.get( filepath );
-  new String( Files.readAllBytes( path ), StandardCharsets.UTF_8 )
-  */
-  // http://web.archive.org/web/20140531042945/https://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
-  dico = parse(  new Scanner( application.getResourceAsStream( bibl[0] ), "UTF-8" ).useDelimiter("\\A").next() );
-  application.setAttribute( att, dico );
-  return dico;
-}
-/**
- * Charger un dictionnaire avec les mots d’un texte
- */
-public TermDic parse( String text ) throws IOException {
-  TermDic dic = new TermDic();
-  Tokenizer toks = new Tokenizer(text);
-  Occ occ = new Occ();
-  short cat;
-  while ( toks.word( occ ) ) {
-    if ( occ.tag.isVerb() || occ.tag.code() == Tag.ADJ ) {
-      dic.inc( occ.lem, occ.tag.code() );
-    }
-    else dic.inc( occ.orth, occ.tag.code() );
-  }
-  return dic;
-}
 /**
  *
  */
@@ -87,7 +48,6 @@ long time;
 DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
 DecimalFormat mega = new DecimalFormat("###,###");
 DecimalFormat dec1 = new DecimalFormat("###,###.0");
-
 %>
 <%@include file="common.jsp" %>
 <!DOCTYPE html>
@@ -99,7 +59,7 @@ DecimalFormat dec1 = new DecimalFormat("###,###.0");
   </head>
   <body>
   <%
-  float qfilter = 2.0f;
+  float qfilter = 1.5f;
   // différentes valeur pour la largeur du filtre
   float[] values= {1f, 1.1f, 1.2f, 1.5f, 2f, 3f, 5f, 10f};
   boolean seldone = false;
@@ -117,31 +77,36 @@ DecimalFormat dec1 = new DecimalFormat("###,###.0");
   boolean go = false;
   String text1 = request.getParameter( "text1" );
   String text2 = request.getParameter( "text2" );
-  if ( text1==null ) text1="";
-  if ( text2==null ) text2="";
   String ref1 = request.getParameter( "ref1" );
   String ref2 = request.getParameter( "ref2" );
+  if ( text1==null && ref1==null && text2==null && ref2==null ) {
+    ref1="moliere_hommes";
+    ref2="moliere_femmes";
+    qfilter = 1.1f;
+  }
+  if ( text1==null ) text1="";
+  if ( text2==null ) text2="";
   final String selected = " selected=\"selected\"";
   String sel;
 
   String[] cells;
   if ( !text1.isEmpty()  ) {
-    dic1 = parse( text1 );
+    dic1 = gparse( text1 );
     ltitle = text1.substring( 0, Math.min( 30, text1.length() ) );
   }
   else if ( ref1 != null) {
-    dic1 = get( pageContext, ref1 );
+    dic1 = gdic( pageContext, ref1 );
     if ( dic1 != null) {
       cells = catalog.get( ref1 );
       ltitle = (cells[1]+". "+cells[2]);
     }
   }
   if ( !text2.isEmpty()  ) {
-    dic2 = parse( text2 );
+    dic2 = gparse( text2 );
     rtitle = text2.substring( 0, Math.min( 30, text2.length() ) );
   }
   else if ( ref2 != null) {
-    dic2 = get( pageContext, ref2 );
+    dic2 = gdic( pageContext, ref2 );
     if ( dic2 != null) {
       cells = catalog.get( ref2 );
       rtitle = (cells[1]+". "+cells[2]);
@@ -266,8 +231,8 @@ if ( dic1 != null && dic2 != null ) {
     <div class="center" style=" margin-left:<%=log(50-gap) %>%; margin-right:<%=log(50-gap) %>%; background: #FFFFFF;
         border-left: 4px rgba(255,0,0,0.3) solid; border-right: 4px rgba(255,0,0,0.3) solid; height: 100%; "> </div>  
 <%
-if ( dic1 == null ) out.println( "<p>"+ref1+": texte inconnu de cette base.</p>" );
-if ( dic2 == null ) out.println( "<p>"+ref2+": texte inconnu de cette base.</p>" );
+if ( ref1 != null && dic1 == null ) out.println( "<p>"+ref1+": texte inconnu de cette base.</p>" );
+if ( ref2 != null && dic2 == null ) out.println( "<p>"+ref2+": texte inconnu de cette base.</p>" );
 // la vue de comparaison
 if ( dic1 != null && dic2 != null ) {
   CompDic comp = new CompDic();

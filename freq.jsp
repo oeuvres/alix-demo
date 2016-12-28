@@ -18,10 +18,8 @@ alix.fr.Tag,
 alix.fr.Occ,
 alix.fr.Tokenizer,
 alix.fr.Lexik,
-alix.fr.LexikEntry
-"%>
-<%!
-static String[][] vues = {
+alix.fr.WordEntry"%>
+<%!static String[][] vues = {
   new String[] { "tokens", "Graphies" },
   new String[] { "nostop", "Graphies sans mots vides" },
   // new String[] { "words", "Mots de la langue" },
@@ -37,7 +35,6 @@ static String[][] vues = {
   new String[] { "gramlist", "Mots grammaticaux, % Frantext" },
   new String[] { "verblist", "Verbes fréquents % Frantext", "withlems" },
 };
-
 
 /**
  * Charger un texte en vecteur de cooccurrents
@@ -61,18 +58,32 @@ public TermDic parse( String text, boolean lem) throws IOException {
     if (lem) {
       dic.inc( occ.lem, occ.tag.code(  ) );
     }
-    else dic.inc( occ.orth, occ.tag.code(  ) );
+    else {
+      dic.inc( occ.orth, occ.tag.code(  ) );
+    }
   }
   return dic;
-}
-%>
-<% request.setCharacterEncoding("UTF-8"); %>
+}%>
 <%
-String context = application.getRealPath("/");
+  request.setCharacterEncoding("UTF-8");
+%>
+<%
+// request parameters
+String bibcode = request.getParameter("bibcode");
+String vue = request.getParameter( "vue" );
+boolean vuelem = false;
+for ( int i = 0; i < vues.length; i++) {
+  if ( vues[i][0].equals( vue ) ) {
+    if ( vues[i].length > 2 && vues[i][2] != null ) vuelem = true;
+  }
+}
+
+
 // global vars
 DecimalFormat numdf = new DecimalFormat("# ###");
 DecimalFormat decdf = new DecimalFormat("0.00");
 DecimalFormat biasdf = new DecimalFormat("# %");
+String context = application.getRealPath("/");
 %>
 <%@include file="common.jsp" %>
 <!DOCTYPE html>
@@ -82,53 +93,15 @@ DecimalFormat biasdf = new DecimalFormat("# %");
     <link rel="stylesheet" type="text/css" href="alix.css" />
   </head>
   <body>
-    <article id="article">
+    <article id="article"">
     <h1><a href=".">Alix</a> : différentes fréquences lexicales</h1>
       <%
         String text = request.getParameter( "text" );
-        if ( text==null ) text="";
+          if ( text==null ) text="";
       %>
-    <form style="position: fixed; float: left; width: 30em; " onsubmit="if (!this.text.value) return true; this.method = 'post'; this.action='?'; " method="get">
-      <select name="bibcode" onchange="this.form.text.value = ''; this.method = 'GET';  this.form.submit()">
-      <%
-        String bibcode = request.getParameter("bibcode");
-        if ( !"".equals( text ) ) bibcode = null;
-        seltext( pageContext, bibcode );
-      %>
-      </select>
-      <br/>
-      <select name="vue" onchange="this.form.onsubmit(); this.form.submit()">
-      <%
-        String vue = request.getParameter( "vue" );
-        String selected = "";
-        if ( vue == null ) selected = " selected=\"selected\"";
-        out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+selected+">Choisir une liste de mots…</option>");
-        String vuelabel = null;
-        boolean vuelem = false;
-        for ( int i = 0; i < vues.length; i++) {
-          selected = "";
-          if ( vues[i][0].equals( vue ) ) {
-            selected = " selected=\"selected\"";
-            vuelabel = vues[i][1];
-            if ( vues[i].length > 2 && vues[i][2] != null ) vuelem = true;
-          }
-          out.print("<option value=\""+vues[i][0]+"\""+selected+">"+vues[i][1]+"</option>");
-        }
-        if ( vue == null ) {
-          vue = vues[0][0];
-          vuelabel = vues[0][1];
-        }
-      %>
-      </select>
-      <br/>
-      <textarea name="text" style="width: 100%; height: 10em; "><%=text%></textarea>
-      <br/>
-      <button onclick="this.form.text.value='';" type="button">Effacer</button>
-      <button type="submit">Envoyer</button>
-    </form>
-    <div style="margin-left: 31em; ">
+    <section style=" float: left;  ">
 <%
-String[] bibl = catalog.get(bibcode);
+  String[] bibl = catalog.get(bibcode);
 
 long time = System.nanoTime();
 
@@ -147,11 +120,11 @@ else if( bibcode != null && bibl != null ) {
     if ( vuelem ) dico = load( pageContext, bibl[0], true);
     else dico = load( pageContext, bibl[0], false);
     if (dico != null ) {
-      application.setAttribute( att, dico );
-      out.println( "Dictionnaire construit en "+((System.nanoTime() - time) / 1000000) + " ms");
+  application.setAttribute( att, dico );
+  out.println( "Dictionnaire construit en "+((System.nanoTime() - time) / 1000000) + " ms");
     }
     else {
-      out.print( "<p>Le texte "+bibl[0]+" n’est pas disponible sur ce serveur.</p>\n");
+  out.print( "<p>Le texte "+bibl[0]+" n’est pas disponible sur ce serveur.</p>\n");
     }
   }
 }
@@ -178,56 +151,67 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
         <th title="0 % absent du texte, 50 % même fréquence dans le texte et Frantext, 100 % absent (ou presque) de Frantext">% Frantext</th>
       </tr>
   	<%
-    BufferedReader br = Files.newBufferedReader(  listfile, StandardCharsets.UTF_8 );
-    int n = 0;
-    int count;
-    float franfreq = 0;
-    double myfreq = 0;
-    double bias = 0;
-    String w;
-    LexikEntry entry;
-    while ( ( w = br.readLine() ) != null) {
-  	  if ( w == null ) continue;
-  	  if ( "".equals( w ) ) continue;
-  	  if ( w.startsWith( "##" ) ) break;
-  	  n++;
-  	  out.print( "<tr>\n");
-  	  // a label, not a word
-  	  if ( w.charAt( 0 ) == '#' ) {
-  	    out.print( "<th>"+n+"</th>\n" );
-  	    out.print( "<th align=\"left\">"+w.substring( 1 ).trim()+"</th><th/><th/><th/>\n" );
-  	    continue;
-  	  }
-  	  out.print( "<td align=\"right\">"+n+"</td>\n" );
-  	  out.print( "<td>"+w+"</td>\n" );
-  	  count = dico.count( w );
-  	  if (count != 0) out.print( "<td align=\"right\">"+count+"</td>\n" );
-  	  else out.print( "<td/>");
-  	  entry = Lexik.entry( w );
-  	  if ( vuelem ) {
-  	    if ( entry != null ) franfreq = entry.lemfreq ;
-  	    else franfreq = 0;
-  	  } else {
-  	    if ( entry != null ) franfreq = entry.orthfreq ;
-  	    else franfreq = 0;
-  	  }
-  	  myfreq = 1.0*dico.count( w )*1000000/occs;
-  	  bias =  myfreq  / (myfreq + franfreq);
-  	  out.print( "<td align=\"right\">"+decdf.format(franfreq)+"</td>\n" );
-  	  String bg = "bg" + Math.round( 10.0 * (2*bias - 1) );
-  	  out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
+  	  BufferedReader br = Files.newBufferedReader(  listfile, StandardCharsets.UTF_8 );
+  	    int n = 0;
+  	    int count;
+  	    float franfreq = 0;
+  	    double myfreq = 0;
+  	    double bias = 0;
+  	    String l;
+        String word;
+        String lem;
+        int pos;
+  	    WordEntry entry;
+  	    while ( ( l = br.readLine() ) != null) {
+  	  	  if ( l == null ) continue;
+  	  	  if ( "".equals( l ) ) continue;
+  	  	  if ( l.startsWith( "##" ) ) break;
+  	  	  n++;
+  	  	  out.print( "<tr>\n");
+  	  	  // a label, not a word
+  	  	  if ( l.charAt( 0 ) == '#' ) {
+  	  	    out.print( "<th>"+n+"</th>\n" );
+  	  	    out.print( "<th align=\"left\">"+l.substring( 1 ).trim()+"</th><th/><th/><th/>\n" );
+  	  	    continue;
+  	  	  }
+          if ((pos=l.indexOf( ';' )) > -1) {
+            lem = l.substring( 0, pos );
+            word = l.substring( pos+1 );
+          }
+          else {
+            lem =l;
+            word = l;
+          }
+  	  	  out.print( "<td align=\"right\">"+n+"</td>\n" );
+  	  	  out.print( "<td>"+lem+"</td>\n" );
+  	  	  count = dico.count( lem );
+  	  	  if (count != 0) out.print( "<td align=\"right\">"+count+"</td>\n" );
+  	  	  else out.print( "<td/>");
+  	  	  entry = Lexik.entry( word );
+  	  	  if ( vuelem ) {
+  	  	    if ( entry != null ) franfreq = entry.lemfreq ;
+  	  	    else franfreq = 0;
+  	  	  } else {
+  	  	    if ( entry != null ) franfreq = entry.orthfreq ;
+  	  	    else franfreq = 0;
+  	  	  }
+  	  	  myfreq = 1.0*dico.count( lem )*1000000/occs;
+  	  	  bias =  myfreq  / (myfreq + franfreq);
+  	  	  out.print( "<td align=\"right\">"+decdf.format(franfreq)+"</td>\n" );
+  	  	  String bg = "bg" + Math.round( 10.0 * (2*bias - 1) );
+  	  	  out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
 
-  	  out.print( "</tr>\n");
-  		}
+  	  	  out.print( "</tr>\n");
+  	  		}
   	%>
   	</table>
     <%
       }
-    else {
+        else {
       long occs = dico.occs();
       int limit = 300;
       int n = 1;
-      LexikEntry entry;
+      WordEntry entry;
 
       // with no cache, 47ms on Dumas, seems OK
       time = System.nanoTime();
@@ -245,7 +229,16 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
         <th>Graphie</th>
         <th>Occurrences</th>
         <%
-          if ( "adj".equals( vue ) || "adv".equals( vue ) || "lem".equals( vue ) || "sub".equals( vue ) || "verb".equals( vue ) || "wordbias".equals( vue ) ) {
+          boolean frantext = false;
+          if ( "adj".equals( vue ) 
+              || "adv".equals( vue ) 
+              || "lem".equals( vue ) 
+              || "nostop".equals( vue ) 
+              || "sub".equals( vue ) 
+              || "verb".equals( vue ) 
+              || "wordbias".equals( vue ) 
+          ) {
+              frantext = true;
               out.print("<th title=\"Effectif par million d’occurrences\">Frantext</th>\n");
               out.print("<th title=\"0% = absent du texte, 50% = même fréquence dans le texte et Frantext, 100% absent (ou presque) de Frantext\">% Frantext</th>\n");
             }
@@ -258,9 +251,14 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           float franfreq = 0;
           double myfreq = 0;
           double bias = 0;
+          String bg = "";
           if ( words[i].isEmpty() ) continue;
           if ( "nostop".equals( vue ) ) {
             if (Lexik.isStop( words[i] )) continue;
+            entry = Lexik.entry(words[i] );
+            if ( entry != null ) franfreq = entry.orthfreq;
+            myfreq = 1.0*dico.count( words[i] )*1000000/occs;
+            bias =  myfreq / (myfreq + franfreq);
           }
           else if ( "words".equals( vue )) {
             if (Lexik.isStop( words[i] )) continue;
@@ -326,10 +324,16 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           out.print( "<td>"+n+"</td>\n" );
           out.print( "<td>"+words[i]+"</td>\n" );
           out.print( "<td>"+dico.count( words[i] )+"</td>\n" );
-          if ( franfreq > 0 ) {
+          if ( frantext ) {
             out.print( "<td align=\"right\">"+decdf.format(franfreq)+"</td>\n" );
-            String bg = "bg" + Math.round( 10.0 * (2 * bias - 1) );
-            out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
+            if ( franfreq == 0 ) {
+              bg = "";
+              out.print( "<td></td>\n" );
+            }
+            else {
+              bg = "bg" + Math.round( 10.0 * (2 * bias - 1) );
+              out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
+            }
           }
           else if ( "adj".equals( vue ) || "adv".equals( vue ) || "lem".equals( vue ) || "sub".equals( vue ) || "verb".equals( vue ) || "wordbias".equals( vue ) ) {
               out.print( "<td/><td/>\n");
@@ -344,8 +348,47 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
 }
 
     %>
+    </section>
+        <div style="float: left; ">
+    <form id="form" style=" padding: 1rem; width: 30em; position: fixed; " onsubmit="if (!this.text.value) return true; this.method = 'post'; this.action='?'; " method="get">
+      <select name="bibcode" onchange="this.form.text.value = ''; this.method = 'GET';  this.form.submit()">
+      <%
+          if ( !"".equals( text ) ) bibcode = null;
+          seltext( pageContext, bibcode );
+      %>
+      </select>
+      <br/>
+      <select name="vue" onchange="this.form.onsubmit(); this.form.submit()">
+      <%
+          String selected = "";
+          if ( vue == null ) selected = " selected=\"selected\"";
+          out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+selected+">Choisir une liste de mots…</option>");
+          String vuelabel = null;
+          for ( int i = 0; i < vues.length; i++) {
+            selected = "";
+            if ( vues[i][0].equals( vue ) ) {
+              selected = " selected=\"selected\"";
+              vuelabel = vues[i][1];
+            }
+            out.print("<option value=\""+vues[i][0]+"\""+selected+">"+vues[i][1]+"</option>");
+          }
+          if ( vue == null ) {
+            vue = vues[0][0];
+            vuelabel = vues[0][1];
+          }
+      %>
+      </select>
+      <br/>
+      <textarea name="text" style="width: 100%; height: 10em; "><%=text%></textarea>
+      <br/>
+      <button onclick="this.form.text.value='';" type="button">Effacer</button>
+      <button type="submit" style="float: right">Envoyer</button>
+    </form>
     </div>
+    
     </article>
+    <script>
+    </script>
     <script src="Sortable.js">//</script>
   </body>
 </html>

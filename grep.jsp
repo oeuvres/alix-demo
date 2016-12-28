@@ -21,6 +21,7 @@ alix.fr.Tokenizer
   </head>
   <body>
     <article id="top">
+      <a href="#top" id="totop">▲</a>
       <h1><a href=".">Alix</a> : chercher un mot (<a href="#cooc">Cooccurrents</a>)</h1>
           <form method="get">
           <% String mot = request.getParameter( "mot" ); if (mot == null) mot =""; %>
@@ -36,22 +37,25 @@ alix.fr.Tokenizer
  <% 
 String text = text( pageContext, bibcode );
 TermDic coocs = new TermDic();
+int limit = 1000; // limiter les occurrences affichées
 while (!"".equals( mot )) {
   if ( text == null ) {
     if ( bibcode == null && "".equals( bibcode )) break;
     out.print( "<p>Le texte "+bibcode+" n’est pas disponible sur ce serveur.</p>\n");
     break;
   }
+  out.println("<div id=\"conc\">" );
   out.println("<section class=\"conc\">" );
   Tokenizer toks = new Tokenizer( text );
   int left = 50;
   int right = 50;
   OccSlider win = new OccSlider(left, right);
+  //
   while  ( toks.word( win.add() ) ) {
-    if ( !win.get( 0 ).lem.equals( mot ) ) continue;
-    if ( !win.get( 0 ).orth.equals( mot ) ) continue;
+    if ( !win.get( 0 ).lem.equals( mot ) && !win.get( 0 ).orth.equals( mot ) ) continue;
     out.println( "<p>" );
     for ( int i=-left; i<=right; i++ ) {
+      // cooccurents
       if ( i < -10 || i == 0 || i > 11 );
       else if ( !win.get( i ).lem.isEmpty(  ) ) coocs.inc( win.get( i ).lem );
       else  coocs.inc( win.get( i ).orth ) ;
@@ -67,18 +71,18 @@ while (!"".equals( mot )) {
 %>
     </article>
     <article id="cooc">
-      <h2><a href="#top">▲</a>Cooccurrents</h2>
+      <h2>Cooccurrents</h2>
       <p>
       <%
 List<Map.Entry<String, int[]>> mots = coocs.entriesByCount();
-int limit = 200;
+limit = 200;
 boolean first = true;
 String term;
 int count;
 for( Map.Entry<String, int[]> entry: mots ) {
   limit --;
   term = entry.getKey();
-  if ( term.isEmpty() ) continue;
+  // if ( term.isEmpty() ) continue;
   count = entry.getValue()[TermDic.ICOUNT];
   if ( count < 2 ) break;
   if ( Lexik.isStop( term )) continue;

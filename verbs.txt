@@ -6,7 +6,7 @@ aller
 pouvoir
 vouloir
 venir
-devoir
+devoir;doit
 falloir
 
 # parole

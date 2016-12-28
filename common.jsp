@@ -8,7 +8,15 @@ java.io.BufferedReader,
 java.io.InputStreamReader,
 java.io.IOException,
 java.nio.charset.StandardCharsets,
-java.nio.file.Files
+java.nio.file.Files,
+
+alix.fr.Occ,
+alix.fr.Tokenizer,
+alix.fr.Lexik,
+alix.fr.Tag,
+alix.fr.WordEntry,
+alix.util.TermDic
+
 " %>
 <%!
 /** Catalog of available texts, data wil be unique for a jsp page, but copied for each jsp */
@@ -52,7 +60,7 @@ static void seltext( PageContext pageContext, String value ) throws IOException
     out.println("<option value=\""+code+"\""+sel+">"+cells[1]+". "+cells[2]+"</option>");
   }
 }
-/** Output a text selector for texts */
+/** Get text from a code */
 static String text( PageContext pageContext, String code ) 
 {
   String[] line = catalog.get( code );
@@ -65,6 +73,49 @@ static String text( PageContext pageContext, String code )
   sc.close();
   return text;
 }
+
+/**
+ * Charger un dictionnaire avec les mots d’un texte, comportement général
+ */
+public TermDic gparse( String text ) throws IOException {
+  TermDic dic = new TermDic();
+  Tokenizer toks = new Tokenizer(text);
+  Occ occ = new Occ();
+  short cat;
+  while ( toks.word( occ ) ) {
+    if ( occ.tag.isVerb() || occ.tag.code() == Tag.ADJ ) {
+      dic.inc( occ.lem, occ.tag.code() );
+    }
+    else dic.inc( occ.orth, occ.tag.code() );
+  }
+  return dic;
+}
+
+/**
+ * Récupérer un dictionnaire par identifiant, comportement général
+ */
+public TermDic gdic( PageContext pageContext, final String code ) throws IOException 
+{
+  ServletContext application = pageContext.getServletContext();
+  String att = "M"+code;
+  TermDic dico = (TermDic)application.getAttribute( att );
+  if ( dico != null ) return dico;
+  String[] bibl = catalog.get( code );
+  // texte inconnu
+  if ( bibl == null ) return null;
+  /*
+  String home = application.getRealPath("/");
+  String filepath = home + "/textes/" + bibl[1];
+  Path path =  Paths.get( filepath );
+  new String( Files.readAllBytes( path ), StandardCharsets.UTF_8 )
+  */
+  // http://web.archive.org/web/20140531042945/https://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
+  dico = gparse(  new Scanner( application.getResourceAsStream( bibl[0] ), "UTF-8" ).useDelimiter("\\A").next() );
+  application.setAttribute( att, dico );
+  return dico;
+}
+
+
 %>
 <%
 // instantiate catalog
