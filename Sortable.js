@@ -84,7 +84,7 @@ tr.odd { background-color: #F5F3EB; } \
 table.sortable th { text-align: center; vertical-align: middle; text-align: left; padding: 5px 1ex 5px 1ex; background-color: #FFFFFF; border-top: 2px solid #CCCCCC; border-bottom: 2px solid #CCCCCC; } \
 table.sortable th.head, table.sortable td.head { vertical-align: bottom; } \
 tr.even th, tr.odd th { text-align: right; } \
-table.sortable tr.mod5 td { border-top: solid 1px #888; } \
+table.sortable tr.mod5 td { border-bottom: solid 1px #888; } \
 table.sortable tr.mod10 td {  } \
 table.sortable tr:hover { background: #FFFFEE; color: black; } \
 table.sortable tr:hover a { color: black; } \
@@ -236,7 +236,7 @@ th.num, table.sortable th.num { text-align: right; font-weight: 100; font-size: 
     // return text.substring(0, 10) ;
     text=Sortable.trim(text);
     // num
-    n=parseFloat(text.replace(/,/g, '.').replace(/[  ]/g, ''));
+    n=parseFloat(text.replace(/,/g, '.').replace(/[  ]/g, '').replace(/^[x×]/, '').replace(/\//, '-') );
     // text
     if (isNaN(n)) {
       text=text.toLowerCase().replace(/œ/g, 'oe').replace(/æ/g, 'ae').replace(/ç/g, 'c').replace(/ñ/g, 'n').replace(/[éèêë]/g, 'e').replace(/[áàâä]/g, 'a').replace(/[íìîï]/g, 'i').replace(/úùûü/, 'u').replace(/\W/g, '') ;

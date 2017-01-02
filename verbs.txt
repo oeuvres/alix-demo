@@ -18,7 +18,6 @@ répondre
 appeler
 écrire
 lire
-écouter
 
 # connaissance
 voir
@@ -33,17 +32,61 @@ sembler
 chercher
 paraître
 retrouver
+écouter
 oublier
 apprendre
+expliquer
+
+#sentiments
+aimer
+sentir
+attendre
+rire
+sourire
+jouer
+pleurer
+plaire
+prier
+ressentir
+admirer
+moquer
+haïr
+mépriser
+fâcher
+daigner
+désirer
+séduire
+combler
+
+# argent
+
+payer
+acheter
+posséder
+
 
 # corps
 vivre
+asseoir
 mourir
+marcher
 manger
 boire
+courir
 dormir
+toucher
 foutre
+embrasser
+caresser
+habiller
+éveiller
+mordre
 jouir
+exciter
+déshabiller
+sucer
+
+## ??
 
 # geste
 prendre
@@ -72,25 +115,15 @@ lever
 commencer
 finir
 monter
-asseoir
+
 
 
 ## TODO
 
-# sentiment
-aimer
-sentir
-attendre
-devenir
-
-# TODO
 perdre
 tourner
 reprendre
-jouer
 jeter
-marcher
-rire
 quitter
 descendre
 essayer
@@ -100,14 +133,11 @@ servir
 continuer
 rentrer
 montrer
-courir
-sourire
 raconter
 garder
 changer
 imaginer
 crier
-expliquer
 apercevoir
 glisser
 reconnaître
@@ -143,13 +173,12 @@ cesser
 envoyer
 valoir
 importer
-foutre
+
 empêcher
 tuer
 frapper
 lancer
 rouler
-pleurer
 installer
 remonter
 suffire
@@ -163,8 +192,7 @@ pencher
 oser
 préparer
 refuser
-payer
-acheter
+
 exister
 conduire
 accepter
@@ -172,11 +200,11 @@ retenir
 remarquer
 fixer
 couper
-plaire
+
 taire
 revoir
 mener
-embrasser
+
 saisir
 présenter
 espérer

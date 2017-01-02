@@ -15,17 +15,19 @@ java.util.Scanner,
 
 alix.util.Char,
 alix.util.TermDic,
-alix.fr.Tag,
+alix.fr.Lexik,
 alix.fr.Occ,
+alix.fr.Tag,
 alix.fr.Tokenizer,
-alix.fr.Lexik
+alix.fr.WordEntry
+
 "%>
-<%
-  request.setCharacterEncoding("UTF-8");
-%>
 <%@include file="common.jsp" %>
 <%
 String bibcode = request.getParameter("bibcode");
+String log = request.getParameter("log");
+if ( log != null && log.isEmpty() ) log = null;
+String frantext = request.getParameter("frantext");
 DecimalFormat fontdf = new DecimalFormat("#");
 
 %>
@@ -38,10 +40,10 @@ DecimalFormat fontdf = new DecimalFormat("#");
     <style>
 #nuage { height: 600px; background: #FFF; }
 a.mot { font-family: Georgia, serif; position: absolute; display: block; white-space: nowrap; color: rgba( 128, 0, 0, 0.9); }
-a.SUB { color: rgba( 0, 0, 0, 0.6); font-family: "Arial", sans-serif; font-weight: 700; }
-a.ADJ { color: rgba( 255, 0, 0, 0.7); }
-a.VERB { color: rgba( 32, 128, 32, 0.8);  }
-a.ADV { color: rgba( 0, 0, 255, 0.8); }
+a.SUB { color: rgba( 64, 64, 64, 0.6); font-family: "Arial", sans-serif; font-weight: 700; }
+a.ADJ { color: rgba( 0, 0, 192, 0.8); }
+a.VERB { color: rgba( 255, 0, 0, 0.7 );  }
+a.ADV { color: rgba( 64, 128, 64, 0.8); }
 a.NAME { padding: 0 0.5ex; background-color: rgba( 192, 192, 192, 0.2) ; color: #FFF; 
 text-shadow: #000 0px 0px 5px;  -webkit-font-smoothing: antialiased;  }
     </style>
@@ -53,58 +55,110 @@ text-shadow: #000 0px 0px 5px;  -webkit-font-smoothing: antialiased;  }
         <select name="bibcode" onchange="this.form.submit()">
           <% seltext( pageContext, bibcode );  %>
         </select>
+        <label>Seuil Frantext
+          <select name="frantext" onchange=" this.form.submit()">
+            <option/>
+            <% Float tlfratio = tlfoptions ( pageContext, frantext ); %>
+          </select>
+        </label>
+        <button>▶</button>
       </form>
       <div id="nuage"></div>
       <script>
    
-<%
-WordEntry entry;
-HashSet<String> filter = new HashSet<String>(); 
+<%HashSet<String> filter = new HashSet<String>(); 
 for (String w: new String[]{
-    "aller", "arriver", "attendre", "connaître", "croire", "demander", "devenir", "donner", "dire", 
+    "aller", "arriver", "attendre", "connaître", "croire", "demander", "devenir", "devoir", "donner", "dire", 
     "entendre", "laisser", "paraître", "passer",
-    "permettre", "prendre", "rendre", "répondre", "rester", "tenir", "venir", "voir", "vouloir", 
+    "permettre", "pouvoir", "prendre", "rendre", "répondre", "rester", "tenir", "venir", "voir", "vouloir", 
     "savoir", "servir", 
     "sortir", "trouver"
 }) filter.add( w );
 
+HashSet<String> filter2 = new HashSet<String>(); 
+for (String w: new String[]{
+    "madame", "mademoiselle", "point", "sir"
+}) filter2.add( w );
+
 if ( bibcode != null ) {
   out.println("var list = [");
-  TermDic dic = gdic( pageContext, bibcode );
-  int max = 10000;
-  String[] words = dic.byCount( 10000 );
+  TermDic dic = dic( pageContext, bibcode );
+  long occs = dic.occs();
+  String[] word = dic.byCount( 100000 );
   int lines = 300;
-  int fontmin = 10;
-  float fontmax = 140;
-  int countmax = 0;
-  int count;
+  int fontmin = 15;
+  float fontmax = 100;
+  int scoremax = 0;
+  int score;
+  WordEntry entry;
+  float franfreq;
+  double bias = 0;
   // loop on text forms in
+  int max = word.length;
   for (int i = 0; i < max; i++) {
-    if (Lexik.isStop( words[i] )) continue;
-    if ( filter.contains( words[i] )) continue;
-    int tag = dic.tag( words[i] );
-    if ( tag == Tag.VERBsup ) continue;
-    if ( Tag.isName( tag )) tag = Tag.NAME;
-    if ( Tag.isVerb( tag )) tag = Tag.VERB;
-    if ( Tag.isAdv( tag )) tag = Tag.ADV;
-    count = dic.count(words[i]);
-    if ( countmax == 0 ) countmax = count;
+    int tag = dic.tag( word[i] );
+    if ( Tag.PUN( tag )) continue;
+    if ( tlfratio != null ) {
+      if ( tag != Tag.SUB && tag != Tag.ADV && tag != Tag.ADJ && tag != Tag.VERB ) continue;
+      if ( filter2.contains( word[i] )) continue;
+      if ( tag == Tag.SUB) tlfratio = 11F;
+      else if ( tag == Tag.VERB) tlfratio = 9F;
+      else tlfratio = 4F;
+      
+      if ("devoir".equals( word[i] )) entry = Lexik.entry( "doit" );
+      else entry = Lexik.entry( word[i] );
+      // locutions adverbiales sans stats
+      if ( entry == null && tag == Tag.ADV) continue;
+      if ( entry == null ) franfreq = 0;
+      else if ( tag == Tag.SUB ) franfreq = entry.orthfreq ;
+      else franfreq = entry.lemfreq ;
+      // if ( franfreq == 0 ) continue;
+      // if ( Tag.isDet( tag )) continue;
+      // if ( tag == Tag.PROrel ) continue;
+      // do not start with a non significant word
+      if ( scoremax == 0 && tag != Tag.SUB && tag != Tag.VERB && tag != Tag.ADJ && tag != Tag.ADV ) continue;
+      score = dic.count( word[i] );
+      double myfreq = 1.0*score*1000000/occs;
+      if ( tlfratio == 0) {
+        if ( franfreq/myfreq > 1.1 ) continue;
+        if ( myfreq/franfreq > 1.1 ) continue;
+      }
+      else if ( tlfratio < 0) {
+        if ( franfreq/myfreq < -tlfratio ) continue;
+      }
+      else if ( tlfratio > 0) {
+        if ( myfreq/franfreq < tlfratio ) continue;
+      }
+      fontmax=60;
+      log = "??";
+    }
+    else {
+      if (Lexik.isStop( word[i] )) continue;
+      if ( Tag.NAME( tag )) tag = Tag.NAME;
+      if ( Tag.VERB( tag )) tag = Tag.VERB;
+      if ( Tag.ADV( tag )) tag = Tag.ADV;
+      if ( tag == Tag.VERBsup ) continue;
+      if ( filter.contains( word[i] )) continue;
+      score = dic.count(word[i]);
+    }
+    if ( scoremax == 0 ) scoremax = score;
+
     out.print("{ word:\"");
-    out.print( words[i] ) ;
+    if ( word[i].indexOf( '"' ) > -1 ) word[i] = word[i].replace( "\"", "\\\"" ); 
+    out.print( word[i] ) ;
     out.print("\", weight:");
     // out.print(count + " " );
-    // out.print( fontdf.format( fontmax*Math.log10(1+9.0*count/countmax) ) );
-    out.print( fontdf.format( (1.0*count/countmax) *fontmax+fontmin ) );
+    if ( log != null ) out.print( fontdf.format( fontmin + (fontmax - fontmin)*Math.log10(1+9.0*score/scoremax) ) );
+    else out.print( fontdf.format( (1.0*score/scoremax) *fontmax+fontmin ) );
     out.print(", attributes:{ class:\"mot ");
     out.print(Tag.label( tag ));
-    out.println("\" } },");
+    out.println("\" }, bias:"+bias+" },");
     if (--lines <= 0 ) break;
   }
   out.println("];");
-  out.println("WordCloud(document.getElementById('nuage'), { minRotation: -Math.PI/3, maxRotation: Math.PI/3,"
-   + "rotateRatio: 0.6, shape: 'square', rotationSteps: 6, gridSize:0, list: list, fontFamily:'Verdana, sans-serif' } );");
-}
-%>
+  out.println("WordCloud(document.getElementById('nuage'), { minRotation: -Math.PI/5, maxRotation: Math.PI/5,"
+   + "rotateRatio: 0.5, shape: 'square', rotationSteps: 4, gridSize:5, list: list, fontFamily:'Verdana, sans-serif' } );");
+}%>
       </script>
     </article>
   </body>

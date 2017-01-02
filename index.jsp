@@ -41,6 +41,7 @@ C’est d’ailleurs pour mieux les aimer que ces instruments fouillent l’inti
       <ul class="menu">
         <li><a href="lem.jsp">Le lemmatiseur du pauvre</a></li>
         <li><a href="freq.jsp">Mots fréquents</a></li>
+        <li><a href="wordcloud.jsp">Nuage de mots</a></li>
         <li><a href="comp.jsp">Comparer deux tableaux lexicaux</a></li>
         <li><a href="grep.jsp">Concordance et cooccurrences</a></li>
         <li><a href="gn.jsp">Adjectifs ante ou post posés</a></li>

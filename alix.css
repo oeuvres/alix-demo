@@ -37,27 +37,27 @@ td.left { text-align:right; }
 section.conc { width: 80ex; margin-left: auto; margin-right: auto; }
 .conc p { margin: 0.5ex 0; padding: 0.5ex 0; border-bottom: 1px solid #FFFFFF; }
 
-.bg-10 { background: rgba(255, 0, 0, 1) !important; color: #FFF; }
-.bg-9 { background: rgba(255, 0, 0, 0.9) !important; color: #FFF; }
-.bg-8 { background: rgba(255, 0, 0, 0.8) !important; color: #FFF; }
-.bg-7 { background: rgba(255, 0, 0, 0.7) !important; }
-.bg-6 { background: rgba(255, 0, 0, 0.6) !important; }
-.bg-5 { background: rgba(255, 0, 0, 0.5) !important; }
-.bg-4 { background: rgba(255, 0, 0, 0.4) !important; }
-.bg-3 { background: rgba(255, 0, 0, 0.3) !important; }
-.bg-2 { background: rgba(255, 0, 0, 0.2) !important; }
-.bg-1 { background: rgba(255, 0, 0, 0.1) !important; color: grey;}
-.bg0 { background: #FFFFFF !important; color: grey; }
-.bg1 { background: rgba(0, 0, 192, 0.1) !important; color: grey; }
-.bg2 { background: rgba(0, 0, 192, 0.2) !important; }
-.bg3 { background: rgba(0, 0, 192, 0.3) !important; }
-.bg4 { background: rgba(0, 0, 192, 0.4) !important; }
-.bg5 { background: rgba(0, 0, 192, 0.5) !important; }
-.bg6 { background: rgba(0, 0, 192, 0.6) !important; }
-.bg7 { background: rgba(0, 0, 192, 0.7) !important; }
-.bg8 { background: rgba(0, 0, 192, 0.8) !important; color: #FFF; }
-.bg9 { background: rgba(0, 0, 192, 0.9) !important; color: #FFF; }
-.bg10 { background: rgba(0, 0, 192, 1.0) !important; color: #FFF; }
+.bg-10 { background: #A00 !important; color: #FFF; }
+.bg-9 { background: #C00 !important; color: #FFF; }
+.bg-8 { background: #F00 !important; color: #FFF; }
+.bg-7 { background: #F22 !important; color: #FFF; }
+.bg-6 { background: #F44 !important; color: #FFF; }
+.bg-5 { background: #F66 !important; }
+.bg-4 { background: #F88 !important; }
+.bg-3 { background: #FAA !important; }
+.bg-2 { background: #FCC !important; }
+.bg-1 { background: #FEE !important; color: #000;}
+.bg0 { background: #FFF !important; color: #000; }
+.bg1 { background: #EEF !important; color: #008; }
+.bg2 { background: #CCF !important; }
+.bg3 { background: #AAF !important; }
+.bg4 { background: #88E !important; }
+.bg5 { background: #66D !important; }
+.bg6 { background: #44C !important; color: #FFF }
+.bg7 { background: #22C !important;  color: #FFF;}
+.bg8 { background: #00C !important; color: #FFF; }
+.bg9 { background: #00A !important; color: #FFF; }
+.bg10 { background: #008 !important; color: #FFF; }
 
 ul.menu li { margin: 0.5ex 0; font-size: 150%; }
 
