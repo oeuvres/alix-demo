@@ -13,7 +13,6 @@ java.util.LinkedHashMap,
 java.util.Locale,
 java.util.Scanner,
 
-
 alix.fr.Occ,
 alix.fr.Tokenizer,
 alix.fr.Lexik,
@@ -86,7 +85,7 @@ static Float tlfoptions ( PageContext pageContext, String param ) throws IOExcep
     catch ( Exception e) {}
   }
 
-  float[] values = { 200f, 100F, 50F, 20F, 10F, 7F, 5F, 3F, 2F, 0F, -2F, -5F, -10F };
+  float[] values = { 200f, 100F, 50F, 20F, 10F, 7F, 6F, 5F, 3F, 2F, 0F, -2F, -5F, -10F };
   int lim = values.length;
   String selected="";
   boolean seldone = false;
@@ -127,10 +126,10 @@ public TermDic parse( String text ) throws IOException {
   Occ occ = new Occ();
   short cat;
   while ( toks.word( occ ) ) {
-    if ( occ.tag.VERB() || occ.tag.code() == Tag.ADJ ) {
-      dic.inc( occ.lem, occ.tag.code() );
+    if ( occ.tag().verb() || occ.tag().code() == Tag.ADJ ) {
+      dic.inc( occ.lem(), occ.tag().code() );
     }
-    else dic.inc( occ.orth, occ.tag.code() );
+    else dic.inc( occ.orth(), occ.tag().code() );
   }
   return dic;
 }
@@ -168,16 +167,16 @@ public TermDic dic( PageContext pageContext, final String bib, final String type
   Occ occ = new Occ();
   short cat;
   while ( toks.word( occ ) ) {
-    if ( occ.tag.VERB() || occ.tag.code() == Tag.ADJ ) {
-      words.inc( occ.lem, occ.tag.code() );
+    if ( occ.tag().verb() || occ.tag().code() == Tag.ADJ ) {
+      words.inc( occ.lem(), occ.tag().code() );
     }
-    else words.inc( occ.orth, occ.tag.code() );
-    if ( occ.tag.PUN());
-    else if( occ.tag.equals(Tag.UNKNOWN));
-    else if( occ.tag.NAME() ) tags.inc("NAME") ;
-    else if( occ.tag.DET() ) tags.inc("DET") ;
-    else if( occ.tag.DET() ) tags.inc("DET") ;
-    else tags.inc( occ.tag.label(  ));
+    else words.inc( occ.orth(), occ.tag().code() );
+    if ( occ.tag().pun());
+    else if( occ.tag().equals(Tag.UNKNOWN));
+    else if( occ.tag().name() ) tags.inc("NAME") ;
+    else if( occ.tag().det() ) tags.inc("DET") ;
+    else if( occ.tag().det() ) tags.inc("DET") ;
+    else tags.inc( occ.tag().label(  ));
   }
   application.setAttribute( bib+"W", words );
   application.setAttribute( bib+"T", tags );

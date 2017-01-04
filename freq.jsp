@@ -62,10 +62,10 @@ public TermDic dic( String text, int mode) throws IOException {
   // String last;
   while ( toks.word( occ ) ) {
     if (mode == LEM) {
-      dic.inc( occ.lem, occ.tag.code(  ) );
+      dic.inc( occ.lem(), occ.tag().code(  ) );
     }
     else {
-      dic.inc( occ.orth, occ.tag.code(  ) );
+      dic.inc( occ.orth(), occ.tag().code(  ) );
     }
   }
   return dic;
@@ -234,7 +234,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
 
       // with no cache, 47ms on Dumas, seems OK
       time = System.nanoTime();
-      String[] words = dico.byCount( 10000 );
+      String[] words = dico.byCount( -1 );
       // out.println( "Chargé en "+((System.nanoTime() - time) / 1000000) + " ms");
       int size = words.length;
       String cat;
@@ -261,97 +261,96 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
       </tr>
       <%
         float franfreq = 0;
-                double myfreq = 0;
-                double bias = 0;
-                String bg = "";
-                String label;
-                int count = 0;
-                // loop on text forms in
-                for (int i = 0; i < size; i++) {
-                  if ( words[i].isEmpty() ) continue;
-                  int tag = dico.tag( words[i] );
-                  count = dico.count( words[i] );
-                  if ( "tokens".equals( vue ) ) {
-                    out.print( "<tr>\n");
-                    out.print( "<td>"+n+"</td>\n" );
-                    out.print( "<td>"+words[i]+"</td>\n" );
-                    out.print( "<td>"+count+"</td>\n" );
-                    out.print( "</tr>\n");
-                    n++;
-                    if (n > limit) break;
-                    continue;
-                  }
-                  if ( "name".equals( vue ) ) {
-                    if ( !Tag.NAME( tag )) continue;
-                    /*
-                    if ( "pers".equals( vue ) && tag != Tag.NAMEpers && tag != Tag.NAMEpersf && tag != Tag.NAMEpersm ) continue;
-                    if ( "place".equals( vue ) && tag != Tag.NAMEplace ) continue;
-                    if ( "name".equals( vue ) && tag != Tag.NAME ) continue;
-                    */
-                    out.print( "<tr>\n");
-                    out.print( "<td>"+n+"</td>\n" );
-                    out.print( "<td>"+words[i]+"</td>\n" );
-                    out.print( "<td>"+count+"</td>\n" );
-                    out.print( "<td>"+ Tag.label( tag ) +"</td>\n" );
-                    out.print( "</tr>\n");
-                    n++;
-                    if (n > limit) break;
-                    continue;
-                  }
-                  if ( "devoir".equals( words[i] )) entry = Lexik.entry( "doit" );
-                  else entry = Lexik.entry(words[i] );
-                  
-                  // filtrer les mots vides quand seuil frantext ?
-                  if ( "nostop".equals( vue )) {
-                    if ( tlfratio == null && Lexik.isStop( words[i] )) continue;
-                    if ( tlfratio != null && ( Tag.NAME( tag ) || Tag.PUN( tag ) || entry == null )) continue;
-                    if ( tlfratio != null && tlfratio < 2 && tlfratio > - 2 && Lexik.isStop( words[i] )) continue;
-                  }
-                  if ( "sub".equals( vue ) && tag != Tag.SUB ) continue;
-                  if ( "verb".equals( vue ) && !Tag.VERB( tag ) ) continue ;
-                  if ( "adj".equals( vue ) && tag != Tag.ADJ ) continue;
-                  if ( "adv".equals( vue ) && !Tag.ADV( tag ) ) continue;
-
-                  if ( entry == null ) franfreq = 0;
-                  else if ( vuelem ) franfreq = entry.lemfreq;
-                  else franfreq = entry.orthfreq;
-                  myfreq = 1.0*dico.count( words[i] )*1000000/occs;
-                  if ( tlfratio != null ) {
-                    if ( count < 2 ) continue;
-                    if ( franfreq == 0 ) continue;
-                    if ( tlfratio == 0) {
-                      if ( franfreq/myfreq > 1.1 ) continue;
-                      if ( myfreq/franfreq > 1.1 ) continue;
-                    }
-                    else if ( tlfratio < 0) {
-                      if ( franfreq/myfreq < -tlfratio ) continue;
-                    }
-                    else if ( tlfratio > 0) {
-                      if ( myfreq/franfreq < tlfratio ) continue;
-                    }
-                  }
-                  
-                  bias =  myfreq / (myfreq + franfreq);
+              double myfreq = 0;
+              double bias = 0;
+              String bg = "";
+              String label;
+              int count = 0;
+              // loop on text forms in
+              for (int i = 0; i < size; i++) {
+                if ( words[i].isEmpty() ) continue;
+                int tag = dico.tag( words[i] );
+                count = dico.count( words[i] );
+                if ( "tokens".equals( vue ) ) {
                   out.print( "<tr>\n");
                   out.print( "<td>"+n+"</td>\n" );
                   out.print( "<td>"+words[i]+"</td>\n" );
-                  out.print( "<td>"+dico.count( words[i] )+"</td>\n" );
-                  out.print( "<td align=\"right\">"+ppmdf.format(myfreq)+" ppm</td>\n" );
-                  out.print( "<td align=\"right\">"+ppmdf.format(franfreq)+" ppm</td>\n" );
-                  if ( franfreq == 0 ) {
-                    bg = "";
-                    out.print( "<td></td>\n" );
-                  }
-                  else {
-                    bg = "bg" + Math.round( 10.0 * (2 * bias - 1) );
-                    if ( myfreq > franfreq) label = "x "+biasdf.format(myfreq/franfreq);
-                    else label = "/ "+biasdf.format(franfreq/myfreq);
-                    out.print( "<td align=\"right\" class=\""+bg+"\">"+ label+"</td>\n" );
-                  }
+                  out.print( "<td>"+count+"</td>\n" );
                   out.print( "</tr>\n");
                   n++;
                   if (n > limit) break;
+                  continue;
                 }
+                if ( "name".equals( vue ) ) {
+                  if ( !Tag.name( tag )) continue;
+                  /*
+                  if ( "pers".equals( vue ) && tag != Tag.NAMEpers && tag != Tag.NAMEpersf && tag != Tag.NAMEpersm ) continue;
+                  if ( "place".equals( vue ) && tag != Tag.NAMEplace ) continue;
+                  if ( "name".equals( vue ) && tag != Tag.NAME ) continue;
+                  */
+                  out.print( "<tr>\n");
+                  out.print( "<td>"+n+"</td>\n" );
+                  out.print( "<td>"+words[i]+"</td>\n" );
+                  out.print( "<td>"+count+"</td>\n" );
+                  out.print( "<td>"+ Tag.label( tag ) +"</td>\n" );
+                  out.print( "</tr>\n");
+                  n++;
+                  if (n > limit) break;
+                  continue;
+                }
+                if ( "devoir".equals( words[i] )) entry = Lexik.entry( "doit" );
+                else entry = Lexik.entry(words[i] );
+                
+                // filtrer les mots vides quand seuil frantext ?
+                if ( "nostop".equals( vue ) || "lem".equals( vue ) ) {
+                  if ( tlfratio == null && Lexik.isStop( words[i] )) continue;
+                  if ( tlfratio != null && ( Tag.name( tag ) || Tag.pun( tag ) || entry == null )) continue;
+                  if ( tlfratio != null && tlfratio < 2 && tlfratio > - 2 && Lexik.isStop( words[i] )) continue;
+                }
+                if ( "sub".equals( vue ) && tag != Tag.SUB ) continue;
+                if ( "verb".equals( vue ) && !Tag.verb( tag ) ) continue ;
+                if ( "adj".equals( vue ) && tag != Tag.ADJ ) continue;
+                if ( "adv".equals( vue ) && !Tag.adv( tag ) ) continue;
+                
+                if ( entry == null ) franfreq = 0;
+                else if ( vuelem ) franfreq = entry.lemfreq;
+                else franfreq = entry.orthfreq;
+                myfreq = 1.0*dico.count( words[i] )*1000000/occs;
+                if ( tlfratio != null ) {
+                  if ( count < 2 ) continue;
+                  if ( franfreq == 0 ) continue;
+                  if ( tlfratio == 0) {
+                    if ( franfreq/myfreq > 2  || myfreq/franfreq > 2 ) continue;
+                  }
+                  else if ( tlfratio < 0) {
+                    if ( franfreq/myfreq < -tlfratio ) continue;
+                  }
+                  else if ( tlfratio > 0) {
+                    if ( myfreq/franfreq < tlfratio ) continue;
+                  }
+                }
+                
+                bias =  myfreq / (myfreq + franfreq);
+                out.print( "<tr>\n");
+                out.print( "<td>"+n+"</td>\n" );
+                out.print( "<td>"+words[i]+"</td>\n" );
+                out.print( "<td>"+dico.count( words[i] )+"</td>\n" );
+                out.print( "<td align=\"right\">"+ppmdf.format(myfreq)+" ppm</td>\n" );
+                out.print( "<td align=\"right\">"+ppmdf.format(franfreq)+" ppm</td>\n" );
+                if ( franfreq == 0 ) {
+                  bg = "";
+                  out.print( "<td></td>\n" );
+                }
+                else {
+                  bg = "bg" + Math.round( 10.0 * (2 * bias - 1) );
+                  if ( myfreq > franfreq) label = "x "+biasdf.format(myfreq/franfreq);
+                  else label = "/ "+biasdf.format(franfreq/myfreq);
+                  out.print( "<td align=\"right\" class=\""+bg+"\">"+ label+"</td>\n" );
+                }
+                out.print( "</tr>\n");
+                n++;
+                if (n > limit) break;
+              }
       %>
     </table>
     <%

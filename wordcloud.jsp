@@ -39,10 +39,11 @@ DecimalFormat fontdf = new DecimalFormat("#");
     <script src="lib/wordcloud2.js">//</script>
     <style>
 #nuage { height: 600px; background: #FFF; }
+#nuage a { text-decoration: none; }
 a.mot { font-family: Georgia, serif; position: absolute; display: block; white-space: nowrap; color: rgba( 128, 0, 0, 0.9); }
-a.SUB { color: rgba( 64, 64, 64, 0.6); font-family: "Arial", sans-serif; font-weight: 700; }
-a.ADJ { color: rgba( 0, 0, 192, 0.8); }
-a.VERB { color: rgba( 255, 0, 0, 0.7 );  }
+a.SUB { color: rgba( 32, 32, 32, 0.6); font-family: "Arial", sans-serif; font-weight: 700; }
+a.ADJ { color: rgba( 128, 128, 192, 0.8); }
+a.VERB { color: rgba( 255, 0, 0, 1 );  }
 a.ADV { color: rgba( 64, 128, 64, 0.8); }
 a.NAME { padding: 0 0.5ex; background-color: rgba( 192, 192, 192, 0.2) ; color: #FFF; 
 text-shadow: #000 0px 0px 5px;  -webkit-font-smoothing: antialiased;  }
@@ -55,12 +56,8 @@ text-shadow: #000 0px 0px 5px;  -webkit-font-smoothing: antialiased;  }
         <select name="bibcode" onchange="this.form.submit()">
           <% seltext( pageContext, bibcode );  %>
         </select>
-        <label>Seuil Frantext
-          <select name="frantext" onchange=" this.form.submit()">
-            <option/>
-            <% Float tlfratio = tlfoptions ( pageContext, frantext ); %>
-          </select>
-        </label>
+        <% String checked = ""; if (frantext != null) checked =" checked=\"checked\""; %>
+        <label>Filtre Frantext <input name="frantext" <%= checked %> type="checkbox"/></label>
         <button>▶</button>
       </form>
       <div id="nuage"></div>
@@ -77,7 +74,8 @@ for (String w: new String[]{
 
 HashSet<String> filter2 = new HashSet<String>(); 
 for (String w: new String[]{
-    "madame", "mademoiselle", "point", "sir"
+    "abbé", "baron", "docteur", "cher", "comte", "duc", "duchesse", "évêque", "lord", "madame", "mademoiselle", 
+    "maître", "marquis", "marquise", "miss", "pauvre", "point", "prince", "princesse", "professeur", "sir"
 }) filter2.add( w );
 
 if ( bibcode != null ) {
@@ -87,7 +85,7 @@ if ( bibcode != null ) {
   String[] word = dic.byCount( 100000 );
   int lines = 300;
   int fontmin = 15;
-  float fontmax = 100;
+  float fontmax = 60;
   int scoremax = 0;
   int score;
   WordEntry entry;
@@ -97,18 +95,19 @@ if ( bibcode != null ) {
   int max = word.length;
   for (int i = 0; i < max; i++) {
     int tag = dic.tag( word[i] );
-    if ( Tag.PUN( tag )) continue;
-    if ( tlfratio != null ) {
+    if ( Tag.pun( tag )) continue;
+    if ( frantext != null ) {
       if ( tag != Tag.SUB && tag != Tag.ADV && tag != Tag.ADJ && tag != Tag.VERB ) continue;
       if ( filter2.contains( word[i] )) continue;
-      if ( tag == Tag.SUB) tlfratio = 11F;
-      else if ( tag == Tag.VERB) tlfratio = 9F;
-      else tlfratio = 4F;
+      float ratio = 4F;
+      if ( tag == Tag.SUB) ratio = 12F;
+      else if ( tag == Tag.VERB) ratio = 7F;
       
       if ("devoir".equals( word[i] )) entry = Lexik.entry( "doit" );
       else entry = Lexik.entry( word[i] );
       // locutions adverbiales sans stats
       if ( entry == null && tag == Tag.ADV) continue;
+      if ( entry == null && tag == Tag.VERB) continue; // compound verbs, no stats
       if ( entry == null ) franfreq = 0;
       else if ( tag == Tag.SUB ) franfreq = entry.orthfreq ;
       else franfreq = entry.lemfreq ;
@@ -119,24 +118,14 @@ if ( bibcode != null ) {
       if ( scoremax == 0 && tag != Tag.SUB && tag != Tag.VERB && tag != Tag.ADJ && tag != Tag.ADV ) continue;
       score = dic.count( word[i] );
       double myfreq = 1.0*score*1000000/occs;
-      if ( tlfratio == 0) {
-        if ( franfreq/myfreq > 1.1 ) continue;
-        if ( myfreq/franfreq > 1.1 ) continue;
-      }
-      else if ( tlfratio < 0) {
-        if ( franfreq/myfreq < -tlfratio ) continue;
-      }
-      else if ( tlfratio > 0) {
-        if ( myfreq/franfreq < tlfratio ) continue;
-      }
-      fontmax=60;
-      log = "??";
+      if ( myfreq/franfreq < ratio ) continue;
+      // log = "??";
     }
     else {
       if (Lexik.isStop( word[i] )) continue;
-      if ( Tag.NAME( tag )) tag = Tag.NAME;
-      if ( Tag.VERB( tag )) tag = Tag.VERB;
-      if ( Tag.ADV( tag )) tag = Tag.ADV;
+      if ( Tag.name( tag )) tag = Tag.NAME;
+      if ( Tag.verb( tag )) tag = Tag.VERB;
+      if ( Tag.adv( tag )) tag = Tag.ADV;
       if ( tag == Tag.VERBsup ) continue;
       if ( filter.contains( word[i] )) continue;
       score = dic.count(word[i]);
@@ -152,7 +141,7 @@ if ( bibcode != null ) {
     else out.print( fontdf.format( (1.0*score/scoremax) *fontmax+fontmin ) );
     out.print(", attributes:{ class:\"mot ");
     out.print(Tag.label( tag ));
-    out.println("\" }, bias:"+bias+" },");
+    out.println("\", target:\"grep\", href:\"grep.jsp?mot="+word[i]+"&bibcode="+bibcode+"\" }, bias:"+bias+" },");
     if (--lines <= 0 ) break;
   }
   out.println("];");
@@ -160,6 +149,7 @@ if ( bibcode != null ) {
    + "rotateRatio: 0.5, shape: 'square', rotationSteps: 4, gridSize:5, list: list, fontFamily:'Verdana, sans-serif' } );");
 }%>
       </script>
+      <iframe name="grep" width="100%" allowfullscreen="true" style="min-height: 500px; border: none "></iframe>
     </article>
   </body>
 </html>

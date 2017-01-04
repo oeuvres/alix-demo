@@ -34,7 +34,7 @@ td.left { text-align:right; }
 .right b { padding: 0 1ex; margin-right: 1ex; }
 .conc b, .conc th {  color: #000; background-color: #FFFFFF; }
 .conc i { font-style: normal; color: red;  }
-section.conc { width: 80ex; margin-left: auto; margin-right: auto; }
+div.conc { width: 80ex; text-align: left; }
 .conc p { margin: 0.5ex 0; padding: 0.5ex 0; border-bottom: 1px solid #FFFFFF; }
 
 .bg-10 { background: #A00 !important; color: #FFF; }
@@ -61,4 +61,4 @@ section.conc { width: 80ex; margin-left: auto; margin-right: auto; }
 
 ul.menu li { margin: 0.5ex 0; font-size: 150%; }
 
-#totop { position: fixed; bottom: 1em; color: rgba( 0, 0, 0, 0.3); }
+#totop { position: fixed; bottom: 1ex; right: 1ex;  color: rgba( 0, 0, 0, 0.3); }

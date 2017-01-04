@@ -42,7 +42,6 @@ public float log ( double percent )
 }
 
 %>
-<% request.setCharacterEncoding("UTF-8"); %>
 <%
 long time;
 DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.ENGLISH);
@@ -91,22 +90,22 @@ DecimalFormat dec1 = new DecimalFormat("###,###.0");
 
   String[] cells;
   if ( !text1.isEmpty()  ) {
-    dic1 = gparse( text1 );
+    dic1 = parse( text1 );
     ltitle = text1.substring( 0, Math.min( 30, text1.length() ) );
   }
   else if ( ref1 != null) {
-    dic1 = gdic( pageContext, ref1 );
+    dic1 = dic( pageContext, ref1 );
     if ( dic1 != null) {
       cells = catalog.get( ref1 );
       ltitle = (cells[1]+". "+cells[2]);
     }
   }
   if ( !text2.isEmpty()  ) {
-    dic2 = gparse( text2 );
+    dic2 = parse( text2 );
     rtitle = text2.substring( 0, Math.min( 30, text2.length() ) );
   }
   else if ( ref2 != null) {
-    dic2 = gdic( pageContext, ref2 );
+    dic2 = dic( pageContext, ref2 );
     if ( dic2 != null) {
       cells = catalog.get( ref2 );
       rtitle = (cells[1]+". "+cells[2]);
