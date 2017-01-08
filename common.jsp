@@ -77,7 +77,7 @@ static void seltext( PageContext pageContext, String value ) throws IOException
  */
 static Float tlfoptions ( PageContext pageContext, String param ) throws IOException
 {
-   JspWriter out = pageContext.getOut();
+  JspWriter out = pageContext.getOut();
   DecimalFormat frdf = new DecimalFormat("#.#", frsyms );
   Float tlfratio = null;
   if ( param != null ) {

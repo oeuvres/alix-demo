@@ -72,9 +72,6 @@ public TermDic dic( String text, int mode) throws IOException {
 }
 %>
 <%
-  request.setCharacterEncoding("UTF-8");
-%>
-<%
 // request parameters
 String bibcode = request.getParameter("bibcode");
 String vue = request.getParameter( "vue" );
