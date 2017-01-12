@@ -25,6 +25,7 @@ alix.frwork.GN
     <link rel="stylesheet" type="text/css" href="alix.css" />
   </head>
   <body>
+    <%@include file="menu.jsp" %>
     <article>
       <h1><a href=".">Alix</a> : <a href="?">Adjectifs ante ou post posés</a></h1>
       <p>

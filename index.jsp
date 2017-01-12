@@ -11,6 +11,7 @@ java.nio.file.Files
     <link rel="stylesheet" type="text/css" href="alix.css" />
   </head>
   <body>
+    <%@include file="menu.jsp" %>
     <article>
       <h1>Alix</h1>
       <p>

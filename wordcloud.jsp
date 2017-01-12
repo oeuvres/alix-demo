@@ -50,9 +50,10 @@ text-shadow: #000 0px 0px 5px;  -webkit-font-smoothing: antialiased;  }
     </style>
   </head>
   <body>
+    <%@include file="menu.jsp" %>
     <article id="article">
       <form method="GET">
-        <a href=".">◀ Alix</a>
+        <a href=".">Alix</a>
         <select name="bibcode" onchange="this.form.submit()">
           <% seltext( pageContext, bibcode );  %>
         </select>
@@ -101,7 +102,7 @@ if ( bibcode != null ) {
       if ( filter2.contains( word[i] )) continue;
       float ratio = 4F;
       if ( tag == Tag.SUB) ratio = 12F;
-      else if ( tag == Tag.VERB) ratio = 7F;
+      else if ( tag == Tag.VERB) ratio = 6F;
       
       if ("devoir".equals( word[i] )) entry = Lexik.entry( "doit" );
       else entry = Lexik.entry( word[i] );
@@ -141,7 +142,7 @@ if ( bibcode != null ) {
     else out.print( fontdf.format( (1.0*score/scoremax) *fontmax+fontmin ) );
     out.print(", attributes:{ class:\"mot ");
     out.print(Tag.label( tag ));
-    out.println("\", target:\"grep\", href:\"grep.jsp?mot="+word[i]+"&bibcode="+bibcode+"\" }, bias:"+bias+" },");
+    out.println("\", target:\"grep\", href:\"grep.jsp?q="+word[i]+"&bibcode="+bibcode+"\" }, bias:"+bias+" },");
     if (--lines <= 0 ) break;
   }
   out.println("];");

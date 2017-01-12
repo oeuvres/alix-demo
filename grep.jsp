@@ -20,13 +20,14 @@ alix.fr.Tokenizer
     <link rel="stylesheet" type="text/css" href="alix.css" />
   </head>
   <body>
-  <article>
+    <%@include file="menu.jsp" %>
+    <article>
     <div id="top"  style="float: left; ">
       <a href="#top" id="totop">▲</a>
       <h1><a href=".">Alix</a> : chercher un mot</h1>
           <form method="get">
-          <% String mot = request.getParameter( "mot" ); if (mot == null) mot =""; %>
-          <input name="mot" value="<%= mot %>"/> <button type="submit">chercher</button> dans
+          <% String q = request.getParameter( "q" ); if (q == null) q =""; %>
+          <input name="q" value="<%= q %>"/> <button type="submit">chercher</button> dans
           <br/>
       <select name="bibcode" onchange="this.form.submit()">
       <%
@@ -46,14 +47,14 @@ if ( text == null ) {
 %>
   <div class="conc">
   <% 
-if ( text != null ) {
+if ( text != null && q != null && !q.trim().isEmpty() ) {
   Tokenizer toks = new Tokenizer( text );
   int left = 50;
   int right = 50;
   OccSlider win = new OccSlider(left, right);
   int n = 1;
   while  ( toks.word( win.add() ) ) {
-    if ( !win.get( 0 ).lem().equals( mot ) && !win.get( 0 ).orth().equals( mot ) ) continue;
+    if ( !win.get( 0 ).lem().equals( q ) && !win.get( 0 ).orth().equals( q ) ) continue;
     out.println( "<p>"+n+" — " );
     for ( int i=-left; i<=right; i++ ) {
       // cooccurents

@@ -104,6 +104,7 @@ String context = application.getRealPath("/");
     <link rel="stylesheet" type="text/css" href="alix.css" />
   </head>
   <body>
+    <%@include file="menu.jsp" %>
     <article id="article"">
     <h1><a href=".">Alix</a> : différentes fréquences lexicales</h1>
       <%

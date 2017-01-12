@@ -18,6 +18,7 @@ alix.fr.Occ
     </style>
   </head>
   <body>
+    <%@include file="menu.jsp" %>
     <article>
       <h1><a href=".">Alix</a> : <a href="">un lemmatiseur qui tolère la poésie</a></h1>
       <p>
@@ -97,19 +98,19 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
         int n = 1;
         Occ occ = new Occ();
         while ( toks.word( occ ) ) {
-          if ( unknown && !occ.tag.equals( Tag.UNKNOWN )) continue;
+          if ( unknown && !occ.tag().equals( Tag.UNKNOWN )) continue;
           out.print("<tr><td>");
-          out.print( occ.graph );
+          out.print( occ.graph() );
           out.print("</td><td>");
-          out.print( occ.orth );
+          out.print( occ.orth() );
           out.print("</td><td>");
-          out.print( occ.tag.label() );
+          out.print( occ.tag().label() );
           out.print("</td><td>");
-          out.print( occ.lem );
+          out.print( occ.lem() );
           out.print("</td><td>");
-          out.print( occ.start );
+          out.print( occ.start() );
           out.print( '–' );
-          out.print( occ.end );
+          out.print( occ.end() );
           out.print("</td><tr>");
           out.println();
         }

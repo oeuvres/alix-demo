@@ -57,6 +57,7 @@ DecimalFormat dec1 = new DecimalFormat("###,###.0");
     <link rel="stylesheet" type="text/css" href="alix.css" />
   </head>
   <body>
+    <%@include file="menu.jsp" %>
   <%
   float qfilter = 1.5f;
   // différentes valeur pour la largeur du filtre

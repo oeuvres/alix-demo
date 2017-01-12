@@ -54,6 +54,12 @@ static LinkedHashMap<String,String[]> catalog( PageContext pageContext ) throws 
   pageContext.getServletContext().setAttribute( "catalog", catalog );
   return catalog;
 }
+static boolean bool( final PageContext pageContext, String param )
+{
+  String value = pageContext.getRequest().getParameter( param );
+  if ( value == null || value.isEmpty() || "0".equals( value ) || "null".equals( value ) || "false".equals( value )) return false;
+  return true;
+}
 /** Output a text selector for texts */
 static void seltext( PageContext pageContext, String value ) throws IOException
 {

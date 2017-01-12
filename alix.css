@@ -1,5 +1,9 @@
 html, body { height: 100%; background-color: #f3f2ec; }
-#article { min-height: 100%;}
+
+nav.menu { background-color: #ffffff; left: 0; padding: 0 1ex; position: absolute; right: 0; top: 0; font-family: sans-serif; }
+nav a { color: #999; text-decoration: none; } 
+
+#article { min-height: 100%; margin-top: 2em; }
 article { margin-top:0; padding: 0 2em 0 2em; font-family: sans-serif;   }
 select, button {font-size: 18px; font-family: sans-serif; }
 textarea { border: none; }
@@ -62,3 +66,6 @@ div.conc { width: 80ex; text-align: left; }
 ul.menu li { margin: 0.5ex 0; font-size: 150%; }
 
 #totop { position: fixed; bottom: 1ex; right: 1ex;  color: rgba( 0, 0, 0, 0.3); }
+
+input.off { background-color: red; }
+input.on { background-color: #00CC00; }
