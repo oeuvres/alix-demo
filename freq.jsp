@@ -20,11 +20,9 @@ alix.fr.Tag,
 alix.fr.Occ,
 alix.fr.Tokenizer,
 alix.fr.Lexik,
-alix.fr.WordEntry
-
+alix.fr.Lexentry
 "%>
-<%!
-static final int ORTH=0;
+<%!static final int ORTH=0;
 static final int LEM=1;
 static final int POS=2;
 
@@ -69,10 +67,9 @@ public TermDic dic( String text, int mode) throws IOException {
     }
   }
   return dic;
-}
-%>
+}%>
 <%
-// request parameters
+  // request parameters
 String bibcode = request.getParameter("bibcode");
 String vue = request.getParameter( "vue" );
 String frantext = request.getParameter( "frantext" );
@@ -88,12 +85,10 @@ for ( int i = 0; i < vues.length; i++) {
     if ( vues[i].length > 2 && vues[i][2] != null ) vuelem = true;
   }
 }
-
-
 %>
 <%@include file="common.jsp" %>
 <%
-DecimalFormat numdf = new DecimalFormat("# ###");
+  DecimalFormat numdf = new DecimalFormat("# ###");
 DecimalFormat biasdf = new DecimalFormat("#.00", frsyms);
 String context = application.getRealPath("/");
 %>
@@ -109,7 +104,7 @@ String context = application.getRealPath("/");
     <h1><a href=".">Alix</a> : différentes fréquences lexicales</h1>
       <%
         String text = request.getParameter( "text" );
-          if ( text==null ) text="";
+            if ( text==null ) text="";
       %>
     <section style=" float: left;  ">
 <%
@@ -166,60 +161,60 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
       </tr>
   	<%
   	  BufferedReader br = Files.newBufferedReader(  listfile, StandardCharsets.UTF_8 );
-  	    int n = 0;
-  	    int count;
-  	    float franfreq = 0;
-  	    double myfreq = 0;
-  	    double bias = 0;
-  	    String l;
-        String word;
-        String lem;
-        int pos;
-  	    WordEntry entry;
-  	    while ( ( l = br.readLine() ) != null) {
-  	  	  if ( l == null ) continue;
-  	  	  if ( "".equals( l ) ) continue;
-  	  	  if ( l.startsWith( "##" ) ) break;
-  	  	  n++;
-  	  	  out.print( "<tr>\n");
-  	  	  // a label, not a word
-  	  	  if ( l.charAt( 0 ) == '#' ) {
-  	  	    out.print( "<th>"+n+"</th>\n" );
-  	  	    out.print( "<th align=\"left\">"+l.substring( 1 ).trim()+"</th><th/><th/><th/>\n" );
-  	  	    continue;
-  	  	  }
-          if ((pos=l.indexOf( ';' )) > -1) {
-            lem = l.substring( 0, pos );
-            word = l.substring( pos+1 );
-          }
-          else {
-            lem =l;
-            word = l;
-          }
-  	  	  out.print( "<td align=\"right\">"+n+"</td>\n" );
-  	  	  out.print( "<td>"+lem+"</td>\n" );
-  	  	  count = dico.count( lem );
-          // comment est-ce possible ?
-          if ( count < 0 ) count = 0;
-  	  	  if (count != 0) out.print( "<td align=\"right\">"+count+"</td>\n" );
-  	  	  else out.print( "<td/>");
-  	  	  entry = Lexik.entry( word );
-  	  	  if ( vuelem ) {
-  	  	    if ( entry != null ) franfreq = entry.lemfreq ;
-  	  	    else franfreq = 0;
-  	  	  } else {
-  	  	    if ( entry != null ) franfreq = entry.orthfreq ;
-  	  	    else franfreq = 0;
-  	  	  }
-  	  	  myfreq = 1.0*count*1000000/occs;
-  	  	  bias =  myfreq  / (myfreq + franfreq);
-          out.print( "<td align=\"right\">"+ppmdf.format(myfreq)+" ppm</td>\n" );
-  	  	  out.print( "<td align=\"right\">"+ppmdf.format(franfreq)+" ppm</td>\n" );
-  	  	  String bg = "bg" + Math.round( 10.0 * (2*bias - 1) );
-  	  	  out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
+  	  	    int n = 0;
+  	  	    int count;
+  	  	    float franfreq = 0;
+  	  	    double myfreq = 0;
+  	  	    double bias = 0;
+  	  	    String l;
+  	    String word;
+  	    String lem;
+  	    int pos;
+  	  	    Lexentry entry;
+  	  	    while ( ( l = br.readLine() ) != null) {
+  	  	  	  if ( l == null ) continue;
+  	  	  	  if ( "".equals( l ) ) continue;
+  	  	  	  if ( l.startsWith( "##" ) ) break;
+  	  	  	  n++;
+  	  	  	  out.print( "<tr>\n");
+  	  	  	  // a label, not a word
+  	  	  	  if ( l.charAt( 0 ) == '#' ) {
+  	  	  	    out.print( "<th>"+n+"</th>\n" );
+  	  	  	    out.print( "<th align=\"left\">"+l.substring( 1 ).trim()+"</th><th/><th/><th/>\n" );
+  	  	  	    continue;
+  	  	  	  }
+  	      if ((pos=l.indexOf( ';' )) > -1) {
+  	        lem = l.substring( 0, pos );
+  	        word = l.substring( pos+1 );
+  	      }
+  	      else {
+  	        lem =l;
+  	        word = l;
+  	      }
+  	  	  	  out.print( "<td align=\"right\">"+n+"</td>\n" );
+  	  	  	  out.print( "<td>"+lem+"</td>\n" );
+  	  	  	  count = dico.count( lem );
+  	      // comment est-ce possible ?
+  	      if ( count < 0 ) count = 0;
+  	  	  	  if (count != 0) out.print( "<td align=\"right\">"+count+"</td>\n" );
+  	  	  	  else out.print( "<td/>");
+  	  	  	  entry = Lexik.entry( word );
+  	  	  	  if ( vuelem ) {
+  	  	  	    if ( entry != null ) franfreq = entry.lemfreq ;
+  	  	  	    else franfreq = 0;
+  	  	  	  } else {
+  	  	  	    if ( entry != null ) franfreq = entry.orthfreq ;
+  	  	  	    else franfreq = 0;
+  	  	  	  }
+  	  	  	  myfreq = 1.0*count*1000000/occs;
+  	  	  	  bias =  myfreq  / (myfreq + franfreq);
+  	      out.print( "<td align=\"right\">"+ppmdf.format(myfreq)+" ppm</td>\n" );
+  	  	  	  out.print( "<td align=\"right\">"+ppmdf.format(franfreq)+" ppm</td>\n" );
+  	  	  	  String bg = "bg" + Math.round( 10.0 * (2*bias - 1) );
+  	  	  	  out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
 
-  	  	  out.print( "</tr>\n");
-  	  		}
+  	  	  	  out.print( "</tr>\n");
+  	  	  		}
   	%>
   	</table>
     <%
@@ -228,7 +223,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
       long occs = dico.occs();
       int limit = 300;
       int n = 1;
-      WordEntry entry;
+      Lexentry entry;
 
       // with no cache, 47ms on Dumas, seems OK
       time = System.nanoTime();

@@ -9,9 +9,7 @@ alix.util.TermDic,
 alix.fr.Tag,
 alix.fr.Occ,
 alix.fr.Tokenizer,
-alix.fr.Lexik,
-alix.fr.WordEntry
-
+alix.fr.Lexik,alix.fr.Lexentry
 "%>
 <%@include file="common.jsp" %>
 <%

@@ -19,17 +19,15 @@ alix.fr.Lexik,
 alix.fr.Occ,
 alix.fr.Tag,
 alix.fr.Tokenizer,
-alix.fr.WordEntry
-
+alix.fr.Lexentry
 "%>
 <%@include file="common.jsp" %>
 <%
-String bibcode = request.getParameter("bibcode");
+  String bibcode = request.getParameter("bibcode");
 String log = request.getParameter("log");
 if ( log != null && log.isEmpty() ) log = null;
 String frantext = request.getParameter("frantext");
 DecimalFormat fontdf = new DecimalFormat("#");
-
 %>
 <!DOCTYPE html>
 <html>
@@ -55,10 +53,14 @@ text-shadow: #000 0px 0px 5px;  -webkit-font-smoothing: antialiased;  }
       <form method="GET">
         <a href=".">Alix</a>
         <select name="bibcode" onchange="this.form.submit()">
-          <% seltext( pageContext, bibcode );  %>
+          <%
+            seltext( pageContext, bibcode );
+          %>
         </select>
-        <% String checked = ""; if (frantext != null) checked =" checked=\"checked\""; %>
-        <label>Filtre Frantext <input name="frantext" <%= checked %> type="checkbox"/></label>
+        <%
+          String checked = ""; if (frantext != null) checked =" checked=\"checked\"";
+        %>
+        <label>Filtre Frantext <input name="frantext" <%=checked%> type="checkbox"/></label>
         <button>▶</button>
       </form>
       <div id="nuage"></div>
@@ -75,7 +77,7 @@ for (String w: new String[]{
 
 HashSet<String> filter2 = new HashSet<String>(); 
 for (String w: new String[]{
-    "abbé", "baron", "docteur", "cher", "comte", "duc", "duchesse", "évêque", "lord", "madame", "mademoiselle", 
+    "abbé", "baron", "docteur", "chapitre", "cher", "comte", "duc", "duchesse", "évêque", "lord", "madame", "mademoiselle", 
     "maître", "marquis", "marquise", "miss", "pauvre", "point", "prince", "princesse", "professeur", "sir"
 }) filter2.add( w );
 
@@ -89,7 +91,7 @@ if ( bibcode != null ) {
   float fontmax = 60;
   int scoremax = 0;
   int score;
-  WordEntry entry;
+  Lexentry entry;
   float franfreq;
   double bias = 0;
   // loop on text forms in

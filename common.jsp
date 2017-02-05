@@ -16,12 +16,16 @@ java.util.Scanner,
 alix.fr.Occ,
 alix.fr.Tokenizer,
 alix.fr.Lexik,
+alix.fr.Lexentry,
 alix.fr.Tag,
-alix.fr.WordEntry,
-alix.util.TermDic
+alix.util.TermDic,
+alix.util.TermDic.Terminfos
+
 
 " %>
-<%!static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
+<%!
+
+static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 static DecimalFormat ppmdf = new DecimalFormat("#,###", frsyms);
 
 /** Get catalog, populate it if empty */
