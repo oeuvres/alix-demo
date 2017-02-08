@@ -23,9 +23,7 @@ alix.util.TermDic.Terminfos
 
 
 " %>
-<%!
-
-static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
+<%!static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 static DecimalFormat ppmdf = new DecimalFormat("#,###", frsyms);
 
 /** Get catalog, populate it if empty */
@@ -136,7 +134,7 @@ public TermDic parse( String text ) throws IOException {
   Occ occ = new Occ();
   short cat;
   while ( toks.word( occ ) ) {
-    if ( occ.tag().verb() || occ.tag().code() == Tag.ADJ ) {
+    if ( occ.tag().isVerb() || occ.tag().code() == Tag.ADJ ) {
       dic.inc( occ.lem(), occ.tag().code() );
     }
     else dic.inc( occ.orth(), occ.tag().code() );
@@ -177,15 +175,15 @@ public TermDic dic( PageContext pageContext, final String bib, final String type
   Occ occ = new Occ();
   short cat;
   while ( toks.word( occ ) ) {
-    if ( occ.tag().verb() || occ.tag().code() == Tag.ADJ ) {
+    if ( occ.tag().isVerb() || occ.tag().code() == Tag.ADJ ) {
       words.inc( occ.lem(), occ.tag().code() );
     }
     else words.inc( occ.orth(), occ.tag().code() );
-    if ( occ.tag().pun());
+    if ( occ.tag().isPun());
     else if( occ.tag().equals(Tag.UNKNOWN));
-    else if( occ.tag().name() ) tags.inc("NAME") ;
-    else if( occ.tag().det() ) tags.inc("DET") ;
-    else if( occ.tag().det() ) tags.inc("DET") ;
+    else if( occ.tag().isName() ) tags.inc("NAME") ;
+    else if( occ.tag().isDet() ) tags.inc("DET") ;
+    else if( occ.tag().isDet() ) tags.inc("DET") ;
     else tags.inc( occ.tag().label(  ));
   }
   application.setAttribute( bib+"W", words );

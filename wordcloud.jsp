@@ -98,7 +98,7 @@ if ( bibcode != null ) {
   int max = word.length;
   for (int i = 0; i < max; i++) {
     int tag = dic.tag( word[i] );
-    if ( Tag.pun( tag )) continue;
+    if ( Tag.isPun( tag )) continue;
     if ( frantext != null ) {
       if ( tag != Tag.SUB && tag != Tag.ADV && tag != Tag.ADJ && tag != Tag.VERB ) continue;
       if ( filter2.contains( word[i] )) continue;
@@ -126,9 +126,9 @@ if ( bibcode != null ) {
     }
     else {
       if (Lexik.isStop( word[i] )) continue;
-      if ( Tag.name( tag )) tag = Tag.NAME;
-      if ( Tag.verb( tag )) tag = Tag.VERB;
-      if ( Tag.adv( tag )) tag = Tag.ADV;
+      if ( Tag.isName( tag )) tag = Tag.NAME;
+      if ( Tag.isVerb( tag )) tag = Tag.VERB;
+      if ( Tag.isAdv( tag )) tag = Tag.ADV;
       if ( tag == Tag.VERBsup ) continue;
       if ( filter.contains( word[i] )) continue;
       score = dic.count(word[i]);
