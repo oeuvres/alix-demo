@@ -1,26 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="
-java.io.IOException,
-java.io.BufferedReader,
-java.io.InputStream,
-java.nio.charset.StandardCharsets,
-java.nio.file.Files,
-java.nio.file.Path,
-java.nio.file.Paths,
-java.text.DecimalFormat,
-java.util.Arrays,
-java.util.HashSet,
-java.util.LinkedHashMap,
-java.util.Scanner,
-
-alix.util.Char,
-alix.util.TermDic,
-alix.fr.Lexik,
-alix.fr.Occ,
-alix.fr.Tag,
-alix.fr.Tokenizer,
-alix.fr.Lexentry
-"%>
 <%@include file="common.jsp" %>
 <%
   String bibcode = request.getParameter("bibcode");
@@ -85,29 +63,28 @@ if ( bibcode != null ) {
   out.println("var list = [");
   TermDic dic = dic( pageContext, bibcode );
   long occs = dic.occs();
-  String[] word = dic.byCount( 100000 );
   int lines = 300;
   int fontmin = 15;
   float fontmax = 60;
   int scoremax = 0;
   int score;
-  Lexentry entry;
+  LexEntry entry;
   float franfreq;
   double bias = 0;
   // loop on text forms in
-  int max = word.length;
-  for (int i = 0; i < max; i++) {
-    int tag = dic.tag( word[i] );
+  for ( DicEntry line: dic.byCount() ) {
+    String word = line.label();
+    int tag = line.tag();
     if ( Tag.isPun( tag )) continue;
     if ( frantext != null ) {
       if ( tag != Tag.SUB && tag != Tag.ADV && tag != Tag.ADJ && tag != Tag.VERB ) continue;
-      if ( filter2.contains( word[i] )) continue;
+      if ( filter2.contains( word )) continue;
       float ratio = 4F;
       if ( tag == Tag.SUB) ratio = 12F;
       else if ( tag == Tag.VERB) ratio = 6F;
       
-      if ("devoir".equals( word[i] )) entry = Lexik.entry( "doit" );
-      else entry = Lexik.entry( word[i] );
+      if ("devoir".equals( word )) entry = Lexik.entry( "doit" );
+      else entry = Lexik.entry( word );
       // locutions adverbiales sans stats
       if ( entry == null && tag == Tag.ADV) continue;
       if ( entry == null && tag == Tag.VERB) continue; // compound verbs, no stats
@@ -119,32 +96,32 @@ if ( bibcode != null ) {
       // if ( tag == Tag.PROrel ) continue;
       // do not start with a non significant word
       if ( scoremax == 0 && tag != Tag.SUB && tag != Tag.VERB && tag != Tag.ADJ && tag != Tag.ADV ) continue;
-      score = dic.count( word[i] );
+      score = line.count();
       double myfreq = 1.0*score*1000000/occs;
       if ( myfreq/franfreq < ratio ) continue;
       // log = "??";
     }
     else {
-      if (Lexik.isStop( word[i] )) continue;
+      if (Lexik.isStop( word )) continue;
       if ( Tag.isName( tag )) tag = Tag.NAME;
       if ( Tag.isVerb( tag )) tag = Tag.VERB;
       if ( Tag.isAdv( tag )) tag = Tag.ADV;
       if ( tag == Tag.VERBsup ) continue;
-      if ( filter.contains( word[i] )) continue;
-      score = dic.count(word[i]);
+      if ( filter.contains( word )) continue;
+      score = line.count();
     }
     if ( scoremax == 0 ) scoremax = score;
 
     out.print("{ word:\"");
-    if ( word[i].indexOf( '"' ) > -1 ) word[i] = word[i].replace( "\"", "\\\"" ); 
-    out.print( word[i] ) ;
+    if ( word.indexOf( '"' ) > -1 ) word = word.replace( "\"", "\\\"" ); 
+    out.print( word ) ;
     out.print("\", weight:");
     // out.print(count + " " );
     if ( log != null ) out.print( fontdf.format( fontmin + (fontmax - fontmin)*Math.log10(1+9.0*score/scoremax) ) );
     else out.print( fontdf.format( (1.0*score/scoremax) *fontmax+fontmin ) );
     out.print(", attributes:{ class:\"mot ");
     out.print(Tag.label( tag ));
-    out.println("\", target:\"grep\", href:\"grep.jsp?q="+word[i]+"&bibcode="+bibcode+"\" }, bias:"+bias+" },");
+    out.println("\", target:\"grep\", href:\"grep.jsp?q="+word+"&bibcode="+bibcode+"\" }, bias:"+bias+" },");
     if (--lines <= 0 ) break;
   }
   out.println("];");

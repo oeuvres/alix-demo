@@ -1,16 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="
-
-alix.util.Char,
-alix.util.IntRoller,
-alix.util.Phrase,
-alix.util.PhraseDic,
-alix.util.TermDic,
-alix.fr.Tag,
-alix.fr.Occ,
-alix.fr.Tokenizer,
-alix.fr.Lexik,alix.fr.Lexentry
-"%>
 <%@include file="common.jsp" %>
 <%
   String bibcode = request.getParameter("bibcode");
@@ -113,112 +101,112 @@ if ( request.getParameter("go") != null ) {
       </form>
       <%
         if ( bibcode !=  null ) text = text( pageContext, bibcode );
-                  if (text!= null && !text.isEmpty()) {  
-                    long time = System.nanoTime();
+        if (text!= null && !text.isEmpty()) {  
+          long time = System.nanoTime();
 
-                    Phrase key = new Phrase( gramwidth, bag ); // collocation key (series or bag)
-                    IntRoller gram = new IntRoller(0, gramwidth - 1); // collocation wheel
-                    IntRoller wordmarks = new IntRoller(0, gramwidth - 1); // positions of words recorded in the collocation key
-                    
-                    TermDic words = new TermDic();
-                    PhraseDic phrases = new PhraseDic();
-                    
-                    int NAME = words.add( "NOM" );
-                    int NUM = words.add( "NUM" );
-                    int senselevel = -1;
-                    if ( stoplist ) {
-                      BufferedReader buf = new BufferedReader(
-                        new InputStreamReader( Lexik.class.getResourceAsStream(  "dic/stop.csv" ), StandardCharsets.UTF_8 )
-                      );
-                      String l;
-                      // define a "sense level" in the dictionary, by inserting a stoplist at first
-                      while ((l = buf.readLine()) != null) {
-                        int code = words.add( l.trim() );
-                        if ( code > senselevel ) senselevel = code;
-                      }
-                      buf.close();
-                      // add some more words to the stoplits
-                      for (String w: new String[]{
-                           "chère", "dire", "dis", "dit", "jeune", "jeunes", "yeux"
-                      }) {
-                        int code = words.add( w );
-                        if ( code > senselevel ) senselevel = code;
-                      }
-                    }
+          Phrase key = new Phrase( gramwidth, bag ); // collocation key (series or bag)
+          IntRoller gram = new IntRoller(0, gramwidth - 1); // collocation wheel
+          IntRoller wordmarks = new IntRoller(0, gramwidth - 1); // positions of words recorded in the collocation key
+          
+          TermDic words = new TermDic();
+          PhraseDic phrases = new PhraseDic();
+          
+          int NAME = words.add( "NOM" );
+          int NUM = words.add( "NUM" );
+          int senselevel = -1;
+          if ( stoplist ) {
+            BufferedReader buf = new BufferedReader(
+              new InputStreamReader( Lexik.class.getResourceAsStream(  "dic/stop.csv" ), StandardCharsets.UTF_8 )
+            );
+            String l;
+            // define a "sense level" in the dictionary, by inserting a stoplist at first
+            while ((l = buf.readLine()) != null) {
+              int code = words.add( l.trim() );
+              if ( code > senselevel ) senselevel = code;
+            }
+            buf.close();
+            // add some more words to the stoplits
+            for (String w: new String[]{
+                 "chère", "dire", "dis", "dit", "jeune", "jeunes", "yeux"
+            }) {
+              int code = words.add( w );
+              if ( code > senselevel ) senselevel = code;
+            }
+          }
 
-                    // out.print("<p>Initialisation : "+((System.nanoTime() - time) / 1000000) + " ms. ");
-                    time = System.nanoTime();
-                    
-                    IntRoller wordflow = new IntRoller(15, 0);
-                    int code;
-                    int exit = 1000;
-                    StringBuffer label = new StringBuffer();
-                    Occ occ = new Occ(); // pointer on current occurrence in the tokenizer flow
-                    Tokenizer toks = new Tokenizer( text );
-                    int occs = 0;
-                    while(true) {
-                      if ( locs ) {
-                        occ = toks.word();
-                        if (occ == null ) break;
-                      }
-                      else {
-                        if ( ! toks.token(occ) ) break;
-                      }
-                      // clear after sentences ?
-                      if ( sent && occ.tag().equals( Tag.PUNsent )) {
-                        wordflow.clear();
-                        gram.clear();
-                        wordmarks.clear();
-                        continue;
-                      }
-                      
-                      if ( occ.tag().isPun() ) continue; // do not record punctuation
-                      occs++; // do not count punctuation
-                      
-                      if ( occ.tag().isNum() ) code = NUM; // simplify numbers
-                      else if (np && occ.tag().isName()) code = NAME; // simplify names
-                      else if (!lem) code = words.add( occ.orth() ); // no lem
-                      else if ( occ.tag().isVerb() || occ.tag().isAdj() || occ.tag().isSub() ) code = words.add( occ.lem() );
-                      else code = words.add( occ.orth() );
-                      // clear to avoid repetitions ?
-                      // « Voulez vous sortir, grand pied de grue, grand pied de grue, grand pied de grue »
-                      if ( reps && code == wordflow.first()) {
-                        wordflow.clear();
-                        gram.clear();
-                        wordmarks.clear();
-                        continue;
-                      }
+          // out.print("<p>Initialisation : "+((System.nanoTime() - time) / 1000000) + " ms. ");
+          time = System.nanoTime();
+          
+          IntRoller wordflow = new IntRoller(15, 0);
+          int code;
+          int exit = 1000;
+          StringBuffer label = new StringBuffer();
+          Occ occ = new Occ(); // pointer on current occurrence in the tokenizer flow
+          Tokenizer toks = new Tokenizer( text );
+          int occs = 0;
+          while(true) {
+            if ( locs ) {
+              occ = toks.word();
+              if (occ == null ) break;
+            }
+            else {
+              if ( ! toks.token(occ) ) break;
+            }
+            // clear after sentences ?
+            if ( sent && occ.tag().equals( Tag.PUNsent )) {
+              wordflow.clear();
+              gram.clear();
+              wordmarks.clear();
+              continue;
+            }
+            
+            if ( occ.tag().isPun() ) continue; // do not record punctuation
+            occs++; // do not count punctuation
+            
+            if ( occ.tag().isNum() ) code = NUM; // simplify numbers
+            else if (np && occ.tag().isName()) code = NAME; // simplify names
+            else if (!lem) code = words.add( occ.orth() ); // no lem
+            else if ( occ.tag().isVerb() || occ.tag().isAdj() || occ.tag().isSub() ) code = words.add( occ.lem() );
+            else code = words.add( occ.orth() );
+            // clear to avoid repetitions ?
+            // « Voulez vous sortir, grand pied de grue, grand pied de grue, grand pied de grue »
+            if ( reps && code == wordflow.first()) {
+              wordflow.clear();
+              gram.clear();
+              wordmarks.clear();
+              continue;
+            }
 
-                      wordflow.push( code ); // add this token to the word flow
-                      wordmarks.dec(); // decrement positions of the recorded plain words
-                      if ( wordflow.get( 0 ) <= senselevel ) continue; // do not record empty words
-                      wordmarks.push( 0 ); // record a new position of full word
-                      gram.push( wordflow.get( 0 ) ); // store a signficant word as a collocation key
-                      if ( gram.get( 0 ) == 0 ) continue; // the collocation key is not complete
-                      
-                      key.set( gram ); // transfer the collocation wheel to a phrase key
-                      int count = phrases.inc( key );
-                      // new value, add a label to the collocation
-                      if ( count == 1 ) {
-                        label.setLength( 0 );
-                        for ( int i = wordmarks.get( 0 ); i <= 0 ; i++) {
-                          label.append( words.term( wordflow.get( i )) );
-                          if (i==0); // do not append space to end
-                          else if ( label.length() > 1 && label.charAt( label.length()-1 ) == '\'' ); // do not append space after apos
-                          else label.append( ' ' );
-                        }
-                        // System.out.println( label );
-                        phrases.label( key, label.toString() );
-                      }
-                      // if ( --exit < 0 ) System.exit( 1 );
-                    }
+            wordflow.push( code ); // add this token to the word flow
+            wordmarks.dec(); // decrement positions of the recorded plain words
+            if ( wordflow.get( 0 ) <= senselevel ) continue; // do not record empty words
+            wordmarks.push( 0 ); // record a new position of full word
+            gram.push( wordflow.get( 0 ) ); // store a signficant word as a collocation key
+            if ( gram.get( 0 ) == 0 ) continue; // the collocation key is not complete
+            
+            key.set( gram ); // transfer the collocation wheel to a phrase key
+            int count = phrases.inc( key );
+            // new value, add a label to the collocation
+            if ( count == 1 ) {
+              label.setLength( 0 );
+              for ( int i = wordmarks.get( 0 ); i <= 0 ; i++) {
+                label.append( words.term( wordflow.get( i )) );
+                if (i==0); // do not append space to end
+                else if ( label.length() > 1 && label.charAt( label.length()-1 ) == '\'' ); // do not append space after apos
+                else label.append( ' ' );
+              }
+              // System.out.println( label );
+              phrases.label( key, label.toString() );
+            }
+            // if ( --exit < 0 ) System.exit( 1 );
+          }
 
-                    out.print( "<p>"+ppmdf.format(occs) +" occurrences, "
-                    + ppmdf.format(phrases.occs()) +" collocations, "
-                    + ppmdf.format(phrases.size())+" différentes, en "
-                    +((System.nanoTime() - time) / 1000000)+" ms.</p>\n");
-                    phrases.html( out, 200, words );
-                  }
+          out.print( "<p>"+ppmdf.format(occs) +" occurrences, "
+          + ppmdf.format(phrases.occs()) +" collocations, "
+          + ppmdf.format(phrases.size())+" différentes, en "
+          +((System.nanoTime() - time) / 1000000)+" ms.</p>\n");
+          phrases.html( out, 200, words );
+        }
       %>
     </article>
   </body>

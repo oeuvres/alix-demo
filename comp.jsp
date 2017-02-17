@@ -1,29 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="
-java.io.IOException,
-java.io.BufferedReader,
-java.nio.charset.StandardCharsets,
-java.nio.file.Files,
-java.nio.file.Path,
-java.nio.file.Paths,
-java.text.DecimalFormat,
-java.text.DecimalFormatSymbols,
-java.util.Arrays,
-java.util.HashSet,
-java.util.Locale,
-java.util.List,
-java.util.Scanner,
-
-alix.util.Char,
-alix.util.CompDic,
-alix.util.CompDic.Balance,
-alix.util.TermDic,
-alix.fr.Tag,
-alix.fr.Occ,
-alix.fr.Tokenizer,
-alix.fr.Lexik,
-alix.fr.Lexentry
-"%>
 <%!
 public static final String[] _FILTER = new String[] {  };
 // "aller", "bientôt", "devoir", "demander", "donner", "faire", "falloir", "paraître", "pouvoir", "prendre", "savoir", "venir", "voir", "vouloir"
@@ -231,6 +206,7 @@ if ( dic1 != null && dic2 != null ) {
     <div class="center" style=" margin-left:<%=log(50-gap) %>%; margin-right:<%=log(50-gap) %>%; background: #FFFFFF;
         border-left: 4px rgba(255,0,0,0.3) solid; border-right: 4px rgba(255,0,0,0.3) solid; height: 100%; "> </div>  
 <%
+
 if ( ref1 != null && dic1 == null ) out.println( "<p>"+ref1+": texte inconnu de cette base.</p>" );
 if ( ref2 != null && dic2 == null ) out.println( "<p>"+ref2+": texte inconnu de cette base.</p>" );
 // la vue de comparaison

@@ -79,16 +79,15 @@ if ( text != null && q != null && !q.trim().isEmpty() ) {
       <h2>Cooccurrents</h2>
       <p>
       <%
-List<Map.Entry<String,Terminfos>> mots = coocs.entriesByCount();
 limit = 200;
 boolean first = true;
 String term;
 int count;
-for( Map.Entry<String,Terminfos> entry: mots ) {
+for( DicEntry entry: coocs.byCount() ) {
   limit --;
-  term = entry.getKey();
+  term = entry.label();
   // if ( term.isEmpty() ) continue;
-  count = entry.getValue().count();
+  count = entry.count();
   if ( count < 2 ) break;
   if ( Lexik.isStop( term )) continue;
   if ( first ) first=false;
