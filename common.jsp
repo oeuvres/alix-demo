@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="
 java.io.BufferedReader,
+java.io.File,
 java.io.InputStream,
 java.io.InputStreamReader,
 java.io.IOException,
@@ -25,8 +26,10 @@ alix.util.IntRoller,
 alix.fr.Lexik,
 alix.fr.Lexik.LexEntry,
 alix.fr.Occ,
+alix.fr.OccSlider,
 alix.util.Phrase,
 alix.util.PhraseDic,
+alix.fr.query.Query,
 alix.fr.Tag,
 alix.util.TermDic,
 alix.util.TermDic.DicEntry,

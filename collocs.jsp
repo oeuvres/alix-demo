@@ -35,7 +35,7 @@ if ( request.getParameter("go") != null ) {
   </head>
   <body>
     <%@include file="menu.jsp" %>
-    <article id="article"">
+    <article id="article">
       <h1><a href=".">Alix</a> : <a href="?">collocations</a> (locutions et cooccurrences fréquentes)</h1>
       <form onsubmit="if (!this.text.value) return true; this.method = 'post'; this.action='?'; " method="get">
         <select name="bibcode" onchange="this.form.text.value = ''; this.method = 'GET';  this.form.submit()">

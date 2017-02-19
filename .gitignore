@@ -3,3 +3,5 @@ WEB-INF/lucene/
 .settings
 test/
 WEB-INF/catalog.csv
+
+WEB-INF/web.xml

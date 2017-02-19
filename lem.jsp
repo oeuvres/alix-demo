@@ -1,13 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="
 java.net.URL,
-java.util.Scanner,
-
-alix.fr.Lexik,
-alix.fr.Tag,
-alix.fr.Tokenizer,
-alix.fr.Occ
+java.util.Scanner
 " %>
+<%@include file="common.jsp" %>
 <% request.setCharacterEncoding("UTF-8"); %>
 <!DOCTYPE html>
 <html>

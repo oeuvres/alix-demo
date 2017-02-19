@@ -2,9 +2,7 @@
 <%@ page import="
 alix.frwork.GN
 "%>
-<%
-  request.setCharacterEncoding("UTF-8");
-%>
+<% request.setCharacterEncoding("UTF-8"); %>
 <%@include file="common.jsp" %>
 <!DOCTYPE html>
 <html lang="fr">
