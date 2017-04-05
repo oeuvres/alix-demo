@@ -59,9 +59,11 @@ for (String w: new String[]{
     "maître", "marquis", "marquise", "miss", "pauvre", "point", "prince", "princesse", "professeur", "sir"
 }) filter2.add( w );
 
-if ( bibcode != null ) {
+TermDic dic = null;
+if ( bibcode != null ) dic = dic( pageContext, bibcode );
+if ( dic == null );
+else {
   out.println("var list = [");
-  TermDic dic = dic( pageContext, bibcode );
   long occs = dic.occs();
   int lines = 300;
   int fontmin = 15;

@@ -149,6 +149,7 @@ DecimalFormat dec1 = new DecimalFormat("###,###.0");
           <option value="SUB" <%=("SUB".equals( tag ))?" selected":"" %>>Substantifs</option>
           <option value="ADJ" <%=("ADJ".equals( tag ))?" selected":"" %>>Adjectifs</option>
           <option value="VERB" <%=("VERB".equals( tag ))?" selected":"" %>>Verbes</option>
+          <option value="ADV" <%=("ADV".equals( tag ))?" selected":"" %>>Adverbes</option>
         </select>
       </label>
       <br/>
@@ -230,6 +231,7 @@ if ( dic1 != null && dic2 != null ) {
     if ( "SUB".equals( tag ) && mot.tag != Tag.SUB ) continue;
     if ( "ADJ".equals( tag ) && mot.tag != Tag.ADJ ) continue;
     if ( "VERB".equals( tag ) && mot.tag != Tag.VERB ) continue;
+    if ( "ADV".equals( tag ) && !Tag.isAdv( mot.tag ) ) continue;
     // filtrer les mots vides au centre
     if ( Math.max(mot.freq1, mot.freq2)/Math.min(mot.freq1, mot.freq2) < qfilter ) {
       if ( Lexik.isStop( mot.term ) ) {

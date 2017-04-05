@@ -1,49 +1,45 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@include file="common.jsp" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+  pageEncoding="UTF-8"%>
+<%@include file="common.jsp"%>
 <% request.setCharacterEncoding("UTF-8"); %>
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Le lemmatiseur du pauvre</title>
-    <link rel="stylesheet" type="text/css" href="alix.css" />
-    <style>
-    </style>
-  </head>
-  <body>
-    <%@include file="menu.jsp" %>
-    <article>
-      <h1><a href=".">Alix</a> : <a href="?">recherche avancée</a></h1>
-      <ul>
-        <li>
-          <a href="?q=suis">suis</a> : suis, Suis (forme orthographique)
-        </li>
-        <li>
-          <a href="?q=être">être</a> : est, Est, suis, sera… (lemme)
-        </li>
-        <li>
-          <a href='?q="être"'>"être"</a> : être, Être (forme orthographique non lemmatisée)
-        </li>
-        <li>
-          <a href="?q=mond*">mond*</a> : mondes, Mondain, mondanité… (préfixe)
-        </li>
-        <li>
-          <a href="?q=*ent">*ent</a> : sentent, présentement… (suffixe)
-        </li>
-        <li>
-          <a href="?q=la *">la *</a>: la France, la guerre… (joker)
-        </li>
-        <li>
-          <a href="?q=DET homme">DET homme</a> : un homme, des hommes, les hommes (nature grammaticale)
-        </li>
-        <li>
-          <a href="?q=être ** ADJ">être ** ADJ</a> : est belle, est vraiment belle… (trou de moins de 10 mots)
-        </li>
-      </ul>
-      <form>
-          <% String q = request.getParameter( "q" ); if (q == null) q =""; %>
-          <input name="q" value="<%= q %>"/> <button type="submit">chercher</button> 
-      </form>
- <% 
+<head>
+<title>Le lemmatiseur du pauvre</title>
+<link rel="stylesheet" type="text/css" href="alix.css" />
+<style>
+</style>
+</head>
+<body>
+  <%@include file="menu.jsp"%>
+  <article>
+    <h1>
+      <a href=".">Alix</a> : <a href="?">recherche avancée</a>
+    </h1>
+    <ul>
+      <li><a href="?q=suis">suis</a> : suis, Suis (forme
+        orthographique)</li>
+      <li><a href="?q=être">être</a> : est, Est, suis, sera…
+        (lemme)</li>
+      <li><a href='?q="être"'>"être"</a> : être, Être (forme
+        orthographique non lemmatisée)</li>
+      <li><a href="?q=mond*">mond*</a> : mondes, Mondain,
+        mondanité… (préfixe)</li>
+      <li><a href="?q=*ent">*ent</a> : sentent, présentement…
+        (suffixe)</li>
+      <li><a href="?q=la *">la *</a>: la France, la guerre… (joker)
+      </li>
+      <li><a href="?q=DET homme">DET homme</a> : un homme, des
+        hommes, les hommes (nature grammaticale)</li>
+      <li><a href="?q=être ** ADJ">être ** ADJ</a> : est belle, est
+        vraiment belle… (trou de moins de 10 mots)</li>
+    </ul>
+    <form>
+      <% String q = request.getParameter( "q" ); if (q == null) q =""; %>
+      <input name="q" value="<%= q.replaceAll( "\"", "&quot;")  %>" />
+      <button type="submit">chercher</button>
+    </form>
+    <% 
 String dir = pageContext.getServletContext().getInitParameter("globdir");
 if ( dir == null ) dir = pageContext.getServletContext().getRealPath("/WEB-INF/textes/"); 
 if ( !q.isEmpty() ) {
@@ -87,5 +83,5 @@ if ( !q.isEmpty() ) {
   out.println("</div>");
 }
 %>
-</article>
+  </article>
 </html>

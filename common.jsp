@@ -62,9 +62,33 @@ static LinkedHashMap<String,String[]> catalog( PageContext pageContext ) throws 
   String[] cells;
   String l;
   while ((l = buf.readLine()) != null) {
-    if (l.charAt( 0 ) == '#' ) continue;
+    if ( l.length() < 1 ) continue;
+    if ( l.charAt( 0 ) == '#' ) continue;
     cells = l.split(";");
-    catalog.put( cells[0], new String[] { cells[1], cells[2], cells[3]} );
+    if ( cells.length < 1 ) continue;
+    String[] value = new String[3];
+    value[0] = cells[0];
+    String key = cells[0];
+    int pos = key.lastIndexOf( '/' );
+    if ( pos > -1 ) key = key.substring( pos+1 );
+    pos = key.lastIndexOf( '.' );
+    if ( pos > -1 ) key = key.substring( 0, pos );
+    if ( cells.length < 3 ) {
+      pos = key.indexOf( '_' );
+      if ( pos > 0 ) {
+        value[1] = key.substring( 0, pos );
+        value[2] = key.substring( pos+1 );
+      }
+      else {
+        value[1] = key;
+        value[2] = key;
+      }
+    }
+    else {
+      value[1] = cells[1];
+      value[2] = cells[2];
+    }
+    catalog.put( key, value );
   }
   buf.close();
   pageContext.getServletContext().setAttribute( "catalog", catalog );
