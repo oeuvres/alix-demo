@@ -1,7 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="
-alix.frwork.GN
-"%>
+<%@ page import="alix.frdo.GN"%>
 <% request.setCharacterEncoding("UTF-8"); %>
 <%@include file="common.jsp" %>
 <!DOCTYPE html>
@@ -148,6 +146,6 @@ if ( !text.isEmpty() ) {
 
 %>
     </article>
-    <script src="Sortable.js">//</script>
+    <script src="lib/Sortable.js">//</script>
   </body>
 </html>

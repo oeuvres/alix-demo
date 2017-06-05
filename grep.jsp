@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="common.jsp" %>
-<% request.setCharacterEncoding("UTF-8"); %>
+<%
+  request.setCharacterEncoding("UTF-8");
+%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -14,52 +16,54 @@
       <a href="#top" id="totop">▲</a>
       <h1><a href=".">Alix</a> : chercher un mot</h1>
           <form method="get">
-          <% String q = request.getParameter( "q" ); if (q == null) q =""; %>
-          <input name="q" value="<%= q %>"/> <button type="submit">chercher</button> dans
+          <%
+            String q = request.getParameter( "q" ); if (q == null) q ="";
+          %>
+          <input name="q" value="<%=q%>"/> <button type="submit">chercher</button> dans
           <br/>
       <select name="bibcode" onchange="this.form.submit()">
       <%
         String bibcode = request.getParameter("bibcode");
-        seltext( pageContext, bibcode );
+          seltext( pageContext, bibcode );
       %>
       </select>
       </form>
- <% 
-String text = text( pageContext, bibcode );
-TermDic coocs = new TermDic();
-int limit = 1000; // limiter les occurrences affichées
-if ( text == null ) {
-  if ( bibcode != null && !"".equals( bibcode ))
-    out.print( "<p>Le texte "+bibcode+" n’est pas disponible sur ce serveur.</p>\n");
-}
-%>
+ <%
+   String text = text( pageContext, bibcode );
+ TermDic coocs = new TermDic();
+ int limit = 1000; // limiter les occurrences affichées
+ if ( text == null ) {
+   if ( bibcode != null && !"".equals( bibcode ))
+     out.print( "<p>Le texte "+bibcode+" n’est pas disponible sur ce serveur.</p>\n");
+ }
+ %>
   <div class="conc">
-  <% 
-if ( text != null && q != null && !q.trim().isEmpty() ) {
-  Tokenizer toks = new Tokenizer( text );
-  int left = 50;
-  int right = 50;
-  OccSlider win = new OccSlider(left, right);
-  int n = 1;
-  while  ( toks.word( win.add() ) ) {
-    if ( !win.get( 0 ).lem().equals( q ) && !win.get( 0 ).orth().equals( q ) ) continue;
-    out.println( "<p>"+n+" — " );
-    for ( int i=-left; i<=right; i++ ) {
-      // cooccurents
-      if ( i < -10 || i == 0 || i > 10 );
-      else if ( !win.get( i ).lem().isEmpty(  ) ) {
-        coocs.inc( win.get( i ).lem() );
-      }
-      else  coocs.inc( win.get( i ).orth() ) ;
-      if ( i==0 ) out.println( "<b>" );
-      win.get( i ).print( new PrintWriter(out) );
-      if ( i==0 ) out.print( "</b>" );
+  <%
+    if ( text != null && q != null && !q.trim().isEmpty() ) {
+    Tokenizer toks = new Tokenizer( text );
+    int left = 50;
+    int right = 50;
+    OccRoller win = new OccRoller(left, right);
+    int n = 1;
+    while  ( toks.word( win.add() ) ) {
+      if ( !win.get( 0 ).lem().equals( q ) && !win.get( 0 ).orth().equals( q ) ) continue;
+      out.println( "<p>"+n+" — " );
+      for ( int i=-left; i<=right; i++ ) {
+    // cooccurents
+    if ( i < -10 || i == 0 || i > 10 );
+    else if ( !win.get( i ).lem().isEmpty(  ) ) {
+      coocs.inc( win.get( i ).lem() );
     }
-    out.print( "</p>" );
-    n++;
+    else  coocs.inc( win.get( i ).orth() ) ;
+    if ( i==0 ) out.println( "<b>" );
+    win.get( i ).print( new PrintWriter(out) );
+    if ( i==0 ) out.print( "</b>" );
+      }
+      out.print( "</p>" );
+      n++;
+    }
   }
-}
-%>
+  %>
     </div>
   </div>
     <div id="cooc" style="float: left; padding: 1ex; ">

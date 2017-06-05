@@ -370,6 +370,6 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
     </div>
     
     </article>
-    <script src="Sortable.js">//</script>
+    <script src="lib/Sortable.js">//</script>
   </body>
 </html>

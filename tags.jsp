@@ -6,9 +6,7 @@ java.util.Scanner,
 
 alix.fr.Lexik,
 alix.fr.Tag,
-alix.fr.Tokenizer,
-alix.fr.Occ
-" %>
+alix.fr.Tokenizer,alix.util.Occ" %>
 <%@include file="common.jsp" %>
 <%
 
@@ -75,6 +73,6 @@ for ( String bibcode: catalog.keySet(  ) ) {
       %>
       </table>
      </article>
-    <script src="Sortable.js">//</script>
+    <script src="lib/Sortable.js">//</script>
   </body>
  </html>

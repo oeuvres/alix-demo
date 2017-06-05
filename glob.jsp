@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8"%>
 <%@include file="common.jsp"%>
-<% request.setCharacterEncoding("UTF-8"); %>
+<%
+  request.setCharacterEncoding("UTF-8");
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -35,30 +37,32 @@
         vraiment belle… (trou de moins de 10 mots)</li>
     </ul>
     <form>
-      <% String q = request.getParameter( "q" ); if (q == null) q =""; %>
-      <input name="q" value="<%= q.replaceAll( "\"", "&quot;")  %>" />
+      <%
+        String q = request.getParameter( "q" ); if (q == null) q ="";
+      %>
+      <input name="q" value="<%=q.replaceAll( "\"", "&quot;")%>" />
       <button type="submit">chercher</button>
     </form>
-    <% 
-String dir = pageContext.getServletContext().getInitParameter("globdir");
-if ( dir == null ) dir = pageContext.getServletContext().getRealPath("/WEB-INF/textes/"); 
-if ( !q.isEmpty() ) {
-  out.println( "<div class=\"conc\">");
-  int left = 20;
-  int right = 30;
-  OccSlider win = new OccSlider(left, right);
-  // loop on folder
-  File ls = new File( dir );
-  for (final File src : ls.listFiles()) {
-    if ( src.getName().startsWith( "." )) continue;
-    if ( src.isDirectory() ) continue;
-    String text = new String(Files.readAllBytes( Paths.get( src.toString() ) ), StandardCharsets.UTF_8);
-    Tokenizer toks = new Tokenizer( text );
-    boolean first = true;
-    Query query = new Query(q);
-    int n = 1;
-    int limit = 10; 
-    while  ( toks.word( win.add() ) ) {
+    <%
+      String dir = pageContext.getServletContext().getInitParameter("globdir");
+    if ( dir == null ) dir = pageContext.getServletContext().getRealPath("/WEB-INF/textes/"); 
+    if ( !q.isEmpty() ) {
+      out.println( "<div class=\"conc\">");
+      int left = 20;
+      int right = 30;
+      OccRoller win = new OccRoller(left, right);
+      // loop on folder
+      File ls = new File( dir );
+      for (final File src : ls.listFiles()) {
+        if ( src.getName().startsWith( "." )) continue;
+        if ( src.isDirectory() ) continue;
+        String text = new String(Files.readAllBytes( Paths.get( src.toString() ) ), StandardCharsets.UTF_8);
+        Tokenizer toks = new Tokenizer( text );
+        boolean first = true;
+        Query query = new Query(q);
+        int n = 1;
+        int limit = 10; 
+        while  ( toks.word( win.add() ) ) {
       if ( !query.test( win.get( 0 ) ) ) continue;
       // first match, display filename
       if ( first ) {
@@ -78,10 +82,10 @@ if ( !q.isEmpty() ) {
       if ( n == limit ) {
         break;
       }
+        }
+      }
+      out.println("</div>");
     }
-  }
-  out.println("</div>");
-}
-%>
+    %>
   </article>
 </html>

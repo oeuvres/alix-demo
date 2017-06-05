@@ -1,6 +1,7 @@
-textes/
+WEB-INF/textes/
+WEB-INF/veks/
 WEB-INF/lucene/
 .settings
-test/
+test*
 WEB-INF/catalog.csv
 WEB-INF/web.xml

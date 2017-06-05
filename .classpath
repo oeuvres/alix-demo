@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="WEB-INF/lib/lucene-core-5.5.0.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/lucene-analyzers-common-5.5.0.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/lucene-misc-5.5.0.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/alix.jar"/>
 	<classpathentry kind="lib" path="WEB-INF/servlet-api-2.3.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/alix.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>
