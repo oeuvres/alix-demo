@@ -41,14 +41,14 @@
   <%
     if ( text != null && q != null && !q.trim().isEmpty() ) {
     Tokenizer toks = new Tokenizer( text );
-    int left = 50;
+    int left = -50;
     int right = 50;
     OccRoller win = new OccRoller(left, right);
     int n = 1;
     while  ( toks.word( win.add() ) ) {
       if ( !win.get( 0 ).lem().equals( q ) && !win.get( 0 ).orth().equals( q ) ) continue;
       out.println( "<p>"+n+" — " );
-      for ( int i=-left; i<=right; i++ ) {
+      for ( int i = left; i <= right; i++ ) {
     // cooccurents
     if ( i < -10 || i == 0 || i > 10 );
     else if ( !win.get( i ).lem().isEmpty(  ) ) {

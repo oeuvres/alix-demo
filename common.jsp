@@ -25,15 +25,15 @@ alix.util.CompDic.Balance,
 alix.util.IntRoller,
 alix.fr.Lexik,
 alix.fr.Lexik.LexEntry,
-alix.util.Occ,
-alix.util.OccRoller,
-alix.util.Phrase,
-alix.util.PhraseDic,
 alix.fr.query.Query,
 alix.fr.Tag,
+alix.fr.Tokenizer,
+alix.util.Occ,
+alix.util.OccRoller,
+alix.util.IntBuffer,
+alix.util.PhraseDic,
 alix.util.TermDic,
-alix.util.TermDic.DicEntry,
-alix.fr.Tokenizer
+alix.util.TermDic.DicEntry
 
 
 " %>

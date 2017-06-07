@@ -48,9 +48,9 @@
     if ( dir == null ) dir = pageContext.getServletContext().getRealPath("/WEB-INF/textes/"); 
     if ( !q.isEmpty() ) {
       out.println( "<div class=\"conc\">");
-      int left = 20;
+      int left = -20;
       int right = 30;
-      OccRoller win = new OccRoller(left, right);
+      OccRoller win = new OccRoller( left, right );
       // loop on folder
       File ls = new File( dir );
       for (final File src : ls.listFiles()) {
@@ -72,7 +72,7 @@
       int foundsize = query.foundSize();
       // display a snippet
       out.println( "<p>"+n+" — " );
-      for ( int i=-left; i<=right; i++ ) {
+      for ( int i = left; i <= right; i++ ) {
         if ( i ==  1 - foundsize ) out.print( "<mark>" );
         win.get( i ).print( new PrintWriter(out) );
         if ( i==0 ) out.println( "</mark>" );

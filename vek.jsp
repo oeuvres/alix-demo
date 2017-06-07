@@ -9,6 +9,7 @@ java.io.PrintWriter,
 java.io.Reader,
 java.text.DecimalFormat,
 java.text.NumberFormat,
+java.text.DecimalFormatSymbols,
 java.util.Enumeration,
 java.util.HashMap,
 java.util.HashSet,
@@ -33,24 +34,29 @@ private HashSet<String> explored;
 /**
  * Sort les relations entre siminymes
  */
-private void siminyms( JspWriter out, String term, int vocab, int hits ) throws IOException
+private void siminyms( JspWriter out, String term, int hits, final String href, int vocab ) throws IOException
 {
+  boolean stop = true;
+  if ( Lexik.isStop( term ) ) stop = false;
   if ( null == term || "".equals( term )) return;
-  DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance( Locale.FRANCE );
+  DecimalFormat df = new DecimalFormat("0.0000", DecimalFormatSymbols.getInstance(Locale.FRANCE));
   List<SimRow> sims = veks.sims( term, vocab );
   if ( sims == null ) return;
   int i= 1;
   for ( SimRow row:sims ) {
+    if ( stop && Lexik.isStop( row.term ) ) continue;
     // normalement c’est le premier mot, on ne sort pas de relation
     // if ( row.term.equals(term) ) continue;
     out.print( "<tr><td>" );
     out.print( i );
     out.print( "</td><td>" );
+    out.print ( "<a href=\""+href+row.term+"\">" );
     out.print( row.term );
-    out.print( "</td><td>" );
+    out.print( "</a>" );
+    out.print( "</td><td align=\"right\">" );
     out.print( row.count );
-    out.print( "</td><td>" );
-    out.print(  df.format( row.score ) );
+    out.print( "</td><td align=\"right\">" );
+    out.print( df.format( row.score ) );
     out.print( "</td></tr>" );
     if ( i++ >= hits) break;
   }
@@ -160,7 +166,7 @@ if ( corpus != null && !corpus.isEmpty() ) {
   if ( veks == null) {
     String glob = corpusdir + corpus;
     int wing = 5;
-    veks = new Dicovek( wing, wing );
+    veks = new Dicovek( -wing, wing );
     out.print("<pre>");
     veks.walk( glob, new PrintWriter(out) );
     out.print("</pre>");
@@ -178,7 +184,7 @@ if ( veks != null ) {
 }
 if ( veks != null && !term.isEmpty() ) { 
   out.println("<p><b>Cooccurrents :</b> ");
-  out.println( veks.coocs( term, 30, true ) );
+  out.println( veks.coocs( term, 100, true ) );
   out.println("</p>"); %>
   <table class="sortable" align="center">
   <caption>Siminymes</caption>
@@ -189,7 +195,7 @@ if ( veks != null && !term.isEmpty() ) {
     <th>Proximity</th>
   </tr>
   <% 
-  siminyms( out, term, -1, 30 ); 
+  siminyms( out, term, 100, "?corpus="+corpus+"&amp;term=", -1 ); 
   out.println("</table>");
 }
   %>
