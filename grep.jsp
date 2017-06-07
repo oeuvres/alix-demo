@@ -56,7 +56,7 @@
     }
     else  coocs.inc( win.get( i ).orth() ) ;
     if ( i==0 ) out.println( "<b>" );
-    win.get( i ).print( new PrintWriter(out) );
+    Tokenizer.write( out, win.get( i ) );
     if ( i==0 ) out.print( "</b>" );
       }
       out.print( "</p>" );

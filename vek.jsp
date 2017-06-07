@@ -140,7 +140,6 @@ body { padding: 2em; font-family: sans-serif; }
 for (final File file : new File( corpusdir ).listFiles()) {
   String key = file.getName();
   if ( key.startsWith( "." ) ) continue;
-  if ( file.isDirectory() ) key += "/*";
   out.print("<option");
   if ( key.equals( corpus ) ) out.print( " selected=\"selected\"" );
   out.print(">");
@@ -165,6 +164,7 @@ if ( corpus != null && !corpus.isEmpty() ) {
   }
   if ( veks == null) {
     String glob = corpusdir + corpus;
+    if ( new File( glob ).isDirectory() ) glob = glob+"/*";
     int wing = 5;
     veks = new Dicovek( -wing, wing );
     out.print("<pre>");
