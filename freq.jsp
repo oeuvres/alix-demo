@@ -17,18 +17,6 @@ static String[][] vues = {
   new String[] { "verblist", "Verbes fréquents % Frantext", "withlems" },
 };
 
-/**
- * Charger un texte en vecteur de cooccurrents
- */
-public String load( PageContext pageContext, String res) throws IOException {
-  InputStream stream = pageContext.getServletContext().getResourceAsStream( res );
-  if ( stream == null ) return null;
-  Scanner sc = new Scanner( stream, "UTF-8" );
-  sc.useDelimiter("\\A");
-  String text = sc.next();
-  sc.close();
-  return text;
-}
 
 public TermDic dic( String text, int mode) throws IOException {
   TermDic dic = new TermDic();
@@ -44,7 +32,8 @@ public TermDic dic( String text, int mode) throws IOException {
     }
   }
   return dic;
-}%>
+}
+%>
 <%
   // request parameters
 String bibcode = request.getParameter("bibcode");
@@ -85,7 +74,7 @@ String context = application.getRealPath("/");
       %>
     <section style=" float: left;  ">
 <%
-String[] bibl = catalog.get(bibcode);
+String[] bibl = catalog.get( bibcode );
 long time = System.nanoTime();
 TermDic dico = null;
 
@@ -99,7 +88,7 @@ else if( bibcode != null && bibl != null ) {
   if ( vuelem ) att = bibcode+"L";
   dico = (TermDic)application.getAttribute( att );
   if ( dico == null ) {
-    String xml = load( pageContext, bibl[0]);
+    String xml = text( pageContext, bibcode );
     if ( vuelem ) dico = dic( xml, LEM);
     else dico = dic( xml, ORTH);
     if (dico != null ) {

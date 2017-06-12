@@ -44,7 +44,9 @@ text-shadow: #000 0px 0px 5px;  -webkit-font-smoothing: antialiased;  }
       <div id="nuage"></div>
       <script>
    
-<%HashSet<String> filter = new HashSet<String>(); 
+<%
+
+HashSet<String> filter = new HashSet<String>(); 
 for (String w: new String[]{
     "aller", "arriver", "attendre", "connaître", "croire", "demander", "devenir", "devoir", "donner", "dire", 
     "entendre", "laisser", "paraître", "passer",
@@ -55,8 +57,10 @@ for (String w: new String[]{
 
 HashSet<String> filter2 = new HashSet<String>(); 
 for (String w: new String[]{
-    "abbé", "baron", "docteur", "chapitre", "cher", "comte", "duc", "duchesse", "évêque", "lord", "madame", "mademoiselle", 
-    "maître", "marquis", "marquise", "miss", "pauvre", "point", "prince", "princesse", "professeur", "sir"
+    "abbé", "baron", "chapitre", "cher", "comte", "comtesse", "docteur", "duc", "duchesse", "évêque", "jeune fille", "jeunes filles", 
+    "jeunes gens", "jeune homme", "lord", "madame", "mademoiselle", 
+    "maître", "marquis", "marquise", "miss", "monsieur", "p.", "pauvre", "point", "prince", "princesse", "professeur",
+    "reine", "roi", "roy", "si", "sir"
 }) filter2.add( w );
 
 TermDic dic = null;

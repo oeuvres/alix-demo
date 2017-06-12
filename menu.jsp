@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
+/*
+   | <a href="collocs.jsp?<%= htpars " title="Locutions et collocations">Phraséologie</a>
+*/
 String htpars="";
 if ( request.getParameter( "bibcode" ) != null && !request.getParameter( "bibcode" ).isEmpty(  ))
   htpars += "&amp;bibcode="+request.getParameter( "bibcode" );
@@ -10,7 +13,6 @@ if ( request.getParameter( "bibcode" ) != null && !request.getParameter( "bibcod
   | <a href="wordcloud.jsp?<%= htpars %>&amp;frantext=on" title="Nuage de mots">Nuage</a>
   | <a href="comp.jsp?<%= htpars %>" title="Tableaux lexicaux comparatifs">Comparaison</a>
   | <a href="grep.jsp?<%= htpars %>" title="Concordance et cooccurrences">Concordance</a>
-  | <a href="collocs.jsp?<%= htpars %>" title="Locutions et collocations">Phraséologie</a>
   | <a href="lem.jsp?">Lemmatiseur</a>
   | <a href="gn.jsp?<%= htpars %>" title="Adjectifs ante/post posés">Adjectifs</a>
 </nav>

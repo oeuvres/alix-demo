@@ -204,7 +204,7 @@
           if (count == 1) {
             label.setLength( 0 );
             for (int i = wordmarks.get( 0 ); i <= 0; i++) {
-              label.append( words.term( wordflow.get( i ) ) );
+              label.append( words.label( wordflow.get( i ) ) );
               if (i == 0)
                 ; // do not append space to end
               else if (label.length() > 1 && label.charAt( label.length() - 1 ) == '\'')

@@ -19,48 +19,100 @@ java.util.Map,
 java.util.Properties,
 
 alix.sqlite.Dicovek,
-alix.sqlite.Dicovek.SimRow,
+alix.sqlite.Dicovek.CosineRow,
+alix.sqlite.Dicovek.TextcatRow,
 alix.fr.Lexik
-
 "%>
-<%!
-
-/** Vector space */
+<%!/** Vector space */
 private Dicovek veks;
 /** All nodes fo edges  */
 private HashMap<String,Integer> nodes;
 /** Local nodes, explored  */
 private HashSet<String> explored;
+/** Writer */
+private JspWriter printer;
+
 /**
  * Sort les relations entre siminymes
  */
-private void siminyms( JspWriter out, String term, int hits, final String href, int vocab ) throws IOException
+private void siminyms( JspWriter out, String term, int hits, final String href, int vocab, boolean inter ) throws IOException
 {
   boolean stop = true;
   if ( Lexik.isStop( term ) ) stop = false;
   if ( null == term || "".equals( term )) return;
   DecimalFormat df = new DecimalFormat("0.0000", DecimalFormatSymbols.getInstance(Locale.FRANCE));
-  List<SimRow> sims = veks.sims( term, vocab );
+  List<CosineRow> sims = veks.sims( term, vocab, inter );
   if ( sims == null ) return;
   int i= 1;
-  for ( SimRow row:sims ) {
+  out.println( "<table class=\"sortable\" style=\"float:left\">" );
+  if (inter) out.println( "<caption>Siminymes (cosine inter)</caption>" );
+  else out.println( "<caption>Siminymes (cosine)</caption>" );
+  out.println( "<tr>" );
+  out.println( "  <th>Rank</th>" );
+  out.println( "  <th>Term</th>" );
+  out.println( "  <th>Count</th>" );
+  out.println( "  <th>Distance</th>" );
+  out.println( "</tr>" );
+  
+  for ( CosineRow row:sims ) {
     if ( stop && Lexik.isStop( row.term ) ) continue;
     // normalement c’est le premier mot, on ne sort pas de relation
     // if ( row.term.equals(term) ) continue;
     out.print( "<tr><td>" );
     out.print( i );
     out.print( "</td><td>" );
-    out.print ( "<a href=\""+href+row.term+"\">" );
+    out.print( "<a href=\""+href+row.term+"\">" );
     out.print( row.term );
     out.print( "</a>" );
     out.print( "</td><td align=\"right\">" );
     out.print( row.count );
     out.print( "</td><td align=\"right\">" );
-    out.print( df.format( row.score ) );
-    out.print( "</td></tr>" );
+    // out.print( df.format( row.score ) );
+    out.print( row.score );
+    out.println( "</td></tr>" );
     if ( i++ >= hits) break;
   }
+  out.println( "</table>" );
 }
+/**
+ * Sort les relations entre siminymes
+ */
+private void textcat( String term, int hits, final String href, int vocab ) throws IOException
+{
+  boolean stop = true;
+  if ( Lexik.isStop( term ) ) stop = false;
+  if ( null == term || "".equals( term )) return;
+  List<TextcatRow> sims = veks.textcat( term );
+  if ( sims == null ) return;
+  int i= 1;
+  printer.println( "<table class=\"sortable\" style=\"float:left\">" );
+  printer.println( "<caption>Siminymes (Texcat)</caption>" );
+  printer.println( "<tr>" );
+  printer.println( "  <th>Rank</th>" );
+  printer.println( "  <th>Term</th>" );
+  printer.println( "  <th>Count</th>" );
+  printer.println( "  <th>Distance</th>" );
+  printer.println( "</tr>" );
+  for ( TextcatRow row:sims ) {
+    if ( stop && Lexik.isStop( row.term ) ) continue;
+    // normalement c’est le premier mot, on ne sort pas de relation
+    // if ( row.term.equals(term) ) continue;
+    printer.print( "<tr><td>" );
+    printer.print( i );
+    printer.print( "</td><td>" );
+    printer.print ( "<a href=\""+href+row.term+"\">" );
+    printer.print( row.term );
+    printer.print( "</a>" );
+    printer.print( "</td><td align=\"right\">" );
+    printer.print( row.count );
+    printer.print( "</td><td align=\"right\">" );
+    printer.print( row.score );
+    printer.print( "</td></tr>" );
+    if ( i++ >= hits) break;
+  }
+  printer.println( "</table>" );
+}
+
 private void edges( JspWriter out, String term, int vocab, int hits  ) throws IOException
 {
   nodes = new  HashMap<String,Integer>();
@@ -74,10 +126,10 @@ private void edges( JspWriter out, String term, int vocab, int hits, int depth  
 {
   if ( null == term || "".equals( term )) return;
   DecimalFormat df = (DecimalFormat)NumberFormat.getNumberInstance(Locale.ENGLISH);
-  List<SimRow> sims = veks.sims( term, vocab );
+  List<CosineRow> sims = veks.sims( term, vocab );
   int i= 1;
   explored.add( term );
-  for ( SimRow row:sims ) {
+  for ( CosineRow row:sims ) {
     nodes.put( row.term, row.count );
     // normalement c’est le premier mot, on ne sort pas de relation, et on le garde en mémoire pour ne pas repasser
     if ( row.term.equals(term) ) {
@@ -97,12 +149,10 @@ private void edges( JspWriter out, String term, int vocab, int hits, int depth  
     }
     if ( i++ >= hits) break;
   }
-}
-
-
-%>
+}%>
 <%
 request.setCharacterEncoding("UTF-8");
+this.printer = out;
 String term = request.getParameter( "term" );
 if ( term == null ) term = "";
 String corpus = request.getParameter( "corpus" );
@@ -186,17 +236,10 @@ if ( veks != null && !term.isEmpty() ) {
   out.println("<p><b>Cooccurrents :</b> ");
   out.println( veks.coocs( term, 100, true ) );
   out.println("</p>"); %>
-  <table class="sortable" align="center">
-  <caption>Siminymes</caption>
-  <tr>
-    <th>Rank</th>
-    <th>Term</th>
-    <th>Count</th>
-    <th>Proximity</th>
-  </tr>
   <% 
-  siminyms( out, term, 100, "?corpus="+corpus+"&amp;term=", -1 ); 
-  out.println("</table>");
+  siminyms( out, term, 100, "?corpus="+corpus+"&amp;term=", -1, true ); 
+  siminyms( out, term, 100, "?corpus="+corpus+"&amp;term=", -1, false ); 
+  textcat( term, 100, "?corpus="+corpus+"&amp;term=", -1 );
 }
   %>
     <%  %>

@@ -17,6 +17,7 @@ java.util.HashSet,
 java.util.LinkedHashMap,
 java.util.List,
 java.util.Locale,
+java.util.Set,
 java.util.Scanner,
 
 alix.util.Char,
@@ -69,6 +70,8 @@ static LinkedHashMap<String,String[]> catalog( PageContext pageContext ) throws 
     String[] value = new String[3];
     value[0] = cells[0];
     String key = cells[0];
+    // folder, cut last /
+    if ( key.endsWith( "/" ) ) key = key.substring( 0, key.length() - 1 );
     int pos = key.lastIndexOf( '/' );
     if ( pos > -1 ) key = key.substring( pos+1 );
     pos = key.lastIndexOf( '.' );
@@ -154,6 +157,26 @@ static String text( PageContext pageContext, String code ) throws IOException
   LinkedHashMap<String,String[]> catalog = catalog( pageContext );
   String[] line = catalog.get( code );
   if ( line == null ) return null;
+  // directory
+  if ( line[0].endsWith( "/" ) ) {
+    Set<String> ls = pageContext.getServletContext().getResourcePaths( line[0] );
+    if ( ls.size() < 1 ) return null;
+    StringBuilder sb = new StringBuilder();
+    for ( String path:ls ) {
+      InputStream stream = pageContext.getServletContext().getResourceAsStream( path );
+      if ( stream == null ) continue;
+      Scanner sc = new Scanner( stream, "UTF-8" );
+      // http://web.archive.org/web/20140531042945/https://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
+      sc.useDelimiter("\\A");
+      String text = sc.next();
+      sc.close();
+      int pos = text.indexOf( "</teiHeader>" );
+      if ( pos > 0 ) sb.append( text.substring( pos ) );
+      else sb.append( text );
+    }
+    return sb.toString(  );
+  }
+  // file ?
   InputStream stream = pageContext.getServletContext().getResourceAsStream( line[0] );
   if ( stream == null ) return null;
   Scanner sc = new Scanner( stream, "UTF-8" );
@@ -187,26 +210,21 @@ public TermDic dic( PageContext pageContext, final String bib ) throws IOExcepti
 /**
  * Récupérer un dictionnaire par identifiant, comportement général
  */
-public TermDic dic( PageContext pageContext, final String bib, final String type ) throws IOException 
+public TermDic dic( PageContext pageContext, final String code, final String type ) throws IOException 
 {
   ServletContext application = pageContext.getServletContext();
-  String att = bib + type;
+  String att = code + type;
   TermDic dico = (TermDic)application.getAttribute( att );
   if ( dico != null ) return dico;
+  /*
   LinkedHashMap<String,String[]> catalog = catalog( pageContext );
   String[] bibl = catalog.get( bib );
   // texte inconnu
   if ( bibl == null ) return null;
-  /*
-  String home = application.getRealPath("/");
-  String filepath = home + "/textes/" + bibl[1];
-  Path path =  Paths.get( filepath );
-  new String( Files.readAllBytes( path ), StandardCharsets.UTF_8 )
-  */
-  // http://web.archive.org/web/20140531042945/https://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
   Scanner sc =  new Scanner( application.getResourceAsStream( bibl[0] ), "UTF-8" );
-  String text = sc.useDelimiter("\\A").next();
-  sc.close();
+  */
+  String text = text( pageContext, code );
+  if ( text == null ) return null;
   TermDic words = new TermDic();
   TermDic tags = new TermDic();
   Tokenizer toks = new Tokenizer(text);
@@ -224,8 +242,8 @@ public TermDic dic( PageContext pageContext, final String bib, final String type
     else if( occ.tag().isDet() ) tags.inc("DET") ;
     else tags.inc( occ.tag().label(  ));
   }
-  application.setAttribute( bib+"W", words );
-  application.setAttribute( bib+"T", tags );
+  application.setAttribute( code+"W", words );
+  application.setAttribute( code+"T", tags );
   if ( "W".equals( type )) return words;
   else if ( "T".equals( type )) return tags;
   else return null;
