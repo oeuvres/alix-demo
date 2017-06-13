@@ -10,6 +10,7 @@ java.io.Reader,
 java.text.DecimalFormat,
 java.text.NumberFormat,
 java.text.DecimalFormatSymbols,
+java.util.Arrays,
 java.util.Enumeration,
 java.util.HashMap,
 java.util.HashSet,
@@ -41,12 +42,15 @@ private void siminyms( JspWriter out, String term, int hits, final String href, 
   if ( Lexik.isStop( term ) ) stop = false;
   if ( null == term || "".equals( term )) return;
   DecimalFormat df = new DecimalFormat("0.0000", DecimalFormatSymbols.getInstance(Locale.FRANCE));
+  
+  long start = System.nanoTime();
+
   List<CosineRow> sims = veks.sims( term, vocab, inter );
   if ( sims == null ) return;
   int i= 1;
   out.println( "<table class=\"sortable\" style=\"float:left\">" );
-  if (inter) out.println( "<caption>Siminymes (cosine inter)</caption>" );
-  else out.println( "<caption>Siminymes (cosine)</caption>" );
+  if (inter) out.println( "<caption>Siminymes (cosine inter) "+((System.nanoTime() - start) / 1000000)+" ms.</caption>" );
+  else out.println( "<caption>Siminymes (cosine) "+((System.nanoTime() - start) / 1000000)+" ms.</caption>" );
   out.println( "<tr>" );
   out.println( "  <th>Rank</th>" );
   out.println( "  <th>Term</th>" );
@@ -153,6 +157,20 @@ private void edges( JspWriter out, String term, int vocab, int hits, int depth  
 <%
 request.setCharacterEncoding("UTF-8");
 this.printer = out;
+
+int left = -5;
+try { left = Integer.parseInt( request.getParameter( "left" ) ); } catch (Exception e) {}
+if ( left < -30 && left > 0) left = -5;
+
+int right = 5;
+try { right = Integer.parseInt( request.getParameter( "right" ) ); } catch (Exception e) {}
+if ( right < 0 || right > 30) right = 5;
+
+int depth = -1;
+try { depth = Integer.parseInt( request.getParameter( "depth" ) ); } catch (Exception e) {}
+if ( depth == 0 ) depth = -1;
+
+
 String term = request.getParameter( "term" );
 if ( term == null ) term = "";
 String corpus = request.getParameter( "corpus" );
@@ -181,13 +199,35 @@ body { padding: 2em; font-family: sans-serif; }
   </head>
   <body>
     <h1><a href="?">Vecteurs de mots</a></h1>
+<%
+if ( corpus != null && !corpus.isEmpty() ) {
+  String corpuskey = corpus;
+  // charger le corpus en mémoire s’il n’y est pas
+  veks = (Dicovek)application.getAttribute( corpus );
+  // test freshness
+  if ( veks != null && new File( corpusdir, corpus ).lastModified() > veks.modified() ) veks = null;
+  if ( veks != null && (left != veks.left || right != veks.right) ) veks = null;  
+  if ( veks == null) {
+    String glob = corpusdir + corpus;
+    if ( new File( glob ).isDirectory() ) glob = glob+"/*";
+    veks = new Dicovek( left, right );
+    out.print("<pre>");
+    veks.walk( glob, new PrintWriter(out) );
+    out.print("</pre>");
+    application.setAttribute( corpuskey, veks );
+  }
+
+}
+%>
     <form>
-    <label>Choisir un corpus 
+    <label>Corpus 
     <select name="corpus" onchange="this.form.submit()">
       <option/>
 <%
 //lister les fichiers de corpus
-for (final File file : new File( corpusdir ).listFiles()) {
+File[] dir = new File( corpusdir ).listFiles();
+Arrays.sort( dir );
+for (final File file : dir ) {
   String key = file.getName();
   if ( key.startsWith( "." ) ) continue;
   out.print("<option");
@@ -200,32 +240,14 @@ for (final File file : new File( corpusdir ).listFiles()) {
 
 %>
     </select>
-    <br/><label>Mot <input name="term" value="<%= term %>"/></label>
     </label>
-    <br/><button type="submit">Chercher</button>
+    <label title="Profondeur du vocabulaire à fouiller">Limite <input size="4" name="depth" value="<%= depth %>"/></label>
+    Fenêtre
+    <label>gauche <input size="2" name="left" value="<%= left %>"/></label>
+    <label>droite <input size="2" name="right" value="<%= right %>"/></label>
+    <label>Mot <input name="term" value="<%= term %>"/></label>
+    <button type="submit">Chercher</button>
     </form>
-<%
-if ( corpus != null && !corpus.isEmpty() ) {
-  // charger le corpus en mémoire s’il n’y est pas
-  veks = (Dicovek)application.getAttribute( corpus );
-  // test freshness
-  if ( veks != null ) {
-    if ( new File( corpusdir, corpus ).lastModified() > veks.modified() ) veks = null;
-  }
-  if ( veks == null) {
-    String glob = corpusdir + corpus;
-    if ( new File( glob ).isDirectory() ) glob = glob+"/*";
-    int wing = 5;
-    veks = new Dicovek( -wing, wing );
-    out.print("<pre>");
-    veks.walk( glob, new PrintWriter(out) );
-    out.print("</pre>");
-    application.setAttribute( corpus, veks );
-  }
-
-}
-
-%>
     <%
 if ( veks != null ) { 
   out.println("<p><b>Mots fréquents :</b> ");
@@ -237,9 +259,10 @@ if ( veks != null && !term.isEmpty() ) {
   out.println( veks.coocs( term, 100, true ) );
   out.println("</p>"); %>
   <% 
-  siminyms( out, term, 100, "?corpus="+corpus+"&amp;term=", -1, true ); 
-  siminyms( out, term, 100, "?corpus="+corpus+"&amp;term=", -1, false ); 
-  textcat( term, 100, "?corpus="+corpus+"&amp;term=", -1 );
+  String href = "?corpus="+corpus+"&amp;depth="+depth+"&amp;right="+right+"&amp;right="+right+"&amp;term=";
+  siminyms( out, term, 100, href, depth, true ); 
+  siminyms( out, term, 100, href, depth, false ); 
+  textcat( term, 100, href, depth );
 }
   %>
     <%  %>
