@@ -29,19 +29,6 @@ alix.util.IntVek.SpecRow,
 alix.util.TermDic,
 alix.fr.Lexik
 "%><%!
-/** Vector space */
-private Dicovek veks;
-/** Writer */
-private JspWriter printer;
-final static int ROOT = 0;
-final static int SIM = -1;
-final static int COOC = -2;
-final static HashSet<String> filter = new HashSet<String>();
-static {
-  for (String w: new String[]{
-      "dire"
-  }) filter.add( w );
-}
 
 private void sigma( List<SimRow> sims, boolean stop ) throws IOException
 {
@@ -113,58 +100,6 @@ private void sigma( List<SimRow> sims, boolean stop ) throws IOException
   sigmanodes( nodes );
   printer.print( "}" );
 }
-
-
-private void sigmanodes( HashMap<Integer, int[]> nodes ) throws IOException
-{
-  printer.println( "  nodes: [" );
-  // loop on nodes
-  TermDic dic = veks.dic();
-  int cooci = 0;
-  int simi = 0;
-  for ( Map.Entry<Integer, int[]> node : nodes.entrySet()) {
-    int code = node.getKey();
-    int type = node.getValue()[0];
-    int size = node.getValue()[1];
-    if ( size < 1 ) continue; // cut orphans ?
-    int x = 0;
-    int y = 0;
-    double angle =0;
-    String color="";
-    String label = dic.label( code ).replace( '\'', '’' );
-    
-    if ( type == COOC ) { // cooccurrent
-      size = size; 
-      angle = Math.PI/4+Math.PI*cooci/3.27;
-      long r = 500;
-      cooci++;
-      x = (int)( 2*r*(Math.cos(angle) )) ;
-      y = (int)( r*(Math.sin(angle) ));
-      color = "rgba(128, 128, 128, 0.5)";
-    }
-    else if ( type == ROOT ) {
-      size = dic.count( code ); 
-      color = "rgba( 255, 0, 0, 0.3)";
-      x = 0;
-      y = 0;
-    }
-    else if ( type == SIM ) {
-      size = dic.count( code ); 
-      long r = 1000;
-      simi++;
-      angle = Math.PI/2+Math.PI*simi/2.69;
-      x = (int)( 2*r* Math.cos(angle) );
-      y = (int)( r* Math.sin(angle) );
-      color = "rgba(0, 0, 192, 0.5)";
-    }
-    //    {id:'ribercour', label:"RIBERCOUR", size:13722, x:1.0, y: 5.5, color: "#4C4CFF", title: "Gentihomme Manceau & d\u00e9put\u00e9 de ce Pa\u00efs.", type:"drama"},
-    printer.println("    {id:'n"+code+"', label:'"+label+"', size:"+size
-    +", color:'"+color+"', x:"+x+", y:"+y+" },");
-  }
-  printer.println( "  ]" );
-}
-
-
 
 
 /**
@@ -242,9 +177,9 @@ private void coocs( String term, final int hits, final String href ) throws IOEx
 
 
 
-%><%
-request.setCharacterEncoding("UTF-8");
-this.printer = out;
+%>
+<%@include file="vekshare.jsp" %>
+<%
 
 int left = -5;
 // try { left = Integer.parseInt( request.getParameter( "left" ) ); } catch (Exception e) {}
@@ -254,38 +189,7 @@ int right = 5;
 // try { right = Integer.parseInt( request.getParameter( "right" ) ); } catch (Exception e) {}
 // if ( right < 0 || right > 30) right = 5;
 
-int depth = -1;
-// try { depth = Integer.parseInt( request.getParameter( "depth" ) ); } catch (Exception e) {}
-// if ( depth == 0 ) depth = -1;
-
-
-String term = request.getParameter( "term" );
-if ( term == null || request.getParameter( "clean" ) != null ) term = "";
-String corpus = request.getParameter( "corpus" );
-String corpusdir = application.getRealPath("/WEB-INF/veks")+"/";
-
-%><!DOCTYPE html>
-<html>
-  <head>
-    <title>Alix, vecteurs de mots</title>
-    <style>
-html { height: 100%; }
-body { font-family: sans-serif; height: 100%; }
-table.page { border-collapse: separate;  border-spacing: 1em 0; width: 100%; }
-table.page td.col { vertical-align: top; }
-td.term { white-space: nowrap; }
-    </style>
-    <script src="lib/sigma/sigma.min.js">//</script>
-    <script src="lib/sigma/sigma.plugins.dragNodes.min.js">//</script>
-    <script src="lib/sigma/sigma.exporters.image.js">//</script>
-    <script src="lib/sigma/sigma.plugins.animate.js">//</script>
-    <script src="lib/sigma/sigma.layout.fruchtermanReingold.js">//</script>
-    <script src="lib/sigma/worker.js">//</script>
-    <script src="lib/sigma/supervisor.js">//</script>
-    <script src="lib/sigmot.js">//</script>
-  </head>
-  <body>
-<%
+form( corpusdir, corpus, term );
 if ( corpus != null && !corpus.isEmpty() ) {
   String corpuskey = corpus;
   // charger le corpus en mémoire s’il n’y est pas
@@ -305,36 +209,6 @@ if ( corpus != null && !corpus.isEmpty() ) {
   }
 
 }
-%>
-    <form>Alix, vecteurs de mots
-    <label>
-    <select name="corpus" onchange="this.form.submit()">
-      <option/>
-<%
-//lister les fichiers de corpus
-File[] dir = new File( corpusdir ).listFiles();
-Arrays.sort( dir );
-for (final File file : dir ) {
-  String key = file.getName();
-  if ( key.startsWith( "." ) ) continue;
-  // if ( file.isDirectory() ) key += "/";
-  out.print("<option");
-  out.print( " value=\""+key+"\"" );
-  if ( key.equals( corpus ) ) out.print( " selected=\"selected\"" );
-  out.print(">");
-  int pos = key.lastIndexOf( "." );
-  if ( pos > 3) out.print( key.substring( 0, pos ) );
-  else out.print( key );
-  out.print("</option>\n");  
-}
-%>
-    </select>
-    </label>
-    <label>Mot <input size="10" name="term" value="<%= term %>"/></label>
-    <button type="submit" name="search">Chercher</button>
-    <button type="submit" name="clean">Effacer</button>
-    </form>
-    <%
 if ( veks == null );
 else if ( term.isEmpty() ) { 
   out.println("<p><b>Mots fréquents :</b> ");
@@ -343,7 +217,7 @@ else if ( term.isEmpty() ) {
 }
 else { 
   int limit = 30;
-  out.println("<table class=\"page\"><tr>");
+  out.println("<table class=\"page\"><tr  height=\"100%\">");
   String href = "?corpus="+corpus+"&amp;term=";
   out.println("<td class=\"col\">");
   coocs( term, limit, href );
@@ -351,36 +225,22 @@ else {
   List<SimRow> sims = veks.sims( term );
   if ( sims != null ) {
     boolean stopfilter = true;
-    out.println("<td class=\"col\">");
+    out.println( "<td class=\"col\">" );
     sims( sims, limit, href, stopfilter ); 
-    out.println("</td>");
-    out.println("<td class=\"col\" width=\"70%\">");
-     %>
-    <div id="graph" class="graph" oncontextmenu="return false" style="position: relative; height: 700px; ">
-      <div style="position: absolute; bottom: 0; right: 2px; z-index: 2; ">
-        <button class="colors but" title="Gris ou couleurs">◐</button>
-        <button class="shot but" type="button" title="Prendre une photo">📷</button>
-        <button class="turnleft but" type="button" title="Rotation vers la gauche">⤴</button>
-        <button class="turnright but" type="button" title="Rotation vers la droite">⤵</button>
-        <button class="zoomin but" style="cursor: zoom-in; " type="button" title="Grossir">+</button>
-        <button class="zoomout but" style="cursor: zoom-out; " type="button" title="Diminuer">–</button>
-        <button class="but restore" type="button" title="Recharger">O</button>
-        <button class="mix but" type="button" title="Mélanger le graphe">♻</button>
-        <button class="FR but" type="button" title="Spacialisation Fruchterman Reingold">☆</button>
-        <button class="atlas2 but" type="button" title="Démarrer ou arrêter la gravité">►</button>
-        <span class="resize interface" style="cursor: se-resize; font-size: 1.3em; " title="Redimensionner la feuille">⬊</span>
-      </div>
-    </div>
-    <script>
-    (function () {
-      var data = <% sigma( sims, stopfilter ); %>;
-      var graph = new sigmot("graph", data ); //
-    })(); 
-    </script>
-    <%
+    out.println( "</td>" );
+    out.println( "<td class=\"col\" width=\"70%\">" );
+    out.println( "<style> #graph { min-height: 700px; } </style>" );
+    graphdiv( "graph" );
+    out.print("<script> (function () { var data = ");
+    sigma( sims, stopfilter );
+    out.print("\n var graph = new sigmot( 'graph', data ); \n })(); ");
+    out.println("</script>");
     out.println("</td>");
   }
   out.println("</tr></table>");
+  out.println( "<p>“Siminymes de siminymes”, réseau de similarité cosine à deux niveaux.</p>" );
+  out.println("<iframe style=\"border: none;\" name=\"vek2\" src=\"vek2.jsp?iframe=1&amp;corpus="+corpus+"&amp;term="+term+"\""
+   +" width=\"99%\" height=\"90%\"></iframe>");
 }
   %>
     <script src="lib/Sortable.js">//</script>

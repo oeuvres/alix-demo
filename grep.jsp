@@ -1,7 +1,19 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="common.jsp" %>
 <%
-  request.setCharacterEncoding("UTF-8");
+int leftmax = -50;
+int left = -5;
+try { left = Integer.parseInt( request.getParameter( "left" ) ); } catch (Exception e) {}
+if ( left < -30 && left > 0) left = -5;
+
+int rightmax = 50;
+int right = 5;
+try { right = Integer.parseInt( request.getParameter( "right" ) ); } catch (Exception e) {}
+if ( right < 0 || right > 30) right = 5;
+
+String q = request.getParameter( "q" );
+if (q == null) q ="";
+
 %>
 <!DOCTYPE html>
 <html>
@@ -15,19 +27,22 @@
     <div id="top"  style="float: left; ">
       <a href="#top" id="totop">▲</a>
       <h1><a href=".">Alix</a> : chercher un mot</h1>
-          <form method="get">
-          <%
-            String q = request.getParameter( "q" ); if (q == null) q ="";
-          %>
-          <input name="q" value="<%=q%>"/> <button type="submit">chercher</button> dans
-          <br/>
-      <select name="bibcode" onchange="this.form.submit()">
-      <%
-        String bibcode = request.getParameter("bibcode");
-          seltext( pageContext, bibcode );
-      %>
-      </select>
-      </form>
+      <form method="get">
+        <input name="q" value="<%=q%>"/>
+        Cooccurence, entre
+       <input size="2" name="left" value="<%=left%>"/>
+       et
+       <input size="2" name="right" value="<%=right%>"/>
+       mots
+       <button type="submit">chercher</button> 
+       <br/>
+       <select name="bibcode" onchange="this.form.submit()">
+       <%
+         String bibcode = request.getParameter("bibcode");
+         seltext( pageContext, bibcode );
+       %>
+       </select>
+     </form>
  <%
    String text = text( pageContext, bibcode );
  TermDic coocs = new TermDic();
@@ -39,28 +54,28 @@
  %>
   <div class="conc">
   <%
-    if ( text != null && q != null && !q.trim().isEmpty() ) {
+  int n = 0;
+  if ( text != null && q != null && !q.trim().isEmpty() ) {
     Tokenizer toks = new Tokenizer( text );
-    int left = -50;
-    int right = 50;
-    OccRoller win = new OccRoller(left, right);
-    int n = 1;
+    OccRoller win = new OccRoller(leftmax, rightmax);
     while  ( toks.word( win.add() ) ) {
       if ( !win.get( 0 ).lem().equals( q ) && !win.get( 0 ).orth().equals( q ) ) continue;
+      n++;
       out.println( "<p>"+n+" — " );
-      for ( int i = left; i <= right; i++ ) {
-    // cooccurents
-    if ( i < -10 || i == 0 || i > 10 );
-    else if ( !win.get( i ).lem().isEmpty(  ) ) {
-      coocs.inc( win.get( i ).lem() );
-    }
-    else  coocs.inc( win.get( i ).orth() ) ;
-    if ( i==0 ) out.println( "<b>" );
-    Tokenizer.write( out, win.get( i ) );
-    if ( i==0 ) out.print( "</b>" );
+      for ( int i = leftmax; i <= rightmax; i++ ) {
+        // cooccurents
+        if ( i < left || i == 0 || i > right );
+        else if ( !win.get( i ).lem().isEmpty(  ) ) {
+          coocs.inc( win.get( i ).lem() );
+        }
+        else  coocs.inc( win.get( i ).orth() ) ;
+        if ( i == left ) out.println( "<mark>" );
+        if ( i == 0 ) out.println( "<b>" );
+        Tokenizer.write( out, win.get( i ) );
+        if ( i==0 ) out.print( "</b>" );
+        if ( i == right ) out.println( "</mark>" );
       }
       out.print( "</p>" );
-      n++;
     }
   }
   %>
@@ -68,7 +83,7 @@
   </div>
     <div id="cooc" style="float: left; padding: 1ex; ">
       <div style=" position:fixed; width: 50ex; ">
-      <h2>Cooccurrents</h2>
+      <h2><%=n%> extraits, cooccurrence :</h2>
       <p>
       <%
 limit = 200;

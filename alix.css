@@ -1,7 +1,7 @@
 html, body { height: 100%; background-color: #f3f2ec; }
-
+* { box-sizing: border-box; }
 nav.menu { background-color: #ffffff; left: 0; padding: 0 1ex; position: absolute; right: 0; top: 0; font-family: sans-serif; }
-nav a { color: #999; text-decoration: none; } 
+nav a { color: #999; text-decoration: none; }
 
 #article { min-height: 100%; margin-top: 2em; }
 article { margin-top:0; padding: 0 2em 0 2em; font-family: sans-serif;   }
@@ -36,7 +36,9 @@ td.num { font-size: 70%; }
 td.left { text-align:right; }
 .left b { padding: 0 1ex; margin-left: 1ex; }
 .right b { padding: 0 1ex; margin-right: 1ex; }
-.conc b, .conc th {  color: #000; background-color: #FFFFFF; }
+.conc b { }
+.conc p { color: #666; }
+.conc mark {  color: #000; background-color: #FFFFFF; padding: 2px 1ex; font-size: 110%; display: block; text-align: center;}
 .conc i { font-style: normal; color: red;  }
 div.conc { width: 80ex; text-align: left; }
 .conc p { margin: 0.5ex 0; padding: 0.5ex 0; border-bottom: 1px solid #FFFFFF; }
