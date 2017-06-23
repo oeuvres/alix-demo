@@ -18,15 +18,8 @@ java.util.HashSet,
 java.util.Locale,
 java.util.List,
 java.util.Map,
-java.util.Properties,
-
-alix.sqlite.Dicovek,
-alix.sqlite.Dicovek.CosineRow,
-alix.util.IntBuffer,
-alix.util.IntTuple,
-alix.util.IntVek,
-alix.util.IntVek.Pair,alix.util.SpecRow,alix.util.TermDic,alix.util.TermDic.DicEntry,alix.fr.Lexik"%><%!/** Vector space */
-private Dicovek veks;
+java.util.Properties,alix.util.DicVek,alix.util.DicVek.CosineRow,alix.util.IntBuffer,alix.util.IntTuple,alix.util.IntVek,alix.util.IntVek.Pair,alix.util.SpecRow,alix.util.DicFreq,alix.util.Entry,alix.fr.Lexik"%><%!/** Vector space */
+private DicVek veks;
 /** Writer */
 private JspWriter printer;
 /**  */
@@ -36,7 +29,7 @@ final static int COOC = -2;
 
 private void sigma3( String term, int loops ) throws IOException
 {
-  TermDic dic = veks.dic();
+  DicFreq dic = veks.dic();
   boolean stop = true;
   if ( Lexik.isStop( term ) ) stop = false;
   HashMap<Integer, int[]> nodes = new HashMap<Integer, int[]>();
@@ -100,7 +93,7 @@ private void sigma3( String term, int loops ) throws IOException
 
 private void sigma2( String term, int loops ) throws IOException
 {
-  TermDic dic = veks.dic();
+  DicFreq dic = veks.dic();
   boolean stop = true;
   if ( Lexik.isStop( term ) ) stop = false;
   HashMap<Integer, int[]> nodes = new HashMap<Integer, int[]>();
@@ -165,7 +158,7 @@ private void sigmanodes( HashMap<Integer, int[]> nodes ) throws IOException
 {
   printer.println( "  nodes: [" );
   // loop on nodes
-  TermDic dic = veks.dic();
+  DicFreq dic = veks.dic();
   int cooci = 0;
   int simi = 0;
   for ( Map.Entry<Integer, int[]> node : nodes.entrySet()) {
@@ -267,8 +260,7 @@ private void sigma( String term, int loops ) throws IOException
   printer.println( "  ]," );
   sigmanodes( nodes );
   printer.print( "}" );
-}%><%
-this.printer = out;
+}%><%this.printer = out;
 request.setCharacterEncoding("UTF-8");
 String term = request.getParameter( "term" );
 if ( term == null ) term = "";
@@ -286,8 +278,7 @@ String corpusdir = application.getRealPath("/WEB-INF/veks")+"/";
     hits = Integer.parseInt( request.getParameter("hits") );  
     if (hits < 0 || hits > 200) hits=30;
   } catch ( Exception e ) {};
-  */
-%><!DOCTYPE html>
+  */%><!DOCTYPE html>
 <html>
   <head>
     <title>Dicovek</title>
@@ -310,7 +301,7 @@ body { font-family: sans-serif; height: 100%; }
     <select name="corpus" onchange="this.form.submit()">
       <option/>
 <%
-//lister les fichiers de corpus
+  //lister les fichiers de corpus
 for (final File file : new File( corpusdir ).listFiles()) {
   String key = file.getName();
   if ( key.startsWith( "." ) ) continue;
@@ -321,18 +312,16 @@ for (final File file : new File( corpusdir ).listFiles()) {
   out.print( key );
   out.print("</option>\n");  
 }
-
-
 %>
     </select>
     </label>
-    <label>Mot <input name="term" value="<%= term %>"/></label>
+    <label>Mot <input name="term" value="<%=term%>"/></label>
     <button type="submit">Chercher</button>
     </form>
 <%
-if ( corpus != null && !corpus.isEmpty() ) {
+  if ( corpus != null && !corpus.isEmpty() ) {
   // charger le corpus en mémoire s’il n’y est pas
-  veks = (Dicovek)application.getAttribute( corpus );
+  veks = (DicVek)application.getAttribute( corpus );
   // test freshness
   if ( veks != null ) {
     if ( new File( corpusdir, corpus ).lastModified() > veks.modified() ) veks = null;
@@ -341,7 +330,7 @@ if ( corpus != null && !corpus.isEmpty() ) {
     String glob = corpusdir + corpus;
     if ( new File( glob ).isDirectory() ) glob = new File( glob ).getCanonicalPath()+"/*";
     int wing = 5;
-    veks = new Dicovek( -wing, wing );
+    veks = new DicVek( -wing, wing );
     out.print("<pre>");
     veks.walk( glob, new PrintWriter(out) );
     out.print("</pre>");

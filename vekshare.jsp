@@ -18,24 +18,24 @@ java.util.Locale,
 java.util.List,
 java.util.Map,
 java.util.Properties,
-
-alix.sqlite.Dicovek,
-alix.sqlite.Dicovek.SimRow,
+alix.util.DicVek,
+alix.util.DicVek.SimRow,
 alix.util.IntBuffer,
 alix.util.IntTuple,
 alix.util.IntVek,
 alix.util.IntVek.Pair,
 alix.util.IntVek.SpecRow,
-alix.util.TermDic,
+alix.util.DicFreq,
+alix.viz.Cloud,
 alix.fr.Lexik
-"%><%!
-/** Current vector space */
-private Dicovek veks;
+"%><%!/** Current vector space */
+private DicVek veks;
 /** Writer */
 private JspWriter printer;
 final static int ROOT = 0;
 final static int SIM = -1;
 final static int COOC = -2;
+final static int SIM2SIM = -3;
 final static HashSet<String> filter = new HashSet<String>();
 static {
   for (String w: new String[]{
@@ -67,7 +67,7 @@ private void sigmanodes( HashMap<Integer, int[]> nodes ) throws IOException
 {
   printer.println( "  nodes: [" );
   // loop on nodes
-  TermDic dic = veks.dic();
+  DicFreq dic = veks.dic();
   int cooci = 0;
   int simi = 0;
   for ( Map.Entry<Integer, int[]> node : nodes.entrySet()) {
@@ -88,22 +88,23 @@ private void sigmanodes( HashMap<Integer, int[]> nodes ) throws IOException
       cooci++;
       x = (int)( 2*r*(Math.cos(angle) )) ;
       y = (int)( r*(Math.sin(angle) ));
-      color = "rgba(128, 128, 128, 0.5)";
+      color = "rgba(128, 128, 128, 0.3)";
     }
     else if ( type == ROOT ) {
-      size = dic.count( code ); 
-      color = "rgba( 255, 0, 0, 0.3)";
+      // size = dic.count( code ); 
+      color = "rgba( 255, 33, 33, 0.5)";
       x = 0;
       y = 0;
     }
-    else if ( type == SIM ) {
-      size = dic.count( code ); 
+    else if ( type == SIM || type == SIM2SIM ) {
+      // size = dic.count( code ); 
       long r = 1000;
       simi++;
       angle = Math.PI/2+Math.PI*simi/2.69;
       x = (int)( 2*r* Math.cos(angle) );
       y = (int)( r* Math.sin(angle) );
-      color = "rgba(0, 0, 192, 0.5)";
+      if ( type == SIM2SIM ) color = "rgba(0, 66, 128, 0.3)";
+      else color = "rgba(66, 0, 192, 0.5)";
     }
     //    {id:'ribercour', label:"RIBERCOUR", size:13722, x:1.0, y: 5.5, color: "#4C4CFF", title: "Gentihomme Manceau & d\u00e9put\u00e9 de ce Pa\u00efs.", type:"drama"},
     printer.println("    {id:'n"+code+"', label:'"+label+"', size:"+size
@@ -140,9 +141,7 @@ private void form( final String corpusdir, final String corpus, final String ter
   printer.println("  <button type=\"submit\" name=\"search\">Chercher</button>");
   printer.println("  <button type=\"submit\" name=\"clean\">Effacer</button>");
   printer.println("</form>");
-}
-
-%><%
+}%><%
 request.setCharacterEncoding("UTF-8");
 this.printer = out;
 String term = request.getParameter( "term" );
@@ -154,14 +153,14 @@ String corpusdir = application.getRealPath("/WEB-INF/veks")+"/";
 <html>
   <head>
     <title>Alix, vecteurs de mots</title>
+    <link rel="stylesheet" type="text/css" href="alix.css" />
     <style>
-* { box-sizing: border-box; }
-html { height: 100%; }
-body { font-family: sans-serif; height: 100%; margin: 0; padding:0;  }
 table.page { border-collapse: separate;  border-spacing: 1em 0; width: 100%; }
-#form { padding: 5px 1em; }
+#form { padding: 5px 1em; margin-top: 1em; }
 table.page td.col { vertical-align: top; }
+td.col table.sortable { margin: 0 1em 0 0; }
 td.term { white-space: nowrap; }
+div.graph { background: #FFF; }
     </style>
     <script src="lib/sigma/sigma.min.js">//</script>
     <script src="lib/sigma/sigma.plugins.dragNodes.min.js">//</script>

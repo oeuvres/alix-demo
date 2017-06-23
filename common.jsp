@@ -21,8 +21,8 @@ java.util.Set,
 java.util.Scanner,
 
 alix.util.Char,
-alix.util.CompDic,
-alix.util.CompDic.Balance,
+alix.util.DicBalance,
+alix.util.DicBalance.Balance,
 alix.util.IntRoller,
 alix.fr.Lexik,
 alix.fr.Lexik.LexEntry,
@@ -32,14 +32,22 @@ alix.fr.Tokenizer,
 alix.util.Occ,
 alix.util.OccRoller,
 alix.util.IntBuffer,
-alix.util.PhraseDic,
-alix.util.TermDic,
-alix.util.TermDic.DicEntry
-
-
-" %>
-<%!static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
+alix.util.DicPhrase,
+alix.util.DicFreq,
+alix.util.DicFreq.Entry
+" %><%!static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 static DecimalFormat ppmdf = new DecimalFormat("#,###", frsyms);
+
+static HashSet<String> cloudfilter = new HashSet<String>();
+static {
+  for (String w: new String[]{
+      "abbé", "afin de", "baron", "chapitre", "cher", "comte", "comtesse", "docteur", "duc", "duchesse", "évêque", "jeune fille", "jeunes filles", 
+      "jeunes gens", "jeune homme", "lord", "madame", "mademoiselle", 
+      "maître", "marquis", "marquise", "miss", "monsieur", "p.", "pauvre", "point", "prince", "princesse", "professeur",
+      "reine", "roi", "roy", "si", "sir", "tout le monde"
+  }) cloudfilter.add( w );
+}
+
 
 /** Get catalog, populate it if empty */
 static LinkedHashMap<String,String[]> catalog( PageContext pageContext ) throws IOException
@@ -189,8 +197,8 @@ static String text( PageContext pageContext, String code ) throws IOException
 /**
  * Charger un dictionnaire avec les mots d’un texte, comportement général
  */
-public TermDic parse( String text ) throws IOException {
-  TermDic dic = new TermDic();
+public DicFreq parse( String text ) throws IOException {
+  DicFreq dic = new DicFreq();
   Tokenizer toks = new Tokenizer(text);
   Occ occ = new Occ();
   short cat;
@@ -202,7 +210,7 @@ public TermDic parse( String text ) throws IOException {
   }
   return dic;
 }
-public TermDic dic( PageContext pageContext, final String bib ) throws IOException 
+public DicFreq dic( PageContext pageContext, final String bib ) throws IOException 
 {
   return dic( pageContext, bib, "W");
 }
@@ -210,11 +218,12 @@ public TermDic dic( PageContext pageContext, final String bib ) throws IOExcepti
 /**
  * Récupérer un dictionnaire par identifiant, comportement général
  */
-public TermDic dic( PageContext pageContext, final String code, final String type ) throws IOException 
+public DicFreq dic( PageContext pageContext, final String code, String type ) throws IOException 
 {
   ServletContext application = pageContext.getServletContext();
+  if ( type == null || type.isEmpty() ) type = "dic";
   String att = code + type;
-  TermDic dico = (TermDic)application.getAttribute( att );
+  DicFreq dico = (DicFreq)application.getAttribute( att );
   if ( dico != null ) return dico;
   /*
   LinkedHashMap<String,String[]> catalog = catalog( pageContext );
@@ -225,8 +234,8 @@ public TermDic dic( PageContext pageContext, final String code, final String typ
   */
   String text = text( pageContext, code );
   if ( text == null ) return null;
-  TermDic words = new TermDic();
-  TermDic tags = new TermDic();
+  DicFreq words = new DicFreq();
+  DicFreq tags = new DicFreq();
   Tokenizer toks = new Tokenizer(text);
   Occ occ = new Occ();
   short cat;

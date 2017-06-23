@@ -44,9 +44,7 @@ text-shadow: #000 0px 0px 5px;  -webkit-font-smoothing: antialiased;  }
       <div id="nuage"></div>
       <script>
    
-<%
-
-HashSet<String> filter = new HashSet<String>(); 
+<%HashSet<String> filter = new HashSet<String>(); 
 for (String w: new String[]{
     "aller", "arriver", "attendre", "connaître", "croire", "demander", "devenir", "devoir", "donner", "dire", 
     "entendre", "laisser", "paraître", "passer",
@@ -63,7 +61,7 @@ for (String w: new String[]{
     "reine", "roi", "roy", "si", "sir"
 }) filter2.add( w );
 
-TermDic dic = null;
+DicFreq dic = null;
 if ( bibcode != null ) dic = dic( pageContext, bibcode );
 if ( dic == null );
 else {
@@ -78,7 +76,7 @@ else {
   float franfreq;
   double bias = 0;
   // loop on text forms in
-  for ( DicEntry line: dic.byCount() ) {
+  for ( Entry line: dic.byCount() ) {
     String word = line.label();
     int tag = line.tag();
     if ( Tag.isPun( tag )) continue;

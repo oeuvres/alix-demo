@@ -1,13 +1,12 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%!
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%!
 
 private void sigma2( List<SimRow> sims, boolean stop ) throws IOException
 {
   int edge = 0;
-  final int children1 = 20;
-  final int children2 = 15;
+  final int children1 = 30;
+  final int children2 = 10;
   int child1 = 0;
-  TermDic dic = veks.dic();
+  DicFreq dic = veks.dic();
   HashMap<Integer, int[]> nodes = new HashMap<Integer, int[]>();
   int rootcode = -1;
   printer.println( "{" );
@@ -32,7 +31,7 @@ private void sigma2( List<SimRow> sims, boolean stop ) throws IOException
         continue;
       }
       if ( stop && node2.code < veks.stopoffset ) continue;
-      if ( !nodes.containsKey( node2.code )) nodes.put( node2.code, new int[]{ COOC, dic.count( node2.code ) } );
+      if ( !nodes.containsKey( node2.code )) nodes.put( node2.code, new int[]{ SIM2SIM, dic.count( node2.code ) } );
       printer.println( "    { id:'e"+edge+"', source:'n"+node1.code+"', target:'n"+node2.code+"' }, "
           +"// "+dic.label( node1.code )+" "+dic.label( node2.code ) );
       edge++;
@@ -43,9 +42,7 @@ private void sigma2( List<SimRow> sims, boolean stop ) throws IOException
   printer.println( "  ]," );
   sigmanodes( nodes );
   printer.print( "}" );
-}
-
-%>
+}%>
 <%@include file="vekshare.jsp" %>
 <style>
 #form { position: absolute; z-index: 3; }
@@ -53,21 +50,22 @@ private void sigma2( List<SimRow> sims, boolean stop ) throws IOException
 </style>
 <body>
 <%
-if ( request.getParameter( "iframe" ) == null ) form( corpusdir, corpus, term );
-this.veks = (Dicovek)application.getAttribute( corpus );
+  if ( request.getParameter( "iframe" ) == null ) form( corpusdir, corpus, term );
+this.veks = (DicVek)application.getAttribute( corpus );
 if ( veks != null ) {
   boolean stopfilter = true;
   String href = "?corpus="+corpus+"&amp;term=";
   List<SimRow> sims = veks.sims( term );
-  graphdiv( "graph" );
-     %>
-    <script>
-    (function () {
-      var data = <% sigma2( sims, stopfilter ); %>;
-      var graph = new sigmot("graph", data ); //
-    })(); 
-    </script>
-<%
+  if ( sims != null ) {
+    graphdiv( "graph" );
+    out.println( "<script>" );
+    out.println( "(function () {" );
+    out.print( "var data =");
+    sigma2( sims, stopfilter );
+    out.println( "; var graph = new sigmot( 'graph', data ); ");
+    out.println( " })();" );
+    out.println( "</script>" );
+  }
 }
 %>
   </body>

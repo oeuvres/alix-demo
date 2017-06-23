@@ -17,15 +17,9 @@ java.util.HashSet,
 java.util.Locale,
 java.util.List,
 java.util.Map,
-java.util.Properties,
-
-alix.sqlite.Dicovek,
-alix.sqlite.Dicovek.CosineRow,
-alix.sqlite.Dicovek.TextcatRow,
-alix.fr.Lexik
-"%>
+java.util.Properties,alix.util.DicVek,alix.util.DicVek.CosineRow,alix.util.DicVek.TextcatRow,alix.fr.Lexik"%>
 <%!/** Vector space */
-private Dicovek veks;
+private DicVek veks;
 /** All nodes fo edges  */
 private HashMap<String,Integer> nodes;
 /** Local nodes, explored  */
@@ -155,7 +149,7 @@ private void edges( JspWriter out, String term, int vocab, int hits, int depth  
   }
 }%>
 <%
-request.setCharacterEncoding("UTF-8");
+  request.setCharacterEncoding("UTF-8");
 this.printer = out;
 
 int left = -5;
@@ -200,17 +194,17 @@ body { padding: 2em; font-family: sans-serif; }
   <body>
     <h1><a href="?">Vecteurs de mots</a></h1>
 <%
-if ( corpus != null && !corpus.isEmpty() ) {
-  String corpuskey = corpus;
+  if ( corpus != null && !corpus.isEmpty() ) {
+  String corpuskey = corpus+"T";
   // charger le corpus en mémoire s’il n’y est pas
-  veks = (Dicovek)application.getAttribute( corpus );
+  veks = (DicVek)application.getAttribute( corpuskey );
   // test freshness
   if ( veks != null && new File( corpusdir, corpus ).lastModified() > veks.modified() ) veks = null;
   if ( veks != null && (left != veks.left || right != veks.right) ) veks = null;  
   if ( veks == null) {
     String glob = corpusdir + corpus;
     if ( new File( glob ).isDirectory() ) glob = glob+"/*";
-    veks = new Dicovek( left, right );
+    veks = new DicVek( left, right );
     out.print("<pre>");
     veks.walk( glob, new PrintWriter(out) );
     out.print("</pre>");

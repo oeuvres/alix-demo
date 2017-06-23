@@ -1,11 +1,14 @@
 html, body { height: 100%; background-color: #f3f2ec; }
+body { font-family: sans-serif; margin: 0; padding:0; }
+p { text-align: justify; }
+p.doc { color: #666; max-width: 80ex; }
 * { box-sizing: border-box; }
 nav.menu { background-color: #ffffff; left: 0; padding: 0 1ex; position: absolute; right: 0; top: 0; font-family: sans-serif; }
 nav a { color: #999; text-decoration: none; }
 
 #article { min-height: 100%; margin-top: 2em; }
 article { margin-top:0; padding: 0 2em 0 2em; font-family: sans-serif;   }
-select, button {font-size: 18px; font-family: sans-serif; }
+select {font-size: 18px; font-family: sans-serif; }
 textarea { border: none; }
 section:after, section:before, form:after, form:before, .bar:after, .bar:before { content:" "; visibility: hidden; display: block; clear: both; height: 0; }
 
@@ -71,3 +74,10 @@ ul.menu li { margin: 0.5ex 0; font-size: 150%; }
 
 input.off { background-color: red; }
 input.on { background-color: #00CC00; }
+
+.wordcloud { font-size: 10pt; font-family: Arial, sans-serif; background: #FFF; position: relative; width: 90%; height: 700px; }
+.wordcloud a { color: rgba( 0, 128, 0, 0.8 ); padding-left:0; white-space: nowrap; line-height: 0.8em; position:absolute;  padding: 0 0.5ex; text-decoration: none; }
+.wordcloud a.sub { color: rgba( 0, 0, 0, 0.6 ); }
+.wordcloud a.verb { color: rgba(255, 64, 64, 1); }
+.wordcloud a.adj { color: rgba(160, 160, 240, 1); }
+.wordcloud a.name { color: rgba( 192, 192, 192, 0.8 ); font-family: Georgia, sans-serif; }

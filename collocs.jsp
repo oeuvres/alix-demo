@@ -57,18 +57,18 @@
         onchange="this.form.submit()">
           <%
             int[] values = { 2, 3, 4, 5 };
-            int lim = values.length;
-            String selected = "";
-            boolean seldone = false;
-            for (int i = 0; i < lim; i++) {
-              if (!seldone && values[i] == gramwidth) {
-                selected = " selected=\"selected\"";
-                seldone = true;
-              }
-              out.println( "<option" + selected + " value=\"" + values[i] + "\">" + values[i] + "</option>" );
-              selected = "";
-            }
-            String checked = " checked=\"checked\"";
+                        int lim = values.length;
+                        String selected = "";
+                        boolean seldone = false;
+                        for (int i = 0; i < lim; i++) {
+                          if (!seldone && values[i] == gramwidth) {
+                            selected = " selected=\"selected\"";
+                            seldone = true;
+                          }
+                          out.println( "<option" + selected + " value=\"" + values[i] + "\">" + values[i] + "</option>" );
+                          selected = "";
+                        }
+                        String checked = " checked=\"checked\"";
           %>
       </select> mots
       </label> <br /> <label> <input name="stoplist" type="checkbox"
@@ -99,7 +99,7 @@
         rows="">
         <%
           if (text != null)
-            out.print( text );
+                    out.print( text );
         %>
       </textarea>
     </form>
@@ -113,8 +113,8 @@
         IntRoller gram = new IntRoller( 0, gramwidth - 1 ); // collocation wheel
         IntRoller wordmarks = new IntRoller( 0, gramwidth - 1 ); // positions of words recorded in the collocation key
 
-        TermDic words = new TermDic();
-        PhraseDic phrases = new PhraseDic();
+        DicFreq words = new DicFreq();
+        DicPhrase phrases = new DicPhrase();
 
         final int NAME = words.add( "NOM" );
         final int NUM = words.add( "NUM" );
@@ -204,7 +204,8 @@
           if (count == 1) {
             label.setLength( 0 );
             for (int i = wordmarks.get( 0 ); i <= 0; i++) {
-              label.append( words.label( wordflow.get( i ) ) );
+              String w = words.label( wordflow.get( i ) );
+              label.append( w ); 
               if (i == 0)
                 ; // do not append space to end
               else if (label.length() > 1 && label.charAt( label.length() - 1 ) == '\'')

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@include file="common.jsp" %>
 <%
-int leftmax = -50;
+  int leftmax = -50;
 int left = -5;
 try { left = Integer.parseInt( request.getParameter( "left" ) ); } catch (Exception e) {}
 if ( left < -30 && left > 0) left = -5;
@@ -13,7 +13,6 @@ if ( right < 0 || right > 30) right = 5;
 
 String q = request.getParameter( "q" );
 if (q == null) q ="";
-
 %>
 <!DOCTYPE html>
 <html>
@@ -39,45 +38,45 @@ if (q == null) q ="";
        <select name="bibcode" onchange="this.form.submit()">
        <%
          String bibcode = request.getParameter("bibcode");
-         seltext( pageContext, bibcode );
+               seltext( pageContext, bibcode );
        %>
        </select>
      </form>
  <%
    String text = text( pageContext, bibcode );
- TermDic coocs = new TermDic();
- int limit = 1000; // limiter les occurrences affichées
- if ( text == null ) {
-   if ( bibcode != null && !"".equals( bibcode ))
-     out.print( "<p>Le texte "+bibcode+" n’est pas disponible sur ce serveur.</p>\n");
- }
+   DicFreq coocs = new DicFreq();
+   int limit = 1000; // limiter les occurrences affichées
+   if ( text == null ) {
+     if ( bibcode != null && !"".equals( bibcode ))
+   out.print( "<p>Le texte "+bibcode+" n’est pas disponible sur ce serveur.</p>\n");
+   }
  %>
   <div class="conc">
   <%
-  int n = 0;
-  if ( text != null && q != null && !q.trim().isEmpty() ) {
-    Tokenizer toks = new Tokenizer( text );
-    OccRoller win = new OccRoller(leftmax, rightmax);
-    while  ( toks.word( win.add() ) ) {
-      if ( !win.get( 0 ).lem().equals( q ) && !win.get( 0 ).orth().equals( q ) ) continue;
-      n++;
-      out.println( "<p>"+n+" — " );
-      for ( int i = leftmax; i <= rightmax; i++ ) {
-        // cooccurents
-        if ( i < left || i == 0 || i > right );
-        else if ( !win.get( i ).lem().isEmpty(  ) ) {
-          coocs.inc( win.get( i ).lem() );
-        }
-        else  coocs.inc( win.get( i ).orth() ) ;
-        if ( i == left ) out.println( "<mark>" );
-        if ( i == 0 ) out.println( "<b>" );
-        Tokenizer.write( out, win.get( i ) );
-        if ( i==0 ) out.print( "</b>" );
-        if ( i == right ) out.println( "</mark>" );
+    int n = 0;
+    if ( text != null && q != null && !q.trim().isEmpty() ) {
+      Tokenizer toks = new Tokenizer( text );
+      OccRoller win = new OccRoller(leftmax, rightmax);
+      while  ( toks.word( win.add() ) ) {
+    if ( !win.get( 0 ).lem().equals( q ) && !win.get( 0 ).orth().equals( q ) ) continue;
+    n++;
+    out.println( "<p>"+n+" — " );
+    for ( int i = leftmax; i <= rightmax; i++ ) {
+      // cooccurents
+      if ( i < left || i == 0 || i > right );
+      else if ( !win.get( i ).lem().isEmpty(  ) ) {
+        coocs.inc( win.get( i ).lem() );
       }
-      out.print( "</p>" );
+      else  coocs.inc( win.get( i ).orth() ) ;
+      if ( i == left ) out.println( "<mark>" );
+      if ( i == 0 ) out.println( "<b>" );
+      Tokenizer.write( out, win.get( i ) );
+      if ( i==0 ) out.print( "</b>" );
+      if ( i == right ) out.println( "</mark>" );
     }
-  }
+    out.print( "</p>" );
+      }
+    }
   %>
     </div>
   </div>
@@ -86,25 +85,25 @@ if (q == null) q ="";
       <h2><%=n%> extraits, cooccurrence :</h2>
       <p>
       <%
-limit = 200;
-boolean first = true;
-String term;
-int count;
-for( DicEntry entry: coocs.byCount() ) {
-  limit --;
-  term = entry.label();
-  // if ( term.isEmpty() ) continue;
-  count = entry.count();
-  if ( count < 2 ) break;
-  if ( Lexik.isStop( term )) continue;
-  if ( first ) first=false;
-  else out.print(", ");
-  out.print( term );
-  out.print(" (");
-  out.print( count );
-  out.print(")");
-  if (limit <= 0) break;
-}
+        limit = 200;
+      boolean first = true;
+      String term;
+      int count;
+      for( Entry entry: coocs.byCount() ) {
+        limit --;
+        term = entry.label();
+        // if ( term.isEmpty() ) continue;
+        count = entry.count();
+        if ( count < 2 ) break;
+        if ( Lexik.isStop( term )) continue;
+        if ( first ) first=false;
+        else out.print(", ");
+        out.print( term );
+        out.print(" (");
+        out.print( count );
+        out.print(")");
+        if (limit <= 0) break;
+      }
       %>
       </p>
       </div>
