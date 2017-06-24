@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@ page import="
+
 java.io.BufferedReader,
 java.io.File,
 java.io.InputStream,
@@ -20,33 +20,39 @@ java.util.Locale,
 java.util.Set,
 java.util.Scanner,
 
-alix.util.Char,
-alix.util.DicBalance,
-alix.util.DicBalance.Balance,
-alix.util.IntRoller,
 alix.fr.Lexik,
 alix.fr.Lexik.LexEntry,
 alix.fr.query.Query,
 alix.fr.Tag,
 alix.fr.Tokenizer,
-alix.util.Occ,
-alix.util.OccRoller,
-alix.util.IntBuffer,
+alix.util.Char,
+alix.util.DicBalance,
+alix.util.DicBalance.Balance,
 alix.util.DicPhrase,
 alix.util.DicFreq,
-alix.util.DicFreq.Entry
-" %><%!static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
+alix.util.DicFreq.Entry,
+alix.util.IntRoller,
+alix.util.IntStack,
+alix.util.Occ,
+alix.util.OccRoller
+
+" %><%!
+
+static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
 static DecimalFormat ppmdf = new DecimalFormat("#,###", frsyms);
 
 static HashSet<String> cloudfilter = new HashSet<String>();
 static {
   for (String w: new String[]{
-      "abbé", "afin de", "baron", "chapitre", "cher", "comte", "comtesse", "docteur", "duc", "duchesse", "évêque", "jeune fille", "jeunes filles", 
-      "jeunes gens", "jeune homme", "lord", "madame", "mademoiselle", 
+      "abbé", "baron", "chapitre", "cher", "comte", "comtesse", "do",
+      "docteur", "duc", "duchesse", "évêque", "francs",
+      "lord", "madame", "mademoiselle", 
       "maître", "marquis", "marquise", "miss", "monsieur", "p.", "pauvre", "point", "prince", "princesse", "professeur",
-      "reine", "roi", "roy", "si", "sir", "tout le monde"
+      "reine", "roi", "roy", "si", "sir", "ut"
   }) cloudfilter.add( w );
 }
+/** Writer */
+private JspWriter printer;
 
 
 /** Get catalog, populate it if empty */
@@ -256,8 +262,10 @@ public DicFreq dic( PageContext pageContext, final String code, String type ) th
   if ( "W".equals( type )) return words;
   else if ( "T".equals( type )) return tags;
   else return null;
-}%>
-<%
+}
+
+%><%
+
 request.setCharacterEncoding("UTF-8");
 // instantiate catalog
 LinkedHashMap<String,String[]> catalog = catalog( pageContext );

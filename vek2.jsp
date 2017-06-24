@@ -42,8 +42,8 @@ private void sigma2( List<SimRow> sims, boolean stop ) throws IOException
   printer.println( "  ]," );
   sigmanodes( nodes );
   printer.print( "}" );
-}%>
-<%@include file="vekshare.jsp" %>
+}%><%@include file="vekshare.jsp" 
+%>
 <style>
 #form { position: absolute; z-index: 3; }
 #graph { height: 99%; } 

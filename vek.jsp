@@ -1,6 +1,7 @@
-<%@ 
-page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@
-include file="common.jsp" %><%!private void sigma( List<SimRow> sims, boolean stop ) throws IOException
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
+%><%!
+
+private void sigma( List<SimRow> sims, boolean stop ) throws IOException
 {
   int edgemax = 500;
   
@@ -8,7 +9,7 @@ include file="common.jsp" %><%!private void sigma( List<SimRow> sims, boolean st
   HashMap<Integer, int[]> nodes = new HashMap<Integer, int[]>();
   // do not repeat root -> cooc
   HashSet<IntTuple> done = new HashSet<IntTuple>();
-  IntBuffer test = new IntBuffer(); // pair test
+  IntStack test = new IntStack(); // pair test
 
   int rootcode = 0;
   IntVek root = null;

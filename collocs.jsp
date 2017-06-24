@@ -57,18 +57,18 @@
         onchange="this.form.submit()">
           <%
             int[] values = { 2, 3, 4, 5 };
-                        int lim = values.length;
-                        String selected = "";
-                        boolean seldone = false;
-                        for (int i = 0; i < lim; i++) {
-                          if (!seldone && values[i] == gramwidth) {
-                            selected = " selected=\"selected\"";
-                            seldone = true;
-                          }
-                          out.println( "<option" + selected + " value=\"" + values[i] + "\">" + values[i] + "</option>" );
-                          selected = "";
-                        }
-                        String checked = " checked=\"checked\"";
+                              int lim = values.length;
+                              String selected = "";
+                              boolean seldone = false;
+                              for (int i = 0; i < lim; i++) {
+                                if (!seldone && values[i] == gramwidth) {
+                                  selected = " selected=\"selected\"";
+                                  seldone = true;
+                                }
+                                out.println( "<option" + selected + " value=\"" + values[i] + "\">" + values[i] + "</option>" );
+                                selected = "";
+                              }
+                              String checked = " checked=\"checked\"";
           %>
       </select> mots
       </label> <br /> <label> <input name="stoplist" type="checkbox"
@@ -99,7 +99,7 @@
         rows="">
         <%
           if (text != null)
-                    out.print( text );
+                        out.print( text );
         %>
       </textarea>
     </form>
@@ -109,7 +109,7 @@
       if (text != null && !text.isEmpty()) {
         long time = System.nanoTime();
 
-        IntBuffer key = new IntBuffer( gramwidth, bag ); // collocation key (series or bag)
+        IntStack key = new IntStack( gramwidth, bag ); // collocation key (series or bag)
         IntRoller gram = new IntRoller( 0, gramwidth - 1 ); // collocation wheel
         IntRoller wordmarks = new IntRoller( 0, gramwidth - 1 ); // positions of words recorded in the collocation key
 

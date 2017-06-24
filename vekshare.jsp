@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@ page import="
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
+%><%@ page import="
 
 java.io.File,
 java.io.InputStream,
@@ -20,7 +21,7 @@ java.util.Map,
 java.util.Properties,
 alix.util.DicVek,
 alix.util.DicVek.SimRow,
-alix.util.IntBuffer,
+alix.util.IntStack,
 alix.util.IntTuple,
 alix.util.IntVek,
 alix.util.IntVek.Pair,
@@ -28,10 +29,11 @@ alix.util.IntVek.SpecRow,
 alix.util.DicFreq,
 alix.viz.Cloud,
 alix.fr.Lexik
-"%><%!/** Current vector space */
+"%><%@
+include file="common.jsp" %><%!
+
+/** Current vector space */
 private DicVek veks;
-/** Writer */
-private JspWriter printer;
 final static int ROOT = 0;
 final static int SIM = -1;
 final static int COOC = -2;
