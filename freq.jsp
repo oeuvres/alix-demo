@@ -171,8 +171,8 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           }
           myfreq = 1.0*count*1000000/occs;
           bias =  myfreq  / (myfreq + franfreq);
-          out.print( "<td align=\"right\">"+ppmdf.format(myfreq)+" ppm</td>\n" );
-          out.print( "<td align=\"right\">"+ppmdf.format(franfreq)+" ppm</td>\n" );
+          out.print( "<td align=\"right\">"+dfppm.format(myfreq)+" ppm</td>\n" );
+          out.print( "<td align=\"right\">"+dfppm.format(franfreq)+" ppm</td>\n" );
           String bg = "bg" + Math.round( 10.0 * (2*bias - 1) );
           out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
           out.print( "</tr>\n");
@@ -291,8 +291,8 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
             out.print( "<td>"+n+"</td>\n" );
             out.print( "<td>"+word+"</td>\n" );
             out.print( "<td>"+count+"</td>\n" );
-            out.print( "<td align=\"right\">"+ppmdf.format(myfreq)+" ppm</td>\n" );
-            out.print( "<td align=\"right\">"+ppmdf.format(franfreq)+" ppm</td>\n" );
+            out.print( "<td align=\"right\">"+dfppm.format(myfreq)+" ppm</td>\n" );
+            out.print( "<td align=\"right\">"+dfppm.format(franfreq)+" ppm</td>\n" );
             if ( franfreq == 0 ) {
               bg = "";
               out.print( "<td></td>\n" );

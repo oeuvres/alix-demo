@@ -31,20 +31,22 @@ alix.util.DicBalance.Balance,
 alix.util.DicPhrase,
 alix.util.DicFreq,
 alix.util.DicFreq.Entry,
+alix.util.IntPair,
 alix.util.IntRoller,
-alix.util.IntStack,
+alix.util.IntSeries,
 alix.util.Occ,
 alix.util.OccRoller
 
 " %><%!
 
 static DecimalFormatSymbols frsyms = DecimalFormatSymbols.getInstance(Locale.FRANCE);
-static DecimalFormat ppmdf = new DecimalFormat("#,###", frsyms);
+static DecimalFormat dfppm = new DecimalFormat("#,###", frsyms);
+static DecimalFormat dfratio = new DecimalFormat("#,##0.0000", frsyms);
 
 static HashSet<String> cloudfilter = new HashSet<String>();
 static {
   for (String w: new String[]{
-      "abbé", "baron", "chapitre", "cher", "comte", "comtesse", "do",
+      "abbé", "baron", "celui", "chapitre", "cher", "comte", "comtesse", "do",
       "docteur", "duc", "duchesse", "évêque", "francs",
       "lord", "madame", "mademoiselle", 
       "maître", "marquis", "marquise", "miss", "monsieur", "p.", "pauvre", "point", "prince", "princesse", "professeur",

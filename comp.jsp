@@ -230,6 +230,8 @@ DecimalFormat dec1 = new DecimalFormat("###,###.0");
     StringBuilder sb = new StringBuilder();
     for(int i = 0; i < size ; i++) {
       mot = list.get( i );
+      // on ne retient pas les noms propres, pas intéressant
+      if ( Tag.isName( mot.tag )) continue;
       if ( "SUB".equals( tag ) && mot.tag != Tag.SUB ) continue;
       if ( "ADJ".equals( tag ) && mot.tag != Tag.ADJ ) continue;
       if ( "VERB".equals( tag ) && mot.tag != Tag.VERB ) continue;

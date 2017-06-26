@@ -8,8 +8,8 @@ private void sigma( List<SimRow> sims, boolean stop ) throws IOException
   DicFreq dic = veks.dic();
   HashMap<Integer, int[]> nodes = new HashMap<Integer, int[]>();
   // do not repeat root -> cooc
-  HashSet<IntTuple> done = new HashSet<IntTuple>();
-  IntStack test = new IntStack(); // pair test
+  HashSet<IntPair> done = new HashSet<IntPair>();
+  IntPair test = new IntPair(); // pair test
 
   int rootcode = 0;
   IntVek root = null;
@@ -57,9 +57,9 @@ private void sigma( List<SimRow> sims, boolean stop ) throws IOException
     +"// "+dic.label( row.target )+" "+cooc );
     edge++;
     // ROOT -> cooc
-    test.set( 0, row.source ).set( 1, row.key );
+    test.set( row.source, row.key );
     if ( done.contains( test ) ) continue;
-    done.add( new IntTuple(test) );
+    done.add( new IntPair(test) );
     nodes.get( row.source )[1]+=row.spec;
     nodes.get( row.key )[1]+=row.spec;
     printer.println( "    { id:'e"+edge+"', source:'n"+row.source+"', target:'n"+row.key+"', size:"+row.spec+" }, "

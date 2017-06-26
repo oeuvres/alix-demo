@@ -81,3 +81,15 @@ input.on { background-color: #00CC00; }
 .wordcloud a.name { color: rgba( 0, 0, 128, 0.6 ); }
 .wordcloud a.verb { color: rgba( 255, 64, 64, 0.8 ); font-weight: bold; }
 .wordcloud a.adj { color: rgba( 0, 128, 0, 0.6 ); }
+
+svg.scatter { width: 100%; background: #FFFFFF; }
+svg.scatter line.dot { stroke: #000; stroke-width: 100; stroke-linecap: round; cursor: pointer; }
+svg.scatter .dot { }
+svg.scatter .dot circle { stroke: #FFF; fill: rgba( 0, 0, 0, 0.2 ); cursor: pointer; }
+svg.scatter .dot text { font-size: 0pt;  }
+svg.scatter .dot:hover text { font-size: 100pt; }
+svg.scatter .sub circle { fill: rgba( 0, 0, 128, 0.3 ) }
+svg.scatter .name circle { fill: rgba( 0, 128, 0, 0.2 ) }
+svg.scatter .verb circle { fill: rgba( 255, 0, 0, 0.2 ) }
+svg.scatter .adj circle { fill: rgba( 0, 92, 128, 0.2 ) }
+svg.scatter .adv circle { fill: rgba( 255, 128, 0, 0.2 ) }

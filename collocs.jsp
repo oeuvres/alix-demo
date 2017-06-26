@@ -109,9 +109,6 @@
       if (text != null && !text.isEmpty()) {
         long time = System.nanoTime();
 
-        IntStack key = new IntStack( gramwidth, bag ); // collocation key (series or bag)
-        IntRoller gram = new IntRoller( 0, gramwidth - 1 ); // collocation wheel
-        IntRoller wordmarks = new IntRoller( 0, gramwidth - 1 ); // positions of words recorded in the collocation key
 
         DicFreq words = new DicFreq();
         DicPhrase phrases = new DicPhrase();
@@ -126,7 +123,7 @@
           // define a "sense level" in the dictionary, by inserting a stoplist at first
           while ((l = buf.readLine()) != null) {
             int code = words.add( l.trim() );
-            if (code > senselevel)
+            if ( code > senselevel )
               senselevel = code;
           }
           buf.close();
@@ -141,7 +138,14 @@
         // out.print("<p>Initialisation : "+((System.nanoTime() - time) / 1000000) + " ms. ");
         time = System.nanoTime();
 
+        // the flow of words coded as int
         IntRoller wordflow = new IntRoller( -15, 0 );
+        // the key of the collocation to record, with holes from the flow 
+        IntRoller gram = new IntRoller( 0, gramwidth - 1 );
+        // A hack to get skip position to rebuild a nice label for a gram 
+        IntRoller wordmarks = new IntRoller( 0, gramwidth - 1 ); 
+        
+        
         int code;
         int exit = 1000;
         StringBuffer label = new StringBuffer();
@@ -197,9 +201,9 @@
           gram.push( wordflow.get( 0 ) ); // store a signficant word as a collocation key
           if (gram.get( 0 ) == 0)
             continue; // the collocation key is not complete
-
-          key.set( gram ); // transfer the collocation wheel to a phrase key
-          int count = phrases.inc( key );
+            
+          // check dictionary if it contains the collocation
+          int count = phrases.inc( gram );
           // new value, add a label to the collocation
           if (count == 1) {
             label.setLength( 0 );
@@ -214,13 +218,13 @@
                 label.append( ' ' );
             }
             // System.out.println( label );
-            phrases.label( key, label.toString() );
+            phrases.label( gram, label.toString() );
           }
           // if ( --exit < 0 ) System.exit( 1 );
         }
 
-        out.print( "<p>" + ppmdf.format( occs ) + " occurrences, " + ppmdf.format( phrases.occs() ) + " collocations, "
-            + ppmdf.format( phrases.size() ) + " différentes, en " + ((System.nanoTime() - time) / 1000000)
+        out.print( "<p>" + dfppm.format( occs ) + " occurrences, " + dfppm.format( phrases.occs() ) + " collocations, "
+            + dfppm.format( phrases.size() ) + " différentes, en " + ((System.nanoTime() - time) / 1000000)
             + " ms.</p>\n" );
         phrases.html( out, 200, words );
       }
