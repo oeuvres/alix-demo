@@ -93,3 +93,33 @@ svg.scatter .name circle { fill: rgba( 0, 128, 0, 0.2 ) }
 svg.scatter .verb circle { fill: rgba( 255, 0, 0, 0.2 ) }
 svg.scatter .adj circle { fill: rgba( 0, 92, 128, 0.2 ) }
 svg.scatter .adv circle { fill: rgba( 255, 128, 0, 0.2 ) }
+
+div.scatter { width: 100%; padding: 3rem 2rem 3rem 3.5rem; background-color: #FFFFFF; position: relative; }
+div.scatter .title { position: absolute; z-index: 2; top: 2rem; left: 25%; padding: 5px; background-color: #FFFFFF; color: #888; font-size: 200%; font-weight: bold; }
+div.scatter .xleg { position: absolute; z-index: 2; bottom: 0.5rem; right: 1rem; }
+div.scatter .yleg { position: absolute; z-index: 2; top: 0.5rem; left: 1rem; }
+div.scatter div.legend { position: absolute; top: 3rem; right: 3rem; border: 1px #CCC solid; background: rgb( 255, 255, 255, 0.8 ); z-index: 5; }
+div.scatter .dots { position: relative; height: 600px; }
+div.scatter .ygrid { position: absolute; border-bottom: 0.5px #CCCCCC solid; font-size: 10pt; color: #999; line-height: 90%; left: -2.5rem; right: 0; padding-left: 0.5rem; }
+div.scatter .xgrid { position: absolute; border-left: 0.5px #CCCCCC solid; top:-1rem; bottom: -1.5rem; font-size: 10pt; color: #999; line-height: 90%; }
+div.scatter .xgrid span { bottom: 0%; position: absolute; }
+div.scatter .xgrid.last { border-right: 2px #CCC solid; }
+div.scatter .xgrid.first { border-left: 2px #CCC solid; }
+div.scatter .xgrid.mod10 { border-left: 1px #000 solid; }
+div.scatter .xgrid.mod10 span { font-weight: bold; }
+div.scatter .xgrid.even span { display: none;  }
+div.scatter div.dot { position: absolute; border: 1px transparent solid; cursor:default; padding: 0 3px 0 0; -webkit-transform: translateY(50%); transform: translateY(50%); }
+div.scatter div.dot:hover { z-index: 9; border: 1px #CCC solid; background-color: rgb( 255, 255, 255, 0.8 ); }
+div.scatter div.dot span { display: none;}
+div.scatter div.dot:hover span { display: inline; }
+div.scatter div.dot b { color: rgba( 128, 128, 128, 0.2 ); font-size: 200%; line-height: 40%; vertical-align: middle; font-family: sans-serif; }
+div.scatter div.sub b { color: rgba( 0, 0, 128, 0.3 ) }
+div.scatter div.name b { color: rgba( 0, 128, 0, 0.2 ) }
+div.scatter div.verb b { color: rgba( 255, 0, 0, 0.2 ) }
+div.scatter div.adj b { color: rgba( 0, 128, 255, 0.2 ) }
+div.scatter div.adv b { color: rgba( 255, 128, 0, 0.2 ) }
+div.scatter div.legend div.dot { position:static; transform: none; }
+
+.dygraph-title { background: #FFFFFF; margin-top: 1rem; margin-left: auto; margin-right: auto; width: 60%; }
+.dygraph-ylabel { margin-top: 0.5rem; color: #888; }
+.dygraph-xlabel { color: #888; }

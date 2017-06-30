@@ -138,12 +138,8 @@
         // out.print("<p>Initialisation : "+((System.nanoTime() - time) / 1000000) + " ms. ");
         time = System.nanoTime();
 
-        // the flow of words coded as int
-        IntRoller wordflow = new IntRoller( -15, 0 );
-        // the key of the collocation to record, with holes from the flow 
+        // pattern to select
         IntRoller gram = new IntRoller( 0, gramwidth - 1 );
-        // A hack to get skip position to rebuild a nice label for a gram 
-        IntRoller wordmarks = new IntRoller( 0, gramwidth - 1 ); 
         
         
         int code;

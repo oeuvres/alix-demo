@@ -34,6 +34,7 @@ alix.util.DicFreq.Entry,
 alix.util.IntPair,
 alix.util.IntRoller,
 alix.util.IntSeries,
+alix.util.IntVek,
 alix.util.Occ,
 alix.util.OccRoller
 
