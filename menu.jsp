@@ -16,6 +16,6 @@ if ( request.getParameter( "bibcode" ) != null && !request.getParameter( "bibcod
   | <a href="grep.jsp?<%= htpars %>" title="Concordance et cooccurrences">Concordance</a>
   | <a href="vek.jsp" title="Vecteurs lexicaux">Siminymes</a>
   | <a href="lem.jsp?">Lemmatiseur</a>
-  | <a href="reps.jsp?<%= htpars %>">Répétitions</a>
+  | <a href="reps.jsp?<%= htpars %>">Récurrences</a>
   | <a href="gn.jsp?<%= htpars %>" title="Adjectifs ante/post posés">Adjectifs</a>
 </nav>

@@ -1,11 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><%@ page import="
 java.util.Collection,
 java.util.Collections,
 java.util.Comparator,
-java.util.HashMap
-" %><%@include file="common.jsp"
-%><%!
+java.util.HashMap,
+alix.util.IntO,
+alix.util.IntOTop
+" %><%@include file="common.jsp"%><%!
 
 int forget;
 final static public short SIZE = 1;
@@ -46,7 +46,7 @@ private void distances( final IntSeries[] table ) throws IOException
   // distribute values
   int max = 0;
   for ( IntSeries word:table) {
-    // if ( word.size() < filterlow ) continue;
+    if ( word.size() < filterlow ) continue;
     int[] row;
     if ( Lexik.isStop( word.label ) ) row = mat[STOP];
     else if ( Tag.isSub( word.cat )) row = mat[SUB];
@@ -62,8 +62,8 @@ private void distances( final IntSeries[] table ) throws IOException
       row[val]++;
     }
   }
-  int wing = max/100;
-  for ( int i=0; i <= max; i=i+1 ) {
+  int wing = forget/100;
+  for ( int i=0; i <= forget; i=i+1 ) {
     printer.print( "[" );
     printer.print( i );
     for ( int[] row: mat ) {
@@ -84,6 +84,56 @@ private void distances( final IntSeries[] table ) throws IOException
   
 }
 
+/**
+ * Find most frequent words for each recurrence distance,
+ * Table of IntSeries should be sorted by size, biggest first.
+ */
+private void freqreps( final IntSeries[] table, int distmax, int topsize, boolean stopfilter ) throws IOException
+{
+  IntOTop<String>[] tops = (IntOTop<String>[])new IntOTop[distmax];
+  for ( int i = 0; i < distmax; i++ ) tops[i] = new IntOTop<String>( topsize );
+  int[] sorted = new int[table[0].size()]; // biggest first, should be enough
+  // for each word, take the sorted set of value
+  for ( IntSeries word:table ) {
+    int size = word.size();
+    if ( size < filterlow ) break;
+    if ( stopfilter && Lexik.isStop( word.label ) ) continue;
+    sorted = word.toArray( sorted );
+    int last = sorted[0];
+    if ( last >= distmax ) continue;
+    int score = 0;
+    for ( int dist: sorted ) {
+      // new value, send to top
+      if ( last != dist ) {
+        tops[last].push( score, word.label );
+        if ( dist >= distmax ) break;
+        last = dist;
+      }
+      score++;
+    }
+  }
+  printer.println("<table class=\"sortable\">");
+  printer.println("<caption>Récurrences les plus fréquentes, par distances (en mots)</caption>");
+  printer.println("<tr>");
+  for ( int i=0; i < distmax; i++ ) {
+    printer.println("<th class=\"nosort\">"+i+"</th>");
+  }
+  printer.println("</tr>");
+  // top, implements Iteratoe
+  printer.println("<tr>");
+  for ( int i=0; i < distmax; i++ ) {
+    printer.println("<td>");
+    boolean first = true;
+    for ( IntO<String> pair: tops[i] ) {
+      if ( first ) first = false;
+      else printer.print( "<br/>" );
+      printer.println( pair.value()+" ("+pair.score()+")" );
+    }
+    printer.println("</td>");
+  }
+  printer.println("</tr>");
+  printer.println("</table>");
+}
 
 public String human( double x )
 {
@@ -143,9 +193,9 @@ private double[] limits( final double min, final double max, boolean log ) throw
 
 private void scatterhtml( final IntSeries[] table ) throws IOException
 {
-  String title = "Répétitions : nombre et distance moyenne";
-  String xleg = "Distance moyenne (caractères)";
-  String yleg = "Répétitions (nombre)";
+  String title = "Récurrences : nombre et distance moyenne (en mots)";
+  String xleg = "Distance moyenne (mots)";
+  String yleg = "Récurrences (nombre)";
   boolean xlog = false;
   boolean ylog = true;
   // int decil = 5;
@@ -303,10 +353,12 @@ fait faire
 trois mille (NUM)
 nous nous
 Le nouveau venu vint
+dit -il. ¶ Il se…
+en en pénétrant toutes les sinuosités
 */%><%
 this.printer = out;
 String bibcode = request.getParameter("bibcode");
-forget = 10000;
+forget = 500;
 try { forget = Integer.parseInt( request.getParameter( "forget" ) ); } catch (Exception e) {}
 if ( forget <= 0 ) forget = -1;
 
@@ -328,7 +380,9 @@ table.freqlist { float: left; margin-right: 1ex;}
   </head>
   <body>
     <%@include file="menu.jsp" %>
-    <p></p>
+    <article>
+    <h1>Récurrences</h1>
+    <p>Une idée de Rudolf Mahrer, mise en code par Frédéric Glorieux</p>
       <form method="GET">
         <a href=".">Alix</a>  
         <select name="bibcode" onchange="this.form.submit()">
@@ -340,7 +394,6 @@ table.freqlist { float: left; margin-right: 1ex;}
         <label title="Distance d’oubli">Oubli <input size="4" name="forget" value="<%=forget%>"/></label>
         <button>▶</button>
       </form>
-    <article>
       <%
       String text = text( pageContext, bibcode );
       int limit = 1000; // limiter les occurrences affichées
@@ -353,50 +406,56 @@ table.freqlist { float: left; margin-right: 1ex;}
         HashMap<String,IntSeries> dico = new HashMap<String,IntSeries>();
         Occ occ = new Occ();
         int[] entry;
-        int pos;
         int dif;
-        int before;
-        int after = 0;
+        int cbefore;
+        int cafter = 0;
+        int wpos = 0;
+        String label;
         while  ( toks.word( occ ) ) {
-          before = after;
-          after += occ.orth().length()+1; //
+          cbefore = cafter;
+          cafter += occ.orth().length()+1; //
           if ( occ.tag().isPun() ) continue;
-          if ( occ.tag().isNum() ) occ.lem( "NUM" );
-          // mot inconnu
-          if ( occ.lem().isEmpty() ) continue;
-          IntSeries list = dico.get( occ.lem() );
+          wpos++;
+          if ( occ.tag().isNum() ) label = "NUM";
+          // mot inconnu ?
+          else if ( occ.lem().isEmpty() ) label = occ.orth().toString();
+          else label = occ.lem().toString();
+          IntSeries list = dico.get( label );
+          
           if ( list == null ) {
-            String key = occ.lem().toString();
             int cat = occ.tag().code();
-            list = new IntSeries( key, cat );
-            list.last = after;
+            list = new IntSeries( label, cat );
+            list.last = wpos;
             list.count++;
-            dico.put( key, list );
+            dico.put( label, list );
             continue;
           }
           if ( list.last > 0 ) {
             list.count++;
-            dif =  before - list.last;
-            list.last = after;
+            dif =  wpos - list.last - 1;
+            list.last = wpos;
             if ( forget > -1 && dif >= forget ) continue;
             list.push( dif );
           }
         }
         IntSeries[] table = dico.values().toArray( new IntSeries[0] );
+        // sort series by size
+        
         // loop on all list before sort, to cache values
         for ( IntSeries row: table ) {
           row.cache();
         }
 
-        // Fréquence
+        // Sort the table by size (number of recurrences recorded)
         Arrays.sort( table, new Comparator<IntSeries>()
         {
           @Override
           public int compare( IntSeries row1, IntSeries row2 )
           {
-            return Integer.compare( row2.count, row1.count );
+            return Integer.compare( row2.size(), row1.size() );
           }
         } );
+
         %>
 <div id="chart" class="dygraph" style="width:100%; height:600px; background: #FFFFFF; margin: 2em 0; "></div>
 <script type="text/javascript">
@@ -409,9 +468,9 @@ g = new Dygraph(
     labels: [ "Distance", "Noms", "Substantifs", "Verbes", "Adjectifs", "Grammaticaux" ],
     legend: "always",
     labelsSeparateLines: "true",
-    title: "Répétitions, distribution par distance et catégorie morpho-syntaxique",
+    title: "Répétitions, distribution par distance et catégorie morpho-syntaxique<br/>(moyenne glissante -<%=forget/100%>/+<%=forget/100%>)",
     ylabel: "Répétitions (nombre)",
-    xlabel: "Distance (en caractères)",
+    xlabel: "Distance (en mots)",
     // showRoller: true,
     // rollPeriod: <%=(int)forget/30%>,
     series: {
@@ -444,69 +503,10 @@ g = new Dygraph(
 );
 </script>
       <%
+	      // biggest series first
+	      freqreps( table, 10, 10, false );
+	      freqreps( table, 10, 10, true );
         scatterhtml( table );
-        table( table, 100, "Tri fréquence &gt;", filterlow, false );
-        table( table, 100, "Tri fréquence &gt; (-mots gram.)", filterlow, true );
-
-
-        Arrays.sort( table, new Comparator<IntSeries>()
-        {
-          @Override
-          public int compare( IntSeries row1, IntSeries row2 )
-          {
-            return Double.compare( row2.avg, row1.avg );
-          }
-        } );
-        table( table, 100, "Tri DMR &gt;", filterlow, false );
-
-        Arrays.sort( table, new Comparator<IntSeries>()
-        {
-          @Override
-          public int compare( IntSeries row1, IntSeries row2 )
-          {
-            return Double.compare( row1.avg, row2.avg );
-          }
-        } );
-        table( table, 100, "Tri DMR &lt;", filterlow, false );
-
-        Arrays.sort( table, new Comparator<IntSeries>()
-        {
-          @Override
-          public int compare( IntSeries row1, IntSeries row2 )
-          {
-            return Double.compare( row2.devstd/row2.avg, row1.devstd/row1.avg );
-          }
-        } );
-        table( table, 100, "Tri + éparpillé", filterlow, false );
-
-        Arrays.sort( table, new Comparator<IntSeries>()
-        {
-          @Override
-          public int compare( IntSeries row1, IntSeries row2 )
-          {
-            return Double.compare( row1.devstd/row1.avg, row2.devstd/row2.avg );
-          }
-        } );
-        table( table, 100, "Tri + homogène", filterlow, false );
-
-
-        // resort on size
-        Arrays.sort( table, new Comparator<IntSeries>()
-        {
-          @Override
-          public int compare( IntSeries row1, IntSeries row2 )
-          {
-            return Integer.compare( row2.count, row1.count );
-          }
-        } );
-
-        out.println("<textarea style=\"height: 10em; width:100%; \">");
-        out.println( "MOT\tOCCS\tREPS\tDMR" );
-        for ( IntSeries row:table ) {
-          if ( row.size() < 1 ) break;
-          out.println( row.label+"\t"+row.count+"\t"+row.size()+"\t"+(int)row.avg );
-        }
-        out.println("</textarea>");
       }
       %>
      </article>
