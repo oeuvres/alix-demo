@@ -25,6 +25,7 @@ alix.fr.Lexik.LexEntry,
 alix.fr.query.Query,
 alix.fr.Tag,
 alix.fr.Tokenizer,
+
 alix.util.Char,
 alix.util.DicBalance,
 alix.util.DicBalance.Balance,
@@ -36,7 +37,8 @@ alix.util.IntRoller,
 alix.util.IntSeries,
 alix.util.IntVek,
 alix.util.Occ,
-alix.util.OccRoller
+alix.util.OccRoller,
+alix.util.Term
 
 " %><%!
 
@@ -134,7 +136,10 @@ static void seltext( PageContext pageContext, String value ) throws IOException
     cells = catalog.get( code );
     if ( code.equals( value ) ) sel = selected;
     else sel = "";
-    out.println("<option value=\""+code+"\""+sel+">"+cells[1]+". "+cells[2]+"</option>");
+    String label = cells[1]+". "+cells[2] ;
+    if ( cells[1] == null || cells[1].isEmpty() ) label = cells[2];
+
+    out.println("<option value=\""+code+"\""+sel+">"+label+"</option>");
   }
 }
 

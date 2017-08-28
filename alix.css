@@ -1,14 +1,18 @@
 html, body { height: 100%; background-color: #f3f2ec; }
 body { font-family: sans-serif; margin: 0; padding:0; }
-p { text-align: justify; }
-p.doc { color: #666; max-width: 80ex; }
+
 * { box-sizing: border-box; }
-nav.menu { background-color: #ffffff; padding: 0 1ex; font-family: sans-serif; }
+nav.menu { background-color: #ffffff; left: 0; padding: 0 1ex; position: absolute; right: 0; top: 0; font-family: sans-serif; }
 nav a { color: #999; text-decoration: none; }
+
+div.text { margin: 1em 2em 0 2em; max-width: 60ex; }
+div.text p { text-align: justify; }
+#chart { font-family: sans-serif; background-color: #FFFFFF; padding-bottom: 1em; width:100%; height:80%; }
+
 
 #article { min-height: 100%; margin-top: 2em; }
 article { margin-top:0; padding: 0 2em 0 2em; font-family: sans-serif;   }
-select {font-size: 18px; font-family: sans-serif; }
+select, button {font-size: 18px; font-family: sans-serif; }
 textarea { border: none; }
 section:after, section:before, form:after, form:before, .bar:after, .bar:before { content:" "; visibility: hidden; display: block; clear: both; height: 0; }
 
@@ -119,7 +123,3 @@ div.scatter div.verb b { color: rgba( 255, 0, 0, 0.2 ) }
 div.scatter div.adj b { color: rgba( 0, 128, 255, 0.2 ) }
 div.scatter div.adv b { color: rgba( 255, 128, 0, 0.2 ) }
 div.scatter div.legend div.dot { position:static; transform: none; }
-
-.dygraph-title { background: #FFFFFF; margin-top: 1rem; margin-left: auto; margin-right: auto; width: 60%; }
-.dygraph-ylabel { margin-top: 0.5rem; color: #888; }
-.dygraph-xlabel { color: #888; }

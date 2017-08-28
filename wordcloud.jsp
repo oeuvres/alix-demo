@@ -58,7 +58,7 @@ for (String w: new String[]{
     "abbé", "baron", "chapitre", "cher", "comte", "comtesse", "docteur", "duc", "duchesse", "évêque", "jeune fille", "jeunes filles", 
     "jeunes gens", "jeune homme", "lord", "madame", "mademoiselle", 
     "maître", "marquis", "marquise", "miss", "monsieur", "p.", "pauvre", "point", "prince", "princesse", "professeur",
-    "reine", "roi", "roy", "si", "sir"
+    "reine", "roi", "roy", "si", "sir", "tout le monde"
 }) filter2.add( w );
 
 DicFreq dic = null;
@@ -107,9 +107,10 @@ else {
     }
     else {
       if (Lexik.isStop( word )) continue;
+      if ( Tag.isAdv( tag )) continue; // locution adverbiale
+      if ( Tag.isAdv( tag )) continue; // locution adverbiale
       if ( Tag.isName( tag )) tag = Tag.NAME;
       if ( Tag.isVerb( tag )) tag = Tag.VERB;
-      if ( Tag.isAdv( tag )) tag = Tag.ADV;
       if ( tag == Tag.VERBsup ) continue;
       if ( filter.contains( word )) continue;
       score = line.count();
