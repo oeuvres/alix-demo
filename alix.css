@@ -12,7 +12,8 @@ div.text p { text-align: justify; }
 
 #article { min-height: 100%; margin-top: 2em; }
 article { margin-top:0; padding: 0 2em 0 2em; font-family: sans-serif;   }
-select, button {font-size: 18px; font-family: sans-serif; }
+select, button { font-size: 18px; font-family: sans-serif; }
+button.but { line-height: 110%; }
 textarea { border: none; }
 section:after, section:before, form:after, form:before, .bar:after, .bar:before { content:" "; visibility: hidden; display: block; clear: both; height: 0; }
 
@@ -50,27 +51,27 @@ td.left { text-align:right; }
 div.conc { width: 80ex; text-align: left; }
 .conc p { margin: 0.5ex 0; padding: 0.5ex 0; border-bottom: 1px solid #FFFFFF; }
 
-.bg-10 { background: #A00 !important; color: #FFF; }
-.bg-9 { background: #C00 !important; color: #FFF; }
-.bg-8 { background: #F00 !important; color: #FFF; }
-.bg-7 { background: #F22 !important; color: #FFF; }
-.bg-6 { background: #F44 !important; color: #FFF; }
+.bg-10 { background: #A00 !important; color: #FFF !important; }
+.bg-9 { background: #C00 !important; color: #FFF !important; }
+.bg-8 { background: #F00 !important; color: #FFF !important; }
+.bg-7 { background: #F22 !important; color: #FFF !important; }
+.bg-6 { background: #F44 !important; color: #FFF !important; }
 .bg-5 { background: #F66 !important; }
 .bg-4 { background: #F88 !important; }
 .bg-3 { background: #FAA !important; }
 .bg-2 { background: #FCC !important; }
-.bg-1 { background: #FEE !important; color: #000;}
-.bg0 { background: #FFF !important; color: #000; }
-.bg1 { background: #EEF !important; color: #008; }
+.bg-1 { background: #FEE !important; color: #000 !important;}
+.bg0 { background: #FFF !important; color: #000 !important; }
+.bg1 { background: #EEF !important; color: #008 !important; }
 .bg2 { background: #CCF !important; }
 .bg3 { background: #AAF !important; }
 .bg4 { background: #88E !important; }
 .bg5 { background: #66D !important; }
-.bg6 { background: #44C !important; color: #FFF }
-.bg7 { background: #22C !important;  color: #FFF;}
-.bg8 { background: #00C !important; color: #FFF; }
-.bg9 { background: #00A !important; color: #FFF; }
-.bg10 { background: #008 !important; color: #FFF; }
+.bg6 { background: #44C !important; color: #FFF !important; }
+.bg7 { background: #22C !important;  color: #FFF !important;}
+.bg8 { background: #00C !important; color: #FFF !important; }
+.bg9 { background: #00A !important; color: #FFF !important; }
+.bg10 { background: #008 !important; color: #FFF !important; }
 
 ul.menu li { margin: 0.5ex 0; font-size: 150%; }
 

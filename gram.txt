@@ -14,14 +14,14 @@ ta
 tes
 vous
 votre
-il
-lui
-elle
 on
+il
+ils
+elle
+lui
 son
 sa
 ses
-ils
 leurs
 
 # Conjugaison

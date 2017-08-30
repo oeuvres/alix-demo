@@ -173,8 +173,16 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           bias =  myfreq  / (myfreq + franfreq);
           out.print( "<td align=\"right\">"+dfppm.format(myfreq)+" ppm</td>\n" );
           out.print( "<td align=\"right\">"+dfppm.format(franfreq)+" ppm</td>\n" );
-          String bg = "bg" + Math.round( 10.0 * (2*bias - 1) );
-          out.print( "<td align=\"right\" class=\""+bg+"\">"+ biasdf.format( bias )+"</td>\n" );
+          if ( franfreq == 0 ) {
+            out.print( "<td></td>\n" );
+          }
+          else {
+            String label;
+            String bg = "bg" + Math.round( 10.0 * (2 * bias - 1) );
+            if ( myfreq > franfreq) label = "x "+biasdf.format(myfreq/franfreq);
+            else label = "/ "+biasdf.format(franfreq/myfreq);
+            out.print( "<td align=\"right\" class=\""+bg+"\">"+ label+"</td>\n" );
+          }
           out.print( "</tr>\n");
         }
       %>
@@ -290,7 +298,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
             out.print( "<tr>\n");
             out.print( "<td>"+n+"</td>\n" );
             out.print( "<td>"+word+"</td>\n" );
-            out.print( "<td>"+count+"</td>\n" );
+            out.print( "<td align=\"right\">"+count+"</td>\n" );
             out.print( "<td align=\"right\">"+dfppm.format(myfreq)+" ppm</td>\n" );
             out.print( "<td align=\"right\">"+dfppm.format(franfreq)+" ppm</td>\n" );
             if ( franfreq == 0 ) {
@@ -343,6 +351,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           }
       %>
       </select>
+      <br/>
       <label>Seuil Frantext
         <select name="frantext" onchange="this.form.onsubmit(); this.form.submit()">
           <option/>
