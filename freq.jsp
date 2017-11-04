@@ -13,8 +13,9 @@ static String[][] vues = {
   new String[] { "adv", "Adverbes" },
   new String[] { "name", "Noms propres" },
   // new String[] { "pos", "Proportions des catégories de mots" },
-  new String[] { "gramlist", "Mots grammaticaux, % Frantext" },
-  new String[] { "verblist", "Verbes fréquents % Frantext", "withlems" },
+  new String[] { "listgram", "% mots grammaticaux fréquents, frantext" },
+  new String[] { "listverb", "% verbes fréquents, frantext", "withlems" },
+  new String[] { "listadj", "% adjectifs fréquents, frantext", "withlems" },
 };
 
 
@@ -45,9 +46,11 @@ if ( frantext != null ) {
 }
 
 boolean vuelem = false;
+String vuelabel = vues[0][1];
 for ( int i = 0; i < vues.length; i++) {
   if ( vues[i][0].equals( vue ) ) {
     if ( vues[i].length > 2 && vues[i][2] != null ) vuelem = true;
+    vuelabel = vues[i][1];
   }
 }
 %>
@@ -68,8 +71,13 @@ String context = application.getRealPath("/");
     <article id="article"">
     <h1><a href=".">Alix</a> : différentes fréquences lexicales</h1>
       <%
-        String text = request.getParameter( "text" );
-                  if ( text==null ) text="";
+       String text = request.getParameter( "text" );
+       if ( text==null ) text="";
+       String[] cells = catalog.get( bibcode );
+       String title = "";
+       if ( cells == null);
+       else if ( cells[1] != null && !cells[1].isEmpty() ) title = cells[1]+". "+cells[2];
+       else title = cells[2];
       %>
     <section style=" float: left;  ">
 <%
@@ -103,25 +111,23 @@ else if( bibcode != null && bibl != null ) {
 if ( dico == null ) {
   if ( bibcode != null ) out.print( "<p>Le texte "+bibcode+" n’est pas disponible sur ce serveur.</p>\n");
 }
-else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
-  Path listfile = Paths.get( context, "/gram.txt" );
-  if ( "verblist".equals( vue ) ) listfile = Paths.get( context, "/verbs.txt" );
+else if ( vue != null && vue.startsWith( "list" ) ) {
+  Path listfile = Paths.get( context, vue+".txt" );
   long occs = dico.occs();
 %>
-    <table class="sortable">
-      <caption>
-      <%
-        //       <caption> bibl[2], <i>bibl[3]</i>,  numdf.format( occs ) mots<br/> ( vuelabel )</caption>
-      %>
-      </caption>
+    <table class="sortable scroll">
+      <caption><%= bibl[1]%><%= (bibl[1].isEmpty())?"":", " %><i><%=bibl[2]%></i>,  <%=numdf.format( occs )%> mots (<%= vuelabel %>)</caption>
+      <thead>
       <tr>
         <th title="Ordre d’exploration">Plan</th>
         <th title="Forme graphique">Graphie</th>
-        <th title="Texte, effectif">Texte</th>
-        <th title="Texte, effectif par million d’occurrences">Texte (ppm)</th>
-        <th title="Frantext, effectif par million d’occurrences">Frantext (ppm)</th>
-        <th title="0 % absent du texte, 50 % même fréquence dans le texte et Frantext, 100 % absent (ou presque) de Frantext">% Frantext</th>
+        <th title="Nombre d’occurrences dans le texte">Occs</th>
+        <th title="Texte, effectif par million d’occurrences">Texte</th>
+        <th title="Frantext, effectif par million d’occurrences">Frantext</th>
+        <th title="">% Frantext</th>
       </tr>
+      </thead>
+      <tbody>
       <%
         BufferedReader br = Files.newBufferedReader(  listfile, StandardCharsets.UTF_8 );
         int n = 0;
@@ -143,7 +149,11 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           // a label, not a word
           if ( l.charAt( 0 ) == '#' ) {
             out.print( "<th>"+n+"</th>\n" );
-            out.print( "<th align=\"left\">"+l.substring( 1 ).trim()+"</th><th/><th/><th/>\n" );
+            // out.print( "<th style=\"text-align: left\" colspan=\"2\">"+l.substring( 1 ).trim()+"</th>\n" );
+            out.print( "<th colspan=\"2\"></th>");
+            out.print( "<th>Texte</th>" );
+            out.print( "<th>Frantext</th>" );
+            out.print( "<th>% Frantext</th>" );
             continue;
           }
           if ((pos=l.indexOf( ';' )) > -1) {
@@ -171,8 +181,8 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           }
           myfreq = 1.0*count*1000000/occs;
           bias =  myfreq  / (myfreq + franfreq);
-          out.print( "<td align=\"right\">"+dfppm.format(myfreq)+" ppm</td>\n" );
-          out.print( "<td align=\"right\">"+dfppm.format(franfreq)+" ppm</td>\n" );
+          out.print( "<td align=\"right\">"+dfppm.format(myfreq)+" / M</td>\n" );
+          out.print( "<td align=\"right\">"+dfppm.format(franfreq)+" / M</td>\n" );
           if ( franfreq == 0 ) {
             out.print( "<td></td>\n" );
           }
@@ -186,6 +196,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           out.print( "</tr>\n");
         }
       %>
+      </tbody>
     </table>
     <%
       }
@@ -202,26 +213,27 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
       // int size = words.length;
       String cat;
     %>
-    <table class="sortable">
-      <%
-        //       <caption>bibl[2], <i>bibl[3]</i>, numdf.format( occs ) mots<br/> ( vuelabel)</caption>
-      %>
+    <table class="sortable scroll">
+      <caption><%= bibl[1]%><%= (bibl[1].isEmpty())?"":", " %><i><%=bibl[2]%></i>,  <%=numdf.format( occs )%> mots (<%= vuelabel %>)</caption>
+      <thead>
       <tr>
         <th>N°</th>
         <th>Graphie</th>
-        <th>Occurrences</th>
+        <th title="Nombre d’occurrences dans le texte">Occs</th>
         <%
           boolean tlfcol = false;
-              if ( "tokens".equals( vue ) );  
+              if ( "tokens".equals( vue ) );
               else if ( "name".equals( vue ) ) out.print("<th>Catégorie</th>");
               else {
                   tlfcol = true;
-                  out.print("<th title=\"Texte, effectif par million d’occurrences\">Texte (ppm)</th>");
-                  out.print("<th title=\"Frantext, effectif par million d’occurrences\">Frantext (ppm)</th>");
-                  out.print("<th title=\"0% = absent du texte, 50% = même fréquence dans le texte et Frantext, 100% absent (ou presque) de Frantext\">% Frantext</th>\n");
+                  out.print("<th title=\"Texte, effectif par million d’occurrences\">Texte</th>");
+                  out.print("<th title=\"Frantext, effectif par million d’occurrences\">Frantext</th>");
+                  out.print("<th title=\"\">% Frantext</th>\n");
                 }
         %>
       </tr>
+      </thead>
+      <tbody>
       <%
         float franfreq = 0;
           double myfreq = 0;
@@ -264,7 +276,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
             }
             if ( "devoir".equals( word )) entry = Lexik.entry( "doit" );
             else entry = Lexik.entry( word );
-            
+
             // filtrer les mots vides quand seuil frantext ?
             if ( "nostop".equals( vue ) || "lem".equals( vue ) ) {
               if ( tlfratio == null && Lexik.isStop( word )) continue;
@@ -275,7 +287,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
             if ( "verb".equals( vue ) && !Tag.isVerb( tag ) ) continue ;
             if ( "adj".equals( vue ) && tag != Tag.ADJ ) continue;
             if ( "adv".equals( vue ) && !Tag.isAdv( tag ) ) continue;
-                          
+
             if ( entry == null ) franfreq = 0;
             else if ( vuelem ) franfreq = entry.lemfreq;
             else franfreq = entry.orthfreq;
@@ -293,14 +305,14 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
                 if ( myfreq/franfreq < tlfratio ) continue;
               }
             }
-                          
+
             bias =  myfreq / (myfreq + franfreq);
             out.print( "<tr>\n");
             out.print( "<td>"+n+"</td>\n" );
             out.print( "<td>"+word+"</td>\n" );
             out.print( "<td align=\"right\">"+count+"</td>\n" );
-            out.print( "<td align=\"right\">"+dfppm.format(myfreq)+" ppm</td>\n" );
-            out.print( "<td align=\"right\">"+dfppm.format(franfreq)+" ppm</td>\n" );
+            out.print( "<td align=\"right\">"+dfppm.format(myfreq)+" / M</td>\n" );
+            out.print( "<td align=\"right\">"+dfppm.format(franfreq)+" / M</td>\n" );
             if ( franfreq == 0 ) {
               bg = "";
               out.print( "<td></td>\n" );
@@ -316,6 +328,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
             if (n > limit) break;
           }
       %>
+      </tbody>
     </table>
     <%
 }
@@ -336,18 +349,12 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
           String selected = "";
           if ( vue == null ) selected = " selected=\"selected\"";
           out.print("<option value=\"\" disabled=\"disabled\" hidden=\"hidden\""+selected+">Choisir une liste de mots…</option>");
-          String vuelabel = null;
           for ( int i = 0; i < vues.length; i++) {
             selected = "";
             if ( vues[i][0].equals( vue ) ) {
               selected = " selected=\"selected\"";
-              vuelabel = vues[i][1];
             }
             out.print("<option value=\""+vues[i][0]+"\""+selected+">"+vues[i][1]+"</option>");
-          }
-          if ( vue == null ) {
-            vue = vues[0][0];
-            vuelabel = vues[0][1];
           }
       %>
       </select>
@@ -365,7 +372,7 @@ else if ( "gramlist".equals( vue ) || "verblist".equals( vue ) ) {
       <button type="submit" style="float: right">Envoyer</button>
     </form>
     </div>
-    
+
     </article>
     <script src="lib/Sortable.js">//</script>
   </body>

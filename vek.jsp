@@ -148,7 +148,8 @@ private void coocs( String term, final int hits, final String href ) throws IOEx
 <%@include file="vekshare.jsp" %>
 <body>
   <%@include file="menu.jsp"%>
-
+  <p style="margin:2em 1em 0 1em; width: 80ex;">Une idée initiale de Marianne Reboul, un programme d’expériences conçu par Olivier Gallet, développé par Frédéric Glorieux, 
+  sur un corpus sélectionnné par Alexandre Gefen.</p>
 <%
   int left = -5;
 // try { left = Integer.parseInt( request.getParameter( "left" ) ); } catch (Exception e) {}
@@ -182,11 +183,13 @@ if ( veks == null );
 else if ( term.isEmpty() ) { 
   
   DicFreq dic = veks.dic();
+  /*
   Cloud cloud = Cloud.cloud( dic, 200, cloudfilter );
   cloud.doLayout();
   out.println("<div id=\"cloud\" style=\"margin-left\">");
   out.println( cloud.html() );
   out.println("</div>");
+  */
   out.println( "<script> var div=document.getElementById('cloud'); a = div.getElementsByTagName('a'); ");
   out.println( "for ( var i = 0; i < a.length; ++i ) a[i].href='?corpus="+corpus+"&term='+a[i].innerText;</script>" );
   

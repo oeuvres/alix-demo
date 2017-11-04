@@ -17,6 +17,13 @@ button.but { line-height: 110%; }
 textarea { border: none; }
 section:after, section:before, form:after, form:before, .bar:after, .bar:before { content:" "; visibility: hidden; display: block; clear: both; height: 0; }
 
+/*
+table.scroll tbody{ display:block; height:200px; overflow-y:auto; }
+table.scroll thead td, table.scroll thead th { float:left; }
+*/
+table.scroll tbody th { border-top: 20px solid #f3f2ec; }
+
+
 table.lem { font-family: sans-serif; border-collapse: collapse; border: 2px solid #FFFFFF; }
 table.lem td { padding: 0 1ex; border-top: 1px solid #FFFFFF; }
 

@@ -51,7 +51,7 @@ static {
   for (String w: new String[]{
       "abbé", "baron", "celui", "chapitre", "cher", "comte", "comtesse", "do",
       "docteur", "duc", "duchesse", "évêque", "francs",
-      "lord", "madame", "mademoiselle", 
+      "lord", "madame", "mademoiselle",
       "maître", "marquis", "marquise", "miss", "monsieur", "p.", "pauvre", "point", "prince", "princesse", "professeur",
       "reine", "roi", "roy", "si", "sir", "ut"
   }) cloudfilter.add( w );
@@ -62,7 +62,7 @@ private JspWriter printer;
 
 /** Get catalog, populate it if empty */
 static LinkedHashMap<String,String[]> catalog( PageContext pageContext ) throws IOException
-{ 
+{
   String force = pageContext.getRequest().getParameter( "force" );
   if ( force != null ) {
     pageContext.getServletContext().removeAttribute( "catalog" );
@@ -72,9 +72,9 @@ static LinkedHashMap<String,String[]> catalog( PageContext pageContext ) throws 
   LinkedHashMap<String,String[]> catalog = (LinkedHashMap<String,String[]>)pageContext.getServletContext().getAttribute( "catalog" );
   if ( catalog != null && force == null) return catalog;
   catalog = new LinkedHashMap<String,String[]>();
-  BufferedReader buf = new BufferedReader( 
+  BufferedReader buf = new BufferedReader(
     new InputStreamReader(
-      pageContext.getServletContext().getResourceAsStream( "/WEB-INF/catalog.csv" ), 
+      pageContext.getServletContext().getResourceAsStream( "/WEB-INF/catalog.csv" ),
       StandardCharsets.UTF_8
     )
   );
@@ -143,7 +143,7 @@ static void seltext( PageContext pageContext, String value ) throws IOException
   }
 }
 
-/** 
+/**
  * Output options for Frantext filter
  */
 static Float tlfoptions ( PageContext pageContext, String param ) throws IOException
@@ -156,7 +156,9 @@ static Float tlfoptions ( PageContext pageContext, String param ) throws IOExcep
     catch ( Exception e) {}
   }
 
-  float[] values = { 200f, 100F, 50F, 20F, 10F, 7F, 6F, 5F, 3F, 2F, 0F, -2F, -5F, -10F };
+  float[] values = { 200F, 100F, 50F, 20F, 10F, 7F, 6F, 5F, 3F, 2F, 0F, -2F, -3F, -5F, -10F };
+  String[] labels = { "> ×200", "> ×100", "> ×50", "> ×20", "> ×10", "> ×7", "> ×6", "> ×5", "> ×3", "> ×2", 
+      "[×2, /2]", "< /2", "< /3", "< /5", "< /10" };
   int lim = values.length;
   String selected="";
   boolean seldone = false;
@@ -166,9 +168,7 @@ static Float tlfoptions ( PageContext pageContext, String param ) throws IOExcep
       selected=" selected=\"selected\"";
       seldone = true;
     }
-    if ( values[i] == 0 ) label = "[2, -2]";
-    else label = frdf.format( values[i] );
-    out.println("<option"+selected+" value=\""+values[i]+"\">"+label +"</option>");
+    out.println("<option"+selected+" value=\""+values[i]+"\">"+labels[i] +"</option>");
     selected = "";
   }
   return tlfratio;
@@ -224,7 +224,7 @@ public DicFreq parse( String text ) throws IOException {
   }
   return dic;
 }
-public DicFreq dic( PageContext pageContext, final String bib ) throws IOException 
+public DicFreq dic( PageContext pageContext, final String bib ) throws IOException
 {
   return dic( pageContext, bib, "W");
 }
@@ -232,7 +232,7 @@ public DicFreq dic( PageContext pageContext, final String bib ) throws IOExcepti
 /**
  * Récupérer un dictionnaire par identifiant, comportement général
  */
-public DicFreq dic( PageContext pageContext, final String code, String type ) throws IOException 
+public DicFreq dic( PageContext pageContext, final String code, String type ) throws IOException
 {
   ServletContext application = pageContext.getServletContext();
   if ( type == null || type.isEmpty() ) type = "dic";

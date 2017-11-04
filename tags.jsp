@@ -20,6 +20,7 @@ alix.fr.Tokenizer,alix.util.Occ" %>
     </style>
   </head>
   <body>
+    <%@include file="menu.jsp" %>
     <article>
       <h1><a href=".">Alix</a> : <a href="">Catégories grammaticales, proportions</a></h1>
       <%
@@ -61,10 +62,10 @@ alix.fr.Tokenizer,alix.util.Occ" %>
         for ( String label: taglist) {
           out.print("<td>");
           if ( label.equals( "SUB/VERB" )) {
-        out.print( 1F*tags.count( "SUB") / tags.count( "VERB") );
+            out.print( 1F*tags.count( "SUB") / tags.count( "VERB") );
           }
           else {
-        out.print(ppmdf.format( 1000000F * tags.count( label) / occs ) );
+        out.print(dfppm.format( 1000000F * tags.count( label) / occs ) );
           }
           out.print("</td>");
         }

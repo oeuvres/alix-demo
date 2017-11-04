@@ -1,3 +1,4 @@
+WEB-INF/gefen/
 WEB-INF/textes/
 WEB-INF/veks/
 WEB-INF/lucene/
@@ -5,3 +6,4 @@ WEB-INF/lucene/
 test*
 WEB-INF/catalog.csv
 WEB-INF/web.xml
+gefen_veks.txt

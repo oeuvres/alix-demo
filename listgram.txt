@@ -24,19 +24,22 @@ sa
 ses
 leurs
 
-# Conjugaison
+# Temps
 est
 sont
 a
 ont
-aurait
+sera
+aura
 serait
+aurait
 était
 étaient
 avait
 avaient
 fut
 eut
+
 # Nombre
 deux
 trois
@@ -48,40 +51,41 @@ huit
 dix
 vingt
 cent
+mille
 
 # Démonstratifs
 cette
 ces
 cet
-cela
 celui
 celle
+cela
 voilà
 
-# Logique
+# Connecteurs
+de
+et
+ou
+ne
+pas
+ni
 puis
 car
 donc
-et
 comme
-ou
-ni
-ne
 mais
 parce que
 
-##
 # Lieu
 dans
 sur
-là
 sous
+là
 vers
 entre
 devant
 chez
 derrière
-
 
 # Temps
 quand
@@ -89,14 +93,15 @@ après
 avant
 depuis
 pendant
-demain
 maintenant
 aujourd'hui
+demain
 
 
 
 # Relatives
 qui
-où
-dont
+que
 quoi
+dont
+où
