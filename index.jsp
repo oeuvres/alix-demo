@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ page import="
 java.nio.charset.StandardCharsets,
 java.nio.file.Files
@@ -15,13 +15,13 @@ java.nio.file.Files
     <article>
       <h1>Alix</h1>
       <p>
-Alix est une <a href="https://github.com/oeuvres/Alix">librairie logiciel libre</a> pour la fouille lexicale, 
-activement développée en ce moment par 
-<a onclick="this.href='mailto'+'\x3A'+'frederic.glorieux'+'\x40'+'fictif.org'" href="#">Frédéric Glorieux</a> et
-<a onclick="this.href='mailto'+'\x3A'+'odysseuspolymetis2010+'\x40'+gmail.com'" href="#">Marianne Reboul</a> 
-dans le contexte  du <a href="http://obvil.paris-sorbonne.fr/developpements/alix">LABEX OBVIL</a> et de 
-l’<a href="http://www.thalim.cnrs.fr/programmes-de-recherche/programmes-subventionnes/article/anr-chapitres">ANR Chapitres</a>.
-Cette démonstration en ligne est pour l’instant destinée à la mise au point des fonctionnalités
+Alix est une <a href="https://github.com/oeuvres/alix">librairie logiciel libre</a> pour la fouille lexicale, 
+développée par 
+<a onclick="this.href='mailto'+'\x3A'+'frederic.glorieux'+'\x40'+'fictif.org'" href="#">Frédéric Glorieux</a>.
+     </p>
+     <p>
+Ce site est destinée à des démonstrations pédagogiques de traitement de la langue avec la 
+<!-- 
         avec les chercheurs intéressés. 
         Le cœur est un lemmatiseur pour le français, programmé dans le langage Java, sans dépendances.
         Il existe d’autres lemmatiseurs, mais ils n’ont pas été développé en contexte littéraire, si bien que ceux que nous avons 
@@ -47,6 +47,7 @@ C’est d’ailleurs pour mieux les aimer que ces instruments fouillent l’inti
         <li><a href="grep.jsp">Concordance et cooccurrences</a></li>
         <li><a href="gn.jsp">Adjectifs ante ou post posés</a></li>
       </ul>
+      -->
     </article>
   </body>
 </html>

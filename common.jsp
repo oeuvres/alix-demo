@@ -20,25 +20,16 @@ java.util.Locale,
 java.util.Set,
 java.util.Scanner,
 
-alix.fr.Lexik,
-alix.fr.Lexik.LexEntry,
-alix.fr.query.Query,
 alix.fr.Tag,
-alix.fr.Tokenizer,
 
 alix.util.Char,
 alix.util.DicBalance,
 alix.util.DicBalance.Balance,
-alix.util.DicPhrase,
 alix.util.DicFreq,
 alix.util.DicFreq.Entry,
 alix.util.IntPair,
-alix.util.IntRoller,
 alix.util.IntSeries,
-alix.util.IntVek,
-alix.util.Occ,
-alix.util.OccRoller,
-alix.util.Term
+alix.util.Occ,alix.util.Occ,
 
 " %><%!
 
