@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+    id="alix" 
+    version="3.0" 
+    xmlns="http://java.sun.com/xml/ns/javaee" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_0.xsd"
+  >
+  <display-name>Alix</display-name>
+  <description>Alix, démonstration</description>
+  <session-config>
+    <session-timeout>120</session-timeout>
+  </session-config>
+  <servlet>
+    <description></description>
+    <servlet-name>lemjsp</servlet-name>
+    <jsp-file>/lem.jsp</jsp-file>
+    <multipart-config>
+      <max-file-size>20848820</max-file-size> 
+      <max-request-size>418018841</max-request-size>
+      <file-size-threshold>1048576</file-size-threshold>
+    </multipart-config>
+  </servlet>
+  <servlet-mapping>
+      <servlet-name>lemjsp</servlet-name>
+      <url-pattern>/lem.jsp</url-pattern>
+  </servlet-mapping>
+</web-app>
