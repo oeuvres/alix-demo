@@ -10,11 +10,11 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="WEB-INF/lib/alix.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/ext/jsp-api_tomcat7.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/ext/servlet-api_tomcat7.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/lucene-analyzers-common-8.7.0.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/lucene-core-8.7.0.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/lucene-highlighter-8.7.0.jar"/>
-	<classpathentry kind="lib" path="WEB-INF/lib/lucene-queries-8.7.0.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/ext/tomcat9-jsp-api.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/ext/tomcat9-servlet-api.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/lucene-analyzers-common-8.8.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/lucene-core-8.8.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/lucene-highlighter-8.8.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/lucene-queries-8.8.1.jar"/>
 	<classpathentry kind="output" path="WEB-INF/classes"/>
 </classpath>

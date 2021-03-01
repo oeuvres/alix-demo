@@ -1,10 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ page import="java.io.BufferedReader" %>
 <%@ page import="java.io.IOException" %>
+<%@ page import="java.io.InputStreamReader" %>
 <%@ page import="java.io.StringReader" %>
 <%@ page import="java.io.Writer" %>
+<%@ page import="java.nio.charset.StandardCharsets" %>
 <%@ page import="java.nio.file.Files" %>
 <%@ page import="java.nio.file.Path" %>
+<%@ page import="java.nio.file.Paths" %>
 
 <%@ page import="org.apache.lucene.analysis.AlixReuseStrategy" %>
 <%@ page import="org.apache.lucene.analysis.Analyzer" %>
@@ -27,6 +31,7 @@
 <%@ page import="alix.lucene.analysis.LocutionFilter" %>
 <%@ page import="alix.lucene.analysis.tokenattributes.CharsLemAtt" %>
 <%@ page import="alix.lucene.analysis.tokenattributes.CharsOrthAtt" %>
+<%@ page import="alix.web.*" %>
 
 
 <%!
@@ -49,31 +54,39 @@ static class LemAnalyzer extends Analyzer
 
   public static void vertical(final String text, final Analyzer analyzer, final Writer out) throws IOException
   {
-    TokenStream stream = analyzer.tokenStream("stats", new StringReader(text));
-    vertical(text, stream, out);
+    TokenStream stream = analyzer.tokenStream("stats", text);
+    vertical(stream, out);
     analyzer.close();
   }
-  public static void vertical(final String text, final TokenStream stream, final Writer out) throws IOException
+  public static void vertical(final TokenStream stream, final Writer out) throws IOException
   {
 
     // get the CharTermAttribute from the TokenStream
     CharTermAttribute term = stream.addAttribute(CharTermAttribute.class);
-    CharsLemAtt lem = stream.addAttribute(CharsLemAtt.class);
     CharsOrthAtt orth = stream.addAttribute(CharsOrthAtt.class);
-    OffsetAttribute offsets = stream.addAttribute(OffsetAttribute.class);
     FlagsAttribute flags = stream.addAttribute(FlagsAttribute.class);
+    CharsLemAtt lem = stream.addAttribute(CharsLemAtt.class);
+    /*
+    OffsetAttribute offsets = stream.addAttribute(OffsetAttribute.class);
     PositionIncrementAttribute posInc = stream.addAttribute(PositionIncrementAttribute.class);
     PositionLengthAttribute posLen = stream.addAttribute(PositionLengthAttribute.class);
+    */
     
     try {
       stream.reset();
       // print all tokens until stream is exhausted
       while (stream.incrementToken()) {
         out.write("<tr>\n");
-        out.write("  <td>"+term+"</td>\n");
-        out.write("  <td>"+orth+"</td>\n");
-        out.write("  <td>"+Tag.label(flags.getFlags())+"</td>\n");
-        out.write("  <td>"+lem+"</td>\n");
+        out.write("  <td>");
+        JspTools.escape(out, term);
+        out.write("</td>\n");
+        out.write("  <td>");
+        JspTools.escape(out, orth);
+        out.write("</td>\n");
+        out.write("  <td>"+Tag.name(flags.getFlags())+"</td>\n");
+        out.write("  <td>");
+        JspTools.escape(out, lem);
+        out.write("</td>\n");
         out.write("</tr>\n");
       }
       
@@ -86,7 +99,65 @@ static class LemAnalyzer extends Analyzer
 
 
 %>
-<% request.setCharacterEncoding("UTF-8"); %>
+<% 
+request.setCharacterEncoding("UTF-8"); 
+Part part = null;
+String contentType = request.getContentType();
+if ("POST".equalsIgnoreCase(request.getMethod()) && (contentType != null) && contentType.startsWith("multipart/form-data")) {
+  part = request.getPart("file");
+}
+// send as csv
+if (part != null) {
+  response.setContentType(Mime.tsv.type);
+  String fileName = JspTools.getFileName(part);
+  fileName = fileName.replaceAll("\\.[^.]+$", ".tsv");
+  response.setHeader("Content-Disposition", "attachment; filename=\""+fileName+"\"");
+  BufferedReader in = new BufferedReader(new InputStreamReader(part.getInputStream(), StandardCharsets.UTF_8));
+  Analyzer analyzer = new LemAnalyzer();
+  TokenStream stream = analyzer.tokenStream("stats", in);
+
+  {
+    CharTermAttribute term = stream.addAttribute(CharTermAttribute.class);
+    CharsOrthAtt orth = stream.addAttribute(CharsOrthAtt.class);
+    FlagsAttribute flags = stream.addAttribute(FlagsAttribute.class);
+    CharsLemAtt lem = stream.addAttribute(CharsLemAtt.class);
+    /*
+    OffsetAttribute offsets = stream.addAttribute(OffsetAttribute.class);
+    PositionIncrementAttribute posInc = stream.addAttribute(PositionIncrementAttribute.class);
+    PositionLengthAttribute posLen = stream.addAttribute(PositionLengthAttribute.class);
+    */
+    
+    try {
+      stream.reset();
+      // print all tokens until stream is exhausted
+      while (stream.incrementToken()) {
+        out.append(term);
+        out.append("\t");
+        out.append(orth);
+        out.append("\t");
+        out.append(Tag.name(flags.getFlags()));
+        out.append("\t");
+        out.append(lem);
+        out.append("\n");
+      }
+      
+      stream.end();
+    }
+    finally {
+      stream.close();
+    }
+  }
+  
+  
+  analyzer.close();
+
+  out.close();
+}
+
+
+
+
+%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -98,7 +169,7 @@ static class LemAnalyzer extends Analyzer
   <body>
     <%@include file="menu.jsp" %>
     <article>
-      <h1><a href=".">Alix</a> : <a href="">Lemmatisation</a></h1>
+      <h1><a href="">Lemmatiser</a></h1>
       <!-- 
       <p>
 Les vers passent en général très mal dans un lemmatiseur, car les majuscules ne coïncident pas avec
@@ -116,27 +187,31 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
 </p>
  -->
       <%
-      String text = request.getParameter( "text" );
+      String text = request.getParameter("text");
       %>
-      <form method="post" action="?">
+      <form method="post" action="?" enctype="multipart/form-data">
+        <label for="file">Soumettre un fichier</label>
+        <input type="file" name="file" />
+        <button name="submit" type="submit">Télécharger</button>
+      </form>
         <%
         /*
         (Unknown) voir uniquement les erreurs
         boolean unknown = !(request.getParameter( "unknown" ) == null);
         String url = request.getParameter( "url" ); if (url == null) url="";
         
-		   if ( !"".equals( url ) ) {
-		     try {
-		       Scanner scan = new Scanner(  new URL( url ).openStream(), "UTF-8" );
-		       scan.useDelimiter("\\A"); 
-		       text = scan.next();
-		       scan.close();
-		     }
-		     catch (Exception e) {
-		       out.print( "<p>"+url+" Impossible de retirer le texte souhaité.</p>" );
-		       text = null;
-		     }
-		   }
+       if ( !"".equals( url ) ) {
+         try {
+           Scanner scan = new Scanner(  new URL( url ).openStream(), "UTF-8" );
+           scan.useDelimiter("\\A"); 
+           text = scan.next();
+           scan.close();
+         }
+         catch (Exception e) {
+           out.print( "<p>"+url+" Impossible de retirer le texte souhaité.</p>" );
+           text = null;
+         }
+       }
         */
       if ( text == null) text = "La Beauté\n\n"
       + "Je suis belle, ô mortels! comme un rêve de pierre,\n"
@@ -157,21 +232,64 @@ statistiques, pouvant corriger les erreurs restantes si elles nuisaient à une a
       + "De purs miroirs qui font toutes choses plus belles:\n"
       + "Mes yeux, mes larges yeux aux clartés éternelles!\n";
       %>
+      <form method="post" action="?">
+        <label for="text">Ou bien tester du texte</label>
         <textarea name="text" style="width: 100%; height: 10em; " onchange="this.form.method='post'; "><%=text%></textarea>
-        <button type="submit">Envoyer</button>
+        <button name="submit" type="submit">Tester</button>
       </form>
-      <table class="lem">
-        <tr>
-          <th>Graphie</th>
-          <th>Forme</th>
-          <th>Catégorie</th>
-          <th>Lemme</th>
-        </tr>
-      <%
-      vertical(text, new LemAnalyzer(), out);
-      %>
+      <section class="table2">
+       <table id="legend" class="lem" width="500">
+         <caption>Catégories lexicales : légende</caption>
+         <thead>
+          <th>Numéro</th>
+          <th>Code</th>
+          <th>Nom</th>
+          <th>Description</th>
+         </thead>
+         <tbody>
+           <%
+           int parentLast = 0;
+           for (Tag tag : Tag.values()) {
+             final int parent = tag.parent;
+             if (parent != parentLast) {
+               out.println("<tr class=\"empty\"><td> </td><td> </td><td> </td><td> </td></tr>");
+               parentLast = parent;
+             }
+             out.println("<tr>");
+             out.print("<td>");
+             out.print(Integer.toHexString(tag.flag));
+             out.println("</td>");
+             out.print("<td>");
+             out.print(tag.name());
+             out.println("</td>");
+             out.print("<td>");
+             out.print(tag.label);
+             out.println("</td>");
+             out.print("<td>");
+             out.print(tag.desc);
+             out.println("</td>");
+             out.println("</tr>");
+           }
+           %>
+         </tbody>
        </table>
-
+      <table class="lem">
+        <thead>
+          <tr>
+            <th>Graphie</th>
+            <th>Forme</th>
+            <th>Catégorie</th>
+            <th>Lemme</th>
+          </tr>
+        </thead>
+        <tbody>
+      <%
+       vertical(text, new LemAnalyzer(), out);
+      
+      %>
+        </tbody>
+       </table>
+       </div>
      </article>
   </body>
  </html>

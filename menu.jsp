@@ -76,6 +76,6 @@ static public enum Tab {
 
 %>
 <nav class="tabs">
-  <a href=".">▲ Alix</a>
+  <a href="." class="tab">▲ Alix</a>
   <%= Tab.nav(request) %>
 </nav>
